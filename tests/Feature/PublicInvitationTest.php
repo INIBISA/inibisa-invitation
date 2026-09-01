@@ -20,7 +20,12 @@ class PublicInvitationTest extends TestCase
 
         $response = $this->get(route('public.invitation', ['slug' => $invitation->slug, 'to' => 'Muhammad Rizky']));
 
-        $response->assertOk()->assertSee('Haikal')->assertSee('Fitria')->assertSee('Muhammad Rizky');
+        $response->assertOk()
+            ->assertSee('Haikal')
+            ->assertSee('Fitria')
+            ->assertSee('Muhammad Rizky')
+            ->assertSee('floral-corner-left.webp')
+            ->assertSee('Navigasi undangan');
     }
 
     public function test_draft_and_inactive_invitations_are_not_public(): void

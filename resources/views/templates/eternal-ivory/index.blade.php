@@ -37,6 +37,7 @@
         @include('templates.eternal-ivory.partials.wishes')
         @include('templates.eternal-ivory.partials.closing')
     </main>
+    @include('templates.eternal-ivory.partials.bottom-navigation')
 </div>
 @if($musicMedia && data_get($settings, 'music', true))<audio id="wedding-music" loop preload="none"><source src="{{ asset('storage/'.$musicMedia->file_path) }}"></audio><button class="music-toggle" type="button" aria-label="Putar atau jeda musik" hidden><span></span></button>@endif
 </body></html>
