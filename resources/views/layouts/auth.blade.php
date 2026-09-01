@@ -1,23 +1,34 @@
 <!doctype html>
 <html lang="id">
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>@yield('title') · {{ config('app.name') }}</title>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/app-interactions.css') }}">
+    <script src="{{ asset('js/app.js') }}" defer></script>
 </head>
-
-<body>
-    <main class="auth-wrap">
-        <section class="auth-card">
-            <div class="eyebrow">Digital Wedding Invitation</div>
-            @if (session('success'))
-                <div class="alert success">{{ session('success') }}</div>
-            @endif@
+<body class="auth-body">
+<main class="auth-layout">
+    <section class="auth-story" aria-label="Tentang Undangan Digital">
+        <img class="auth-story-image" src="{{ asset('images/templates/eternal-ivory/couple-placeholder.svg') }}" alt="" width="960" height="1280" decoding="async">
+        <div class="auth-story-overlay"></div>
+        <img class="auth-floral auth-floral-top" src="{{ asset('images/templates/eternal-ivory/floral-corner-left.webp') }}" alt="" width="720" height="720" decoding="async">
+        <img class="auth-floral auth-floral-bottom" src="{{ asset('images/templates/eternal-ivory/floral-corner-right.webp') }}" alt="" width="720" height="720" decoding="async">
+        <div class="auth-story-content">
+            <a class="auth-brand" href="{{ route('login') }}"><span class="brand-mark light"><span>U</span></span><span><strong>Undangan</strong><small>Digital Studio</small></span></a>
+            <div class="auth-message"><span class="auth-kicker">Beautiful moments, thoughtfully shared</span><h1>Create elegant wedding invitations with ease.</h1><p>Design, personalize, and share an unforgettable invitation from one beautifully simple workspace.</p><ul><li><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4zM8 8h8M8 12h5M8 16h7"/></svg><span><strong>Premium Templates</strong><small>Editorial designs crafted for every love story.</small></span></li><li><svg viewBox="0 0 24 24"><path d="m4 20 4.5-1 10-10-3.5-3.5-10 10zM13.5 6.5 17 10M15 4l2-2 5 5-2 2"/></svg><span><strong>Easy Customization</strong><small>Make every detail feel uniquely yours.</small></span></li><li><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 10.5 6.8-4M8.6 13.5l6.8 4"/></svg><span><strong>Effortless Sharing</strong><small>Share your celebration with a single link.</small></span></li></ul></div>
+            <p class="auth-quote">“Every love story deserves a beautiful beginning.”</p>
+        </div>
+    </section>
+    <section class="auth-form-panel">
+        <a class="auth-brand mobile-auth-brand" href="{{ route('login') }}"><span class="brand-mark"><span>U</span></span><span><strong>Undangan</strong><small>Digital Studio</small></span></a>
+        <div class="auth-form-wrap">
+            @if(session('success'))<div class="alert success">{{ session('success') }}</div>@endif
             @yield('content')
-        </section>
-    </main>
+        </div>
+        <p class="auth-copyright">© {{ now()->year }} {{ config('app.name') }}. Crafted with care.</p>
+    </section>
+</main>
 </body>
-
 </html>

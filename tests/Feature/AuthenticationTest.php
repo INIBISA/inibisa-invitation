@@ -10,6 +10,20 @@ class AuthenticationTest extends TestCase
 {
     use LazilyRefreshDatabase;
 
+    public function test_authentication_pages_render_premium_forms(): void
+    {
+        $this->get(route('login'))
+            ->assertOk()
+            ->assertSee('Welcome Back')
+            ->assertSee('Premium Templates')
+            ->assertSee('data-password-toggle', false);
+
+        $this->get(route('register'))
+            ->assertOk()
+            ->assertSee('Create Account')
+            ->assertSee('Admin approval required');
+    }
+
     public function test_registration_creates_pending_customer(): void
     {
         $response = $this->post('/register', [

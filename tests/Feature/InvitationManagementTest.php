@@ -73,7 +73,7 @@ class InvitationManagementTest extends TestCase
         $customer = User::factory()->active()->create();
         $invitation = Invitation::factory()->for($customer)->create();
 
-        $this->actingAs($customer)->get(route('dashboard'))->assertOk();
+        $this->actingAs($customer)->get(route('dashboard'))->assertOk()->assertSee('Create Invitation');
         $this->actingAs($customer)->get(route('invitations.create'))->assertOk();
         $this->actingAs($customer)->get(route('invitations.edit', $invitation))->assertOk();
         $this->actingAs($customer)->get(route('invitations.rsvps', $invitation))->assertOk();

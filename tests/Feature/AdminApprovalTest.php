@@ -40,7 +40,7 @@ class AdminApprovalTest extends TestCase
     {
         $admin = User::factory()->admin()->create();
 
-        $this->actingAs($admin)->get(route('admin.dashboard'))->assertOk();
+        $this->actingAs($admin)->get(route('admin.dashboard'))->assertOk()->assertSee('Recent Invitations');
         $this->actingAs($admin)->get(route('admin.customers.index'))->assertOk();
         $this->actingAs($admin)->get(route('admin.invitations.index'))->assertOk();
         $this->actingAs($admin)->get(route('admin.templates.index'))->assertOk();
