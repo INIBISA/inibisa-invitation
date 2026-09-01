@@ -13,7 +13,13 @@ return new class extends Migration
     {
         Schema::create('templates', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->string('key')->unique();
+            $table->string('view_path');
+            $table->string('thumbnail')->nullable();
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
+            $table->index(['is_active', 'name']);
         });
     }
 

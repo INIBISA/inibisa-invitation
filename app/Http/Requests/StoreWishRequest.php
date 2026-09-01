@@ -2,28 +2,25 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\ValidationRule;
+use App\Models\Invitation;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreWishRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        return false;
+        $invitation = $this->route('invitation');
+
+        return $invitation instanceof Invitation
+            && $invitation->status === Invitation::STATUS_PUBLISHED
+            && (bool) data_get($invitation->data, 'settings.wishes', true);
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
-            //
+            'guest_name' => ['required', 'string', 'max:100'],
+            'message' => ['required', 'string', 'max:600'],
         ];
     }
 }

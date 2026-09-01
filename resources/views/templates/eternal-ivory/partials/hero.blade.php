@@ -1,0 +1,1 @@
+<section class="hero reveal"><p class="monogram">{{ mb_substr(data_get($groom, 'nickname'),0,1) }}<i>&</i>{{ mb_substr(data_get($bride, 'nickname'),0,1) }}</p><p class="kicker">We Are Getting Married</p><h2>{{ data_get($groom, 'nickname') }} <i>&</i> {{ data_get($bride, 'nickname') }}</h2><p>{{ $weddingDate->translatedFormat('l, d F Y') }}</p></section>

@@ -13,7 +13,11 @@ return new class extends Migration
     {
         Schema::create('wishes', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('invitation_id')->constrained()->cascadeOnDelete();
+            $table->string('guest_name');
+            $table->text('message');
             $table->timestamps();
+            $table->index(['invitation_id', 'created_at']);
         });
     }
 

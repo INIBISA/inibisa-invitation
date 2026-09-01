@@ -3,15 +3,15 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Models\Template;
+use Illuminate\View\View;
 
 class TemplateController extends Controller
 {
-    /**
-     * Handle the incoming request.
-     */
-    public function __invoke(Request $request)
+    public function __invoke(): View
     {
-        //
+        $templates = Template::query()->withCount('invitations')->orderBy('name')->get();
+
+        return view('admin.templates', compact('templates'));
     }
 }

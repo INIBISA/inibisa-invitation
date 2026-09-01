@@ -2,64 +2,68 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreInvitationRequest;
+use App\Http\Requests\UpdateInvitationRequest;
 use App\Models\Invitation;
-use Illuminate\Http\Request;
+use App\Models\Template;
+use App\Services\InvitationMediaManager;
+use App\Support\InvitationData;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\View\View;
 
 class InvitationController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function create(): View
     {
-        //
+        $templates = Template::query()->where('is_active', true)->orderBy('name')->get();
+
+        return view('invitations.create', compact('templates'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function store(StoreInvitationRequest $request, InvitationMediaManager $mediaManager): RedirectResponse
     {
-        //
+        $invitation = $request->user()->invitations()->create([
+            'template_id' => $request->integer('template_id'),
+            'title' => $request->string('title')->toString(),
+            'slug' => $request->string('slug')->toString(),
+            'data' => InvitationData::fromValidated($request->validated()),
+        ]);
+
+        $mediaManager->syncFromRequest($invitation, $request);
+
+        return redirect()->route('invitations.edit', $invitation)->with('success', 'Undangan berhasil dibuat.');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function edit(Invitation $invitation): View
     {
-        //
+        Gate::authorize('update', $invitation);
+        $invitation->load('media');
+        $templates = Template::query()->where('is_active', true)->orderBy('name')->get();
+
+        return view('invitations.edit', compact('invitation', 'templates'));
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Invitation $invitation)
+    public function update(UpdateInvitationRequest $request, Invitation $invitation, InvitationMediaManager $mediaManager): RedirectResponse
     {
-        //
+        $invitation->update([
+            'template_id' => $request->integer('template_id'),
+            'title' => $request->string('title')->toString(),
+            'slug' => $request->string('slug')->toString(),
+            'data' => InvitationData::fromValidated($request->validated()),
+        ]);
+
+        $mediaManager->syncFromRequest($invitation, $request);
+
+        return back()->with('success', 'Perubahan undangan tersimpan.');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Invitation $invitation)
+    public function destroy(Invitation $invitation, InvitationMediaManager $mediaManager): RedirectResponse
     {
-        //
-    }
+        Gate::authorize('delete', $invitation);
+        $mediaManager->deleteAll($invitation);
+        $invitation->delete();
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Invitation $invitation)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Invitation $invitation)
-    {
-        //
+        return redirect()->route('dashboard')->with('success', 'Undangan dihapus.');
     }
 }

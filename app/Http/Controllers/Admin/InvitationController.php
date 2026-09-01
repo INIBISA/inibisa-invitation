@@ -3,15 +3,15 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Models\Invitation;
+use Illuminate\View\View;
 
 class InvitationController extends Controller
 {
-    /**
-     * Handle the incoming request.
-     */
-    public function __invoke(Request $request)
+    public function __invoke(): View
     {
-        //
+        $invitations = Invitation::query()->with(['user:id,name,email', 'template:id,name'])->latest('id')->paginate(30);
+
+        return view('admin.invitations', compact('invitations'));
     }
 }
