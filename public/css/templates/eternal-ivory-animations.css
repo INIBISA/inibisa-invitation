@@ -1,0 +1,429 @@
+.scroll-progress {
+    position: fixed;
+    z-index: 120;
+    top: 0;
+    left: 50%;
+    width: min(480px, 100%);
+    height: 3px;
+    pointer-events: none;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.12);
+}
+.scroll-progress span {
+    display: block;
+    width: 100%;
+    height: 100%;
+    transform: scaleX(0);
+    transform-origin: left;
+    background: linear-gradient(90deg, #d8bc86, var(--gold), #f0d9ac);
+    box-shadow: 0 0 10px rgba(184, 150, 91, 0.65);
+    will-change: transform;
+}
+.is-ready .opening-image {
+    animation: openingZoom 9s ease-out both;
+}
+.is-ready .opening-frame > .kicker {
+    animation: openingRise 0.8s 0.15s both;
+}
+.is-ready .opening h1 {
+    animation: openingRise 0.9s 0.3s both;
+}
+.is-ready .cover-date {
+    animation: openingRise 0.8s 0.45s both;
+}
+.is-ready .guest {
+    animation: openingRise 0.8s 0.6s both;
+}
+.is-ready .open-button {
+    animation: openingRise 0.8s 0.75s both;
+}
+.is-ready .floral-corner-left {
+    animation: cornerLeft 7s ease-in-out infinite alternate;
+}
+.is-ready .floral-corner-right {
+    animation: cornerRight 7.5s ease-in-out infinite alternate;
+}
+.open-button,
+.ivory-button,
+.copy-account,
+.bottom-navigation a,
+.music-toggle {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        color 0.25s ease,
+        background 0.25s ease;
+}
+.open-button:active,
+.ivory-button:active,
+.copy-account:active,
+.bottom-navigation a:active {
+    transform: scale(0.96);
+}
+.sweet-ripple {
+    position: absolute;
+    z-index: -1;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.38);
+    pointer-events: none;
+    transform: translate(-50%, -50%) scale(0);
+    animation: ripple 0.65s ease-out;
+}
+.sweet-petals {
+    position: fixed;
+    z-index: 96;
+    inset: 0;
+    max-width: 480px;
+    margin: auto;
+    overflow: hidden;
+    pointer-events: none;
+}
+.sweet-petal {
+    position: absolute;
+    top: -25px;
+    width: 11px;
+    height: 16px;
+    border-radius: 70% 30% 70% 30%;
+    background: linear-gradient(145deg, #fffdf8, #e9cfa5);
+    box-shadow: 0 1px 4px rgba(115, 83, 46, 0.18);
+    opacity: 0;
+    animation: petalFall var(--petal-duration) var(--petal-delay)
+        cubic-bezier(0.2, 0.65, 0.4, 1) forwards;
+    will-change: transform, opacity;
+}
+.hero-wreath {
+    animation: wreathBreathe 5.5s ease-in-out infinite;
+}
+.invitation-opened .hero-photo {
+    animation: portraitFloat 5s ease-in-out infinite;
+}
+.section-sprig-left {
+    animation: sprigLeft 6s ease-in-out infinite alternate;
+}
+.section-sprig-right {
+    animation: sprigRight 6.5s ease-in-out infinite alternate;
+}
+.date-floral,
+.event-accent,
+.response-floral,
+.closing-bouquet,
+.quote-floral {
+    will-change: transform;
+}
+.reveal.reveal-left {
+    transform: translateX(-32px);
+}
+.reveal.reveal-right {
+    transform: translateX(32px);
+}
+.reveal.reveal-scale {
+    transform: scale(0.91);
+    filter: blur(2px);
+}
+.reveal.visible {
+    transform: none;
+    filter: none;
+}
+.section-head.visible .floral-divider {
+    animation: dividerBloom 1s 0.18s both;
+}
+.person.visible .portrait {
+    animation: portraitReveal 0.9s 0.1s both;
+}
+.portrait {
+    transform: perspective(800px) rotateX(var(--tilt-x, 0deg))
+        rotateY(var(--tilt-y, 0deg));
+    transform-style: preserve-3d;
+    transition:
+        transform 0.16s ease-out,
+        box-shadow 0.3s ease;
+}
+.portrait.is-tilting {
+    box-shadow: 0 22px 38px rgba(70, 52, 31, 0.18);
+}
+.portrait img {
+    transition: transform 0.45s ease;
+}
+.portrait:hover img {
+    transform: scale(1.025);
+}
+.event-card.visible .event-dot {
+    animation: dotPulse 1.8s 0.45s ease-out infinite;
+}
+.countdown strong.tick {
+    animation: numberTick 0.45s ease;
+}
+.gallery-grid figure {
+    position: relative;
+    cursor: zoom-in;
+}
+.gallery-grid figure:after {
+    content: "Lihat";
+    position: absolute;
+    right: 9px;
+    bottom: 9px;
+    padding: 5px 9px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 99px;
+    color: #fff;
+    background: rgba(24, 21, 18, 0.42);
+    font-size: 0.56rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0;
+    transform: translateY(5px);
+    transition: 0.3s;
+    backdrop-filter: blur(5px);
+}
+.gallery-grid figure:hover:after {
+    opacity: 1;
+    transform: none;
+}
+.sweet-lightbox {
+    position: fixed;
+    z-index: 140;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: rgba(23, 20, 17, 0.91);
+    opacity: 0;
+    visibility: hidden;
+    transition:
+        opacity 0.35s,
+        visibility 0.35s;
+    backdrop-filter: blur(9px);
+}
+.sweet-lightbox.open {
+    opacity: 1;
+    visibility: visible;
+}
+.sweet-lightbox img {
+    max-width: min(430px, 94vw);
+    max-height: 84vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.38);
+    transform: scale(0.9);
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+.sweet-lightbox.open img {
+    transform: scale(1);
+}
+.lightbox-close {
+    position: absolute;
+    top: max(18px, env(safe-area-inset-top));
+    right: max(18px, calc((100vw - 480px) / 2 + 18px));
+    width: 42px;
+    height: 42px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.08);
+    font-size: 1.4rem;
+    cursor: pointer;
+}
+.sweet-toast {
+    position: fixed;
+    z-index: 150;
+    left: 50%;
+    bottom: 88px;
+    max-width: calc(100% - 40px);
+    padding: 10px 17px;
+    border: 1px solid #d8bf92;
+    border-radius: 99px;
+    color: var(--charcoal);
+    background: rgba(255, 253, 249, 0.96);
+    box-shadow: 0 12px 35px rgba(36, 33, 30, 0.18);
+    font: italic 0.82rem var(--serif);
+    opacity: 0;
+    transform: translate(-50%, 15px) scale(0.95);
+    transition: 0.3s;
+    pointer-events: none;
+    white-space: nowrap;
+}
+.sweet-toast.show {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+}
+.bottom-navigation a.active svg {
+    animation: navHeart 0.55s cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+.music-toggle:not(.paused) {
+    animation: musicPulse 2.2s ease-in-out infinite;
+}
+.ivory-field input:focus,
+.ivory-field select:focus,
+.ivory-field textarea:focus {
+    outline: 0;
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(184, 150, 91, 0.12);
+    transform: translateY(-1px);
+}
+@keyframes openingRise {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+@keyframes openingZoom {
+    from {
+        transform: scale(1.08);
+    }
+    to {
+        transform: scale(1);
+    }
+}
+@keyframes cornerLeft {
+    from {
+        transform: rotate(-2deg) translate(-3px, -2px);
+    }
+    to {
+        transform: rotate(1.5deg) translate(4px, 4px);
+    }
+}
+@keyframes cornerRight {
+    from {
+        transform: rotate(2deg) translate(2px, -2px);
+    }
+    to {
+        transform: rotate(-1.5deg) translate(-4px, 5px);
+    }
+}
+@keyframes ripple {
+    to {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(22);
+    }
+}
+@keyframes petalFall {
+    0% {
+        opacity: 0;
+        transform: translate3d(0, -20px, 0) rotate(0);
+    }
+    12% {
+        opacity: 0.9;
+    }
+    100% {
+        opacity: 0;
+        transform: translate3d(var(--petal-drift), 105vh, 0)
+            rotate(var(--petal-rotate));
+    }
+}
+@keyframes wreathBreathe {
+    50% {
+        transform: translate(-50%, -50%) scale(1.035) rotate(1deg);
+    }
+}
+@keyframes portraitFloat {
+    50% {
+        transform: translateY(-6px);
+    }
+}
+@keyframes sprigLeft {
+    to {
+        transform: translateY(14px) rotate(2deg);
+    }
+}
+@keyframes sprigRight {
+    to {
+        transform: translateY(-13px) rotate(-2deg);
+    }
+}
+@keyframes dividerBloom {
+    from {
+        opacity: 0;
+        transform: scaleX(0.45);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+@keyframes portraitReveal {
+    from {
+        clip-path: inset(0 0 100% 0 round 85px 85px 8px 8px);
+    }
+    to {
+        clip-path: inset(0 round 85px 85px 8px 8px);
+    }
+}
+@keyframes dotPulse {
+    0%,
+    100% {
+        box-shadow: 0 0 0 1px var(--gold);
+    }
+    50% {
+        box-shadow: 0 0 0 7px rgba(184, 150, 91, 0);
+    }
+}
+@keyframes numberTick {
+    50% {
+        opacity: 0.35;
+        transform: translateY(-3px);
+    }
+}
+@keyframes navHeart {
+    50% {
+        transform: scale(1.28) rotate(-5deg);
+    }
+}
+@keyframes musicPulse {
+    50% {
+        box-shadow: 0 5px 25px rgba(184, 150, 91, 0.6);
+        transform: scale(1.05);
+    }
+}
+@media (hover: hover) {
+    .open-button:hover,
+    .ivory-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(36, 33, 30, 0.16);
+    }
+    .bottom-navigation a:hover {
+        color: var(--gold);
+        transform: translateY(-2px);
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .is-ready .opening-image,
+    .is-ready .opening-frame > *,
+    .is-ready .floral-corner-left,
+    .is-ready .floral-corner-right,
+    .hero-wreath,
+    .invitation-opened .hero-photo,
+    .section-sprig-left,
+    .section-sprig-right,
+    .music-toggle:not(.paused),
+    .event-card.visible .event-dot,
+    .section-head.visible .floral-divider,
+    .person.visible .portrait {
+        animation: none !important;
+    }
+    .sweet-petals {
+        display: none;
+    }
+    .reveal.reveal-left,
+    .reveal.reveal-right,
+    .reveal.reveal-scale {
+        transform: none;
+        filter: none;
+    }
+    .date-floral,
+    .event-accent,
+    .response-floral,
+    .closing-bouquet,
+    .quote-floral {
+        transform: none !important;
+    }
+}

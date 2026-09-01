@@ -19,6 +19,7 @@
     <meta property="og:type" content="website"><meta property="og:title" content="The Wedding of {{ data_get($groom, 'nickname') }} & {{ data_get($bride, 'nickname') }}"><meta property="og:description" content="{{ $weddingDate->translatedFormat('d F Y') }}"><meta property="og:url" content="{{ $canonical }}">
     @if($coverMedia)<meta property="og:image" content="{{ asset('storage/'.$coverMedia->file_path) }}">@endif
     <link rel="stylesheet" href="{{ asset('css/templates/eternal-ivory.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/templates/eternal-ivory-animations.css') }}">
     <script src="{{ asset('js/templates/eternal-ivory.js') }}" defer></script>
 </head>
 <body>
