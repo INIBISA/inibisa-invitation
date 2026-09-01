@@ -3,7 +3,10 @@
 use App\Http\Controllers\Admin\CustomerController as AdminCustomerController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\InvitationController as AdminInvitationController;
+use App\Http\Controllers\Admin\RsvpController as AdminRsvpController;
+use App\Http\Controllers\Admin\SettingController as AdminSettingController;
 use App\Http\Controllers\Admin\TemplateController as AdminTemplateController;
+use App\Http\Controllers\Admin\WishController as AdminWishController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\SessionController;
 use App\Http\Controllers\DashboardController;
@@ -47,6 +50,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::patch('/customers/{customer}', [AdminCustomerController::class, 'update'])->name('customers.update');
     Route::get('/invitations', AdminInvitationController::class)->name('invitations.index');
     Route::get('/templates', AdminTemplateController::class)->name('templates.index');
+    Route::get('/rsvps', AdminRsvpController::class)->name('rsvps.index');
+    Route::get('/wishes', AdminWishController::class)->name('wishes.index');
+    Route::get('/settings', [AdminSettingController::class, 'edit'])->name('settings.edit');
+    Route::patch('/settings', [AdminSettingController::class, 'update'])->name('settings.update');
 });
 
 Route::post('/{invitation:slug}/rsvp', [PublicRsvpController::class, 'store'])->middleware('throttle:guest-interaction')->name('public.rsvp');
