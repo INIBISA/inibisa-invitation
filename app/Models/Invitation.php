@@ -3,17 +3,25 @@
 namespace App\Models;
 
 use Database\Factories\InvitationFactory;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['user_id', 'template_id', 'title', 'slug', 'status', 'data', 'published_at'])]
 class Invitation extends Model
 {
     /** @use HasFactory<InvitationFactory> */
     use HasFactory;
+
+    protected $fillable = [
+        'user_id',
+        'template_id',
+        'title',
+        'slug',
+        'status',
+        'data',
+        'published_at',
+    ];
 
     public const STATUS_DRAFT = 'draft';
 
