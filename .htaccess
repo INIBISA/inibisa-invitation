@@ -1,0 +1,16 @@
+<IfModule mod_rewrite.c>
+    Options -MultiViews -Indexes
+
+    RewriteEngine On
+
+    # Never expose application files when the project root is public.
+    RewriteRule ^(?:\.env(?:\.|$)|\.git(?:/|$)|app(?:/|$)|bootstrap(?:/|$)|config(?:/|$)|database(?:/|$)|resources(?:/|$)|routes(?:/|$)|tests(?:/|$)|vendor(?:/|$)|composer\.(?:json|lock)$|package(?:-lock)?\.json$) - [F,L,NC]
+
+    # Serve public assets from the project root without exposing /public in URLs.
+    RewriteCond %{DOCUMENT_ROOT}/public/$1 -f [OR]
+    RewriteCond %{DOCUMENT_ROOT}/public/$1 -d
+    RewriteRule ^(.+)$ public/$1 [L]
+
+    # Send all application routes to Laravel's front controller.
+    RewriteRule ^ index.php [L]
+</IfModule>
