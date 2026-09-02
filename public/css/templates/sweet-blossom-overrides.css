@@ -1,0 +1,102 @@
+:root {
+    --ivory: #fff7f3;
+    --paper: #fffdfb;
+    --charcoal: #5e3f3a;
+    --gold: #c87972;
+    --line: #efd0c8;
+    --muted: #8e6d67;
+    --serif: Georgia, "Times New Roman", serif;
+}
+
+html,
+body {
+    background: #ead3ce;
+}
+
+.invitation-wrapper {
+    background: var(--ivory);
+}
+
+.opening {
+    color: #6d403d;
+    background: #f7d8d2;
+}
+
+.opening-shade {
+    background: linear-gradient(180deg, rgba(255, 239, 234, .18), rgba(255, 226, 220, .5));
+}
+
+.opening-frame {
+    border-color: rgba(183, 105, 97, .45);
+}
+
+.opening h1,
+.hero h2,
+.section h2,
+.section h3 {
+    color: #b9615f;
+}
+
+.opening h1 i,
+.hero h2 i,
+.section h2 i,
+.section h3 i {
+    color: #e28b83;
+}
+
+.open-button,
+.ivory-button,
+.ivory-button.dark,
+.copy-account {
+    color: #fff;
+    background: linear-gradient(135deg, #e9978e, #c96968);
+    box-shadow: 0 8px 18px rgba(190, 101, 97, .2);
+}
+
+.hero,
+.section:nth-child(even) {
+    background: #fff9f6;
+}
+
+.quote,
+.date,
+.gift,
+.closing {
+    background: linear-gradient(180deg, #f9ded8, #fff8f4);
+}
+
+.card,
+.event-card,
+.bank-card,
+.wish-list article,
+.ivory-field input,
+.ivory-field textarea,
+.rsvp-form select {
+    border-color: var(--line);
+    background: rgba(255, 253, 251, .86);
+}
+
+.floral-corner,
+.section-sprig,
+.quote-floral,
+.event-accent,
+.response-floral,
+.closing-bouquet,
+.hero-wreath {
+    opacity: .92;
+}
+
+.bottom-navigation {
+    border-color: #edc1b9;
+    background: rgba(255, 248, 245, .94);
+}
+
+@media (max-width: 480px) {
+    .floral-corner {
+        width: 58%;
+    }
+
+    .section-sprig {
+        width: 32%;
+    }
+}

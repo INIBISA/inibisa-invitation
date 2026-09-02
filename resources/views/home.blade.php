@@ -161,6 +161,21 @@
                     <small class="template-note">Template baru akan ditambahkan secara bertahap agar kualitas tetap terjaga.</small>
                 </div>
             </div>
+            <div class="template-showcase" data-reveal>
+                <img src="{{ asset('images/templates/sweet-blossom/floral-banner.webp') }}" alt="Preview template Sweet Blossom" width="640" height="480" loading="lazy" decoding="async">
+                <div>
+                    <span class="template-badge">Baru</span>
+                    <h3>Sweet Blossom</h3>
+                    <p>Nuansa blush yang romantis dengan bunga sakura, pita lembut, dan detail floral yang manis. Cocok untuk pernikahan yang ingin tampil hangat dan penuh warna.</p>
+                    <ul>
+                        <li><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg> Ornamen floral pink yang romantis</li>
+                        <li><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg> Wreath, bouquet, divider, dan dekorasi sudut</li>
+                        <li><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg> RSVP, wishes, gallery, dan gift terintegrasi</li>
+                    </ul>
+                    <a class="landing-cta" href="{{ route('register') }}">Buat Undangan dengan Template Ini</a>
+                    <small class="template-note">Desain floral baru untuk cerita yang terasa lebih personal.</small>
+                </div>
+            </div>
         </div>
     </section>
 

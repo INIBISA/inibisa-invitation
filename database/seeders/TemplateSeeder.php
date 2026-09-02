@@ -18,5 +18,15 @@ class TemplateSeeder extends Seeder
                 'is_active' => true,
             ],
         );
+
+        Template::query()->updateOrCreate(
+            ['key' => 'sweet-blossom'],
+            [
+                'name' => 'Sweet Blossom',
+                'view_path' => 'templates.sweet-blossom.index',
+                'thumbnail' => 'images/templates/sweet-blossom/floral-banner.webp',
+                'is_active' => true,
+            ],
+        );
     }
 }
