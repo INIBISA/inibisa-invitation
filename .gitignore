@@ -6,6 +6,10 @@
 .phpactor.json
 .phpunit.result.cache
 /.codex
+/.agents/
+/.claude/
+/.ai/
+/.opencode/
 /.cursor/
 /.idea
 /.nova
@@ -14,6 +18,15 @@
 /.zed
 /auth.json
 /node_modules
+
+# AI assistant configuration and instructions
+/.mcp.json
+/AGENTS.md
+/CLAUDE.md
+/CODEX.md
+/GEMINI.md
+/boost.json
+/opencode.json
 /public/build
 /public/fonts-manifest.dev.json
 /public/hot
