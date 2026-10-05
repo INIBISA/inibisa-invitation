@@ -1,58 +1,118 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Inibisa Invitation
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikasi undangan pernikahan digital berbasis Laravel 12. Customer membuat, mengatur, dan mempublikasikan undangan. Tamu membuka tautan publik untuk melihat detail acara, mengisi RSVP, serta mengirim ucapan.
 
-## About Laravel
+## Fitur
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Landing page, registrasi, login, dan persetujuan customer oleh admin.
+- Dashboard customer untuk membuat dan mengelola undangan.
+- Template undangan publik: Eternal Ivory dan Sweet Blossom.
+- Detail pasangan, acara, cerita, galeri, musik, hadiah, RSVP, serta ucapan tamu.
+- Preview sebelum publikasi dan tautan publik berbasis slug.
+- Dashboard admin untuk customer, undangan, template, RSVP, ucapan, serta pengaturan aplikasi.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Kebutuhan
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP 8.3 atau lebih baru dengan ekstensi Imagick.
+- Composer.
+- MySQL 8 atau kompatibel.
 
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## Instalasi
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone https://github.com/INIBISA/inibisa-invitation.git
+cd inibisa-invitation
+composer install
+cp .env.example .env
+php artisan key:generate
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Atur koneksi database dan kredensial admin pada `.env`:
 
-## Contributing
+```dotenv
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=undangan_digital
+DB_USERNAME=root
+DB_PASSWORD=
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+ADMIN_NAME=Administrator
+ADMIN_EMAIL=admin@example.com
+ADMIN_PASSWORD=password
+```
 
-## Code of Conduct
+Jalankan migrasi, seeder, lalu server pengembangan:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+php artisan migrate --seed
+php artisan serve
+```
 
-## Security Vulnerabilities
+Buka `http://localhost:8000`. Login admin memakai `ADMIN_EMAIL` dan `ADMIN_PASSWORD` dari `.env`.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Alur Aplikasi
 
-## License
+### Customer
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+1. Pengunjung mendaftar dari `/register`.
+2. Akun baru berstatus `pending`.
+3. Admin menyetujui akun melalui `/admin/customers`.
+4. Customer login dan membuat undangan dari dashboard.
+5. Customer memilih template, mengisi detail pasangan, acara, cerita, rekening hadiah, serta media.
+6. Customer membuka preview, kemudian mempublikasikan undangan.
+7. Tautan publik tersedia pada `/{slug}` dan dapat dibagikan ke tamu.
+
+### Tamu
+
+1. Tamu membuka `/{slug}`. Nama penerima opsional melalui `?to=Nama+Tamu`.
+2. Tamu melihat detail pasangan, jadwal acara, galeri, cerita, dan informasi hadiah sesuai pengaturan undangan.
+3. Tamu mengirim RSVP melalui `/{slug}/rsvp`.
+4. Tamu mengirim ucapan melalui `/{slug}/wishes`.
+
+### Admin
+
+1. Admin login melalui `/login`.
+2. Dashboard `/admin` menampilkan ringkasan customer, undangan, RSVP, dan ucapan.
+3. Admin menyetujui atau menolak customer baru.
+4. Admin memantau semua undangan, template, RSVP, dan ucapan.
+5. Admin mengubah pengaturan aplikasi dari `/admin/settings`.
+
+## Status Undangan
+
+- `draft`: belum tampil untuk umum.
+- `published`: dapat dibuka melalui slug publik.
+- `inactive`: tidak lagi dapat dibuka publik tanpa menghapus data.
+
+## Perintah Pengembangan
+
+```bash
+# Menjalankan server Laravel
+php artisan serve
+
+# Menjalankan test
+php artisan test --compact
+
+# Memformat kode PHP
+vendor/bin/pint --format agent
+
+# Menghapus cache konfigurasi
+php artisan optimize:clear
+```
+
+## Struktur Penting
+
+- `app/Http/Controllers`: alur customer, admin, dan halaman publik.
+- `app/Http/Requests`: validasi form.
+- `app/Models`: model undangan, template, media, RSVP, ucapan, dan user.
+- `app/Services/InvitationMediaManager.php`: pengelolaan media undangan.
+- `app/Support/InvitationData.php`: normalisasi data detail undangan.
+- `resources/views/templates`: template halaman undangan publik.
+- `database/migrations`: skema database.
+- `database/seeders`: akun admin, template, dan data demo.
+
+## Catatan Keamanan
+
+- Jangan commit `.env` atau kredensial produksi.
+- Ganti `ADMIN_PASSWORD` sebelum deployment.
+- Atur `APP_ENV=production` dan `APP_DEBUG=false` di server produksi.
