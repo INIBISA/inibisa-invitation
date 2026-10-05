@@ -64,11 +64,11 @@
             </div>
             <div class="hero-preview" data-reveal>
                 <div class="device">
-                    <div class="device-top"><span></span><span></span><span></span><small>undangan.digital/haikal-fitria</small></div>
+                    <div class="device-top"><span></span><span></span><span></span><small>undangan.digital/alexander-cyntia</small></div>
                     <div class="device-screen">
                         <img class="preview-wreath" src="{{ asset('images/templates/eternal-ivory/floral-wreath.webp') }}" alt="" width="520" height="520" decoding="async">
                         <p class="preview-kicker">The Wedding Of</p>
-                        <h2>Haikal &amp; Fitria</h2>
+                        <h2>Alexander &amp; Cyntia</h2>
                         <p class="preview-date">Sabtu, 14 September 2026</p>
                         <img class="preview-divider" src="{{ asset('images/templates/eternal-ivory/floral-divider.webp') }}" alt="" width="320" height="60" decoding="async">
                         <div class="preview-cards">

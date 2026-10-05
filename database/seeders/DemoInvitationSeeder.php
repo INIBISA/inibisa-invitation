@@ -12,9 +12,9 @@ class DemoInvitationSeeder extends Seeder
     public function run(): void
     {
         $customer = User::query()->updateOrCreate(
-            ['email' => 'haikal@example.com'],
+            ['email' => 'alexander@example.com'],
             [
-                'name' => 'Muhammad Haikal',
+                'name' => 'Alexander',
                 'password' => 'password',
                 'role' => User::ROLE_CUSTOMER,
                 'status' => User::STATUS_ACTIVE,
@@ -24,27 +24,27 @@ class DemoInvitationSeeder extends Seeder
         $template = Template::query()->where('key', 'eternal-ivory')->firstOrFail();
 
         $invitation = Invitation::query()->updateOrCreate(
-            ['slug' => 'haikal-fitria'],
+            ['slug' => 'alexander-cyntia'],
             [
                 'user_id' => $customer->id,
                 'template_id' => $template->id,
-                'title' => 'Haikal & Fitria',
+                'title' => 'Alexander & Cyntia',
                 'status' => Invitation::STATUS_PUBLISHED,
                 'published_at' => now(),
                 'data' => [
                     'groom' => [
-                        'nickname' => 'Haikal',
-                        'full_name' => 'Muhammad Haikal',
+                        'nickname' => 'Alexander',
+                        'full_name' => 'Alexander',
                         'father' => 'Bapak Ahmad',
                         'mother' => 'Ibu Nurhayati',
-                        'instagram' => '@haikal',
+                        'instagram' => '@alexander',
                     ],
                     'bride' => [
-                        'nickname' => 'Fitria',
-                        'full_name' => 'Fitria Putri',
+                        'nickname' => 'Cyntia',
+                        'full_name' => 'Cyntia',
                         'father' => 'Bapak Hendra',
                         'mother' => 'Ibu Siti',
-                        'instagram' => '@fitria',
+                        'instagram' => '@cyntia',
                     ],
                     'wedding_date' => '2026-09-20',
                     'quote' => 'Dua jiwa, satu perjalanan, dan cinta yang tumbuh selamanya.',
@@ -57,7 +57,7 @@ class DemoInvitationSeeder extends Seeder
                         ['title' => 'Lamaran', 'date' => '2025-12-20', 'story' => 'Kami memilih melanjutkan perjalanan ini bersama.'],
                     ],
                     'banks' => [
-                        ['bank_name' => 'BCA', 'account_number' => '1234567890', 'account_name' => 'Muhammad Haikal'],
+                        ['bank_name' => 'BCA', 'account_number' => '1234567890', 'account_name' => 'Alexander'],
                     ],
                     'settings' => [
                         'countdown' => true,

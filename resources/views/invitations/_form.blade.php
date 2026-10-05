@@ -6,8 +6,8 @@
 @endphp
 <section class="card form-section"><h2>Identitas undangan</h2><div class="form-grid">
     <div class="field"><label for="template_id">Template</label><select class="input" id="template_id" name="template_id" required><option value="">Pilih template</option>@foreach($templates as $template)<option value="{{ $template->id }}" @selected((string)old('template_id', $invitation?->template_id) === (string)$template->id)>{{ $template->name }}</option>@endforeach</select></div>
-    <div class="field"><label for="title">Judul</label><input class="input" id="title" name="title" data-title-source value="{{ old('title', $invitation?->title) }}" placeholder="Haikal & Fitria" required></div>
-    <div class="field full"><label for="slug">Slug link</label><input class="input" id="slug" name="slug" data-slug-target value="{{ old('slug', $invitation?->slug) }}" placeholder="haikal-fitria" required><span class="muted">Link publik: domain.com/<strong>slug</strong></span></div>
+    <div class="field"><label for="title">Judul</label><input class="input" id="title" name="title" data-title-source value="{{ old('title', $invitation?->title) }}" placeholder="Alexander & Cyntia" required></div>
+    <div class="field full"><label for="slug">Slug link</label><input class="input" id="slug" name="slug" data-slug-target value="{{ old('slug', $invitation?->slug) }}" placeholder="alexander-cyntia" required><span class="muted">Link publik: domain.com/<strong>slug</strong></span></div>
 </div></section>
 <div class="grid invitation-list">
 <section class="card form-section"><div class="eyebrow">The Groom</div><h2>Mempelai pria</h2>
