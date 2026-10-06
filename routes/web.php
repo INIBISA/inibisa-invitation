@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\CustomerController as AdminCustomerController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\DemoInvitationController as AdminDemoInvitationController;
 use App\Http\Controllers\Admin\InvitationController as AdminInvitationController;
 use App\Http\Controllers\Admin\RsvpController as AdminRsvpController;
 use App\Http\Controllers\Admin\SettingController as AdminSettingController;
@@ -50,6 +51,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::patch('/customers/{customer}', [AdminCustomerController::class, 'update'])->name('customers.update');
     Route::get('/invitations', AdminInvitationController::class)->name('invitations.index');
     Route::get('/templates', AdminTemplateController::class)->name('templates.index');
+    Route::get('/demos/{invitation}/edit', [AdminDemoInvitationController::class, 'edit'])->name('demos.edit');
+    Route::put('/demos/{invitation}', [AdminDemoInvitationController::class, 'update'])->name('demos.update');
     Route::get('/rsvps', AdminRsvpController::class)->name('rsvps.index');
     Route::get('/wishes', AdminWishController::class)->name('wishes.index');
     Route::get('/settings', [AdminSettingController::class, 'edit'])->name('settings.edit');

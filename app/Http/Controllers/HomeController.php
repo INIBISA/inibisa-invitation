@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Invitation;
+use App\Models\Template;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -14,6 +16,25 @@ class HomeController extends Controller
             return redirect()->route($request->user()->isAdmin() ? 'admin.dashboard' : 'dashboard');
         }
 
-        return view('home');
+        $templates = Template::query()
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get(['id', 'key', 'name', 'thumbnail']);
+
+        $demos = Invitation::query()
+            ->select(['id', 'template_id', 'slug'])
+            ->whereIn('template_id', $templates->pluck('id'))
+            ->where('status', Invitation::STATUS_PUBLISHED)
+            ->orderBy('id')
+            ->get()
+            ->unique('template_id')
+            ->keyBy('template_id');
+
+        $descriptions = [
+            'eternal-ivory' => 'Nuansa ivory yang tenang dengan serif anggun dan ornamen floral klasik.',
+            'sweet-blossom' => 'Nuansa blush romantis dengan bunga sakura yang hangat dan manis.',
+        ];
+
+        return view('home', compact('templates', 'demos', 'descriptions'));
     }
 }
