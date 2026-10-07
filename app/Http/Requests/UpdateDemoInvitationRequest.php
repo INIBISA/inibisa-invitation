@@ -60,6 +60,7 @@ class UpdateDemoInvitationRequest extends FormRequest
             'wishes.*.message' => ['required', 'string', 'max:1000'],
             'settings' => ['nullable', 'array'],
             'settings.*' => ['nullable', 'boolean'],
+            'wedding_music_id' => ['nullable', Rule::exists('wedding_music', 'id')->where('is_active', true)],
             'youtube_url' => ['nullable', 'string', 'max:255'],
             'music_start_seconds' => ['nullable', 'integer', 'min:0', 'max:43200'],
             'cover' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],

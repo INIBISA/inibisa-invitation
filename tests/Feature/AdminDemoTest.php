@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Template;
 use App\Models\TemplateDemo;
 use App\Models\User;
+use App\Models\WeddingMusic;
 use Database\Seeders\DemoInvitationSeeder;
 use Database\Seeders\TemplateSeeder;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
@@ -53,6 +54,68 @@ class AdminDemoTest extends TestCase
             ->assertSee('Admin Demo')
             ->assertSee('data-youtube-start="30"', false)
             ->assertSee('Selamat untuk kedua mempelai.');
+    }
+
+    public function test_demo_editor_shows_only_active_catalog_music(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $this->seed([TemplateSeeder::class, DemoInvitationSeeder::class]);
+        $demo = TemplateDemo::query()->firstOrFail();
+        $activeMusic = WeddingMusic::factory()->create(['title' => 'Musik aktif']);
+        WeddingMusic::factory()->create(['title' => 'Musik nonaktif', 'is_active' => false]);
+
+        $this->actingAs($admin)->get(route('admin.demos.edit', $demo))
+            ->assertOk()
+            ->assertSee($activeMusic->title)
+            ->assertDontSee('Musik nonaktif');
+    }
+
+    public function test_admin_can_choose_catalog_music_for_demo(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $this->seed([TemplateSeeder::class, DemoInvitationSeeder::class]);
+        $demo = TemplateDemo::query()->firstOrFail();
+        $music = WeddingMusic::factory()->create([
+            'title' => 'Musik pilihan demo',
+            'youtube_url' => 'https://www.youtube.com/watch?v=laMRBmD2aeg',
+            'youtube_video_id' => 'laMRBmD2aeg',
+        ]);
+        $payload = $this->validPayload($demo->template);
+        $payload['youtube_url'] = '';
+        $payload['wedding_music_id'] = $music->id;
+
+        $this->actingAs($admin)->put(route('admin.demos.update', $demo), $payload)
+            ->assertRedirect()
+            ->assertSessionHas('success');
+
+        $demo->refresh();
+        $this->assertSame($music->id, $demo->data['music']['catalog_music_id']);
+        $this->assertSame('laMRBmD2aeg', $demo->data['music']['youtube_video_id']);
+        $this->assertSame('Musik pilihan demo', $demo->data['music']['title']);
+        $this->assertSame(30, $demo->data['music']['start_seconds']);
+
+        $this->actingAs($admin)->get(route('admin.demos.edit', $demo))
+            ->assertSee('value="'.$music->id.'" checked', false)
+            ->assertDontSee('name="youtube_url" type="url" value="'.$music->youtube_url.'"', false);
+
+        $this->get(route('templates.show', $demo->template))
+            ->assertSee('data-youtube-music="laMRBmD2aeg"', false);
+    }
+
+    public function test_admin_cannot_choose_inactive_catalog_music_for_demo(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $this->seed([TemplateSeeder::class, DemoInvitationSeeder::class]);
+        $demo = TemplateDemo::query()->firstOrFail();
+        $music = WeddingMusic::factory()->create(['is_active' => false]);
+        $payload = $this->validPayload($demo->template);
+        $payload['youtube_url'] = '';
+        $payload['wedding_music_id'] = $music->id;
+
+        $this->actingAs($admin)->put(route('admin.demos.update', $demo), $payload)
+            ->assertSessionHasErrors('wedding_music_id');
+
+        $this->assertNotSame($music->youtube_video_id, $demo->refresh()->data['music']['youtube_video_id'] ?? null);
     }
 
     public function test_admin_can_upload_and_remove_demo_media(): void

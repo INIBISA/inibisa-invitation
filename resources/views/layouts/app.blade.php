@@ -8,8 +8,8 @@
     <title>@yield('title', config('app.name')) · {{ config('app.name') }}</title>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <link rel="stylesheet" href="{{ asset('css/app-interactions.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/app-polish.css') }}">
-    <script src="{{ asset('js/app.js') }}" defer></script>
+    <link rel="stylesheet" href="{{ asset('css/app-polish.css') }}?v={{ filemtime(public_path('css/app-polish.css')) }}">
+    <script src="{{ asset('js/app.js') }}?v={{ filemtime(public_path('js/app.js')) }}" defer></script>
 </head>
 
 <body class="dashboard-body">

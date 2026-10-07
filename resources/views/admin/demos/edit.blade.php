@@ -26,7 +26,7 @@
         @include('invitations._form', [
             'invitation' => $demo,
             'templates' => collect([$demo->template]),
-            'musicChoices' => collect(),
+            'musicChoices' => $musicChoices,
             'isDemoEditor' => true,
         ])
     </form>

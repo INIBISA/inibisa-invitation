@@ -5,6 +5,8 @@
     $banks = old('banks', data_get($data, 'banks', []));
     $demoWishes = old('wishes', data_get($data, 'wishes', []));
     $isDemoEditor = $isDemoEditor ?? false;
+    $selectedMusicId = old('wedding_music_id', $isDemoEditor ? data_get($data, 'music.catalog_music_id') : $invitation?->wedding_music_id);
+    $musicStartSeconds = max(0, min(43200, (int) old('music_start_seconds', data_get($data, 'music.start_seconds', 0))));
     $selectedTemplateId = old('template_id', $invitation?->template_id ?? request('template_id'));
     $errorStep = 1;
     foreach ($errors->keys() as $errorKey) {
@@ -199,14 +201,37 @@
         <div class="invitation-subsection">
             <div class="invitation-subsection-head"><div><h3>Musik Undangan</h3><p>Pilih satu musik katalog atau gunakan link YouTube sendiri.</p></div></div>
             <div class="music-picker invitation-music-picker">
-                <label class="music-choice music-choice-none"><input type="radio" name="wedding_music_id" value="" @checked(!old('wedding_music_id', $invitation?->wedding_music_id))><span><strong>Tanpa musik katalog</strong><small>Gunakan link sendiri atau tampilkan tanpa musik.</small></span></label>
+                <label class="music-choice music-choice-none"><input type="radio" name="wedding_music_id" value="" @checked(! $selectedMusicId)><span><strong>Tanpa musik katalog</strong><small>Gunakan link sendiri atau tampilkan tanpa musik.</small></span></label>
                 @foreach ($musicChoices as $song)
-                    <div class="music-choice"><label><input type="radio" name="wedding_music_id" value="{{ $song->id }}" @checked((string) old('wedding_music_id', $invitation?->wedding_music_id) === (string) $song->id)><img src="{{ $song->thumbnail }}" alt="" loading="lazy"><span><strong>{{ $song->title }}</strong><small>{{ $song->category }}</small></span></label><button class="button secondary small" type="button" data-youtube-preview="{{ $song->youtube_video_id }}">Putar Musik</button></div>
+                    <div class="music-choice"><label><input type="radio" name="wedding_music_id" value="{{ $song->id }}" @checked((string) $selectedMusicId === (string) $song->id)><img src="{{ $song->thumbnail }}" alt="" loading="lazy"><span><strong>{{ $song->title }}</strong><small>{{ $song->category }}</small></span></label><button class="button secondary small" type="button" data-youtube-preview="{{ $song->youtube_video_id }}">Putar Musik</button></div>
                 @endforeach
             </div>
-            <div class="music-custom-divider"><span>atau gunakan link sendiri</span></div>
-            <div class="field"><label for="youtube_url">Tautan YouTube <em>Opsional</em></label><input class="input" id="youtube_url" name="youtube_url" type="url" value="{{ old('youtube_url', $invitation?->wedding_music_id ? '' : data_get($data, 'music.youtube_url')) }}" placeholder="https://www.youtube.com/watch?v=..."><small>Tautan ini diprioritaskan jika musik katalog juga dipilih.</small><button class="button secondary small" type="button" data-youtube-url-preview>Putar Tautan Ini</button>@error('youtube_url')<small class="field-error">{{ $message }}</small>@enderror</div>
-            <div class="field"><label for="music_start_seconds">Mulai dari detik ke-</label><input class="input" id="music_start_seconds" name="music_start_seconds" type="number" min="0" max="43200" step="1" value="{{ old('music_start_seconds', data_get($data, 'music.start_seconds', 0)) }}"><small>Isi 0 untuk memutar dari awal. Contoh: 45 untuk mulai pada detik ke-45.</small>@error('music_start_seconds')<small class="field-error">{{ $message }}</small>@enderror</div>
+            <div class="music-custom-divider"><span>atau cari musik di YouTube</span></div>
+            <div class="youtube-search" data-youtube-search data-search-endpoint="{{ route('youtube.music.search') }}">
+                <label for="youtube_music_search">Cari judul lagu atau penyanyi</label>
+                <div class="youtube-search-controls"><input class="input" id="youtube_music_search" type="search" placeholder="Contoh: Baraka Allahu Lakuma" maxlength="100" data-youtube-search-query><button class="button secondary" type="button" data-youtube-search-submit>Cari</button></div>
+                <p data-youtube-search-status role="status" aria-live="polite">Pilih hasil untuk mengisi tautan YouTube secara otomatis.</p>
+                <div class="youtube-search-results" data-youtube-search-results hidden></div>
+            </div>
+            <div class="music-custom-divider"><span>atau masukkan tautan sendiri</span></div>
+            <div class="field"><label for="youtube_url">Tautan YouTube <em>Opsional</em></label><input class="input" id="youtube_url" name="youtube_url" type="url" value="{{ old('youtube_url', $selectedMusicId ? '' : data_get($data, 'music.youtube_url')) }}" placeholder="https://www.youtube.com/watch?v=..."><small>Mengisi tautan sendiri akan membatalkan pilihan musik katalog.</small><button class="button secondary small" type="button" data-youtube-url-preview>Putar Tautan Ini</button>@error('youtube_url')<small class="field-error">{{ $message }}</small>@enderror</div>
+            <div class="field music-time-picker" data-music-time-picker>
+                <label for="music_start_minutes">Mulai dari waktu</label>
+                <input id="music_start_seconds" name="music_start_seconds" type="hidden" value="{{ $musicStartSeconds }}" data-music-start-value>
+                <div class="music-time-fields">
+                    <label for="music_start_minutes"><input class="input" id="music_start_minutes" type="number" min="0" max="720" step="1" inputmode="numeric" value="{{ intdiv($musicStartSeconds, 60) }}" data-music-minutes><span>Menit</span></label>
+                    <span class="music-time-separator" aria-hidden="true">:</span>
+                    <label for="music_start_remainder"><input class="input" id="music_start_remainder" type="number" min="0" max="59" step="1" inputmode="numeric" value="{{ $musicStartSeconds % 60 }}" data-music-seconds><span>Detik</span></label>
+                </div>
+                <div class="music-time-presets" role="group" aria-label="Pilihan waktu cepat">
+                    <button type="button" data-music-start-preset="0">Dari awal</button>
+                    <button type="button" data-music-start-preset="30">0:30</button>
+                    <button type="button" data-music-start-preset="60">1:00</button>
+                    <button type="button" data-music-start-preset="90">1:30</button>
+                </div>
+                <small data-music-start-summary>Musik mulai dari {{ sprintf('%02d:%02d', intdiv($musicStartSeconds, 60), $musicStartSeconds % 60) }}. Tombol putar mengikuti waktu ini.</small>
+                @error('music_start_seconds')<small class="field-error">{{ $message }}</small>@enderror
+            </div>
         </div>
     </section>
 

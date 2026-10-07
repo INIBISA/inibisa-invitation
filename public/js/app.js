@@ -168,6 +168,12 @@
     }
 
     document.addEventListener("input", function (event) {
+        if (event.target.matches('[name="youtube_url"]') && event.target.value.trim()) {
+            var noCatalogMusic = event.target.form?.querySelector('[name="wedding_music_id"][value=""]');
+            if (noCatalogMusic) {
+                noCatalogMusic.checked = true;
+            }
+        }
         if (event.target.matches("[data-title-source]")) {
             var slug = document.querySelector("[data-slug-target]");
             if (slug && !slug.dataset.touched) {
@@ -181,6 +187,15 @@
         }
         if (event.target.matches("[data-slug-target]")) {
             event.target.dataset.touched = "true";
+        }
+    });
+
+    document.addEventListener("change", function (event) {
+        if (event.target.matches('[name="wedding_music_id"]') && event.target.value) {
+            var customMusicUrl = event.target.form?.querySelector('[name="youtube_url"]');
+            if (customMusicUrl) {
+                customMusicUrl.value = "";
+            }
         }
     });
 
@@ -249,7 +264,7 @@
             var startInput = previewForm && previewForm.querySelector('[name="music_start_seconds"]');
             var startSeconds = startInput ? Math.min(43200, Math.max(0, parseInt(startInput.value, 10) || 0)) : 0;
             var startParameter = startSeconds > 0 ? "&start=" + startSeconds : "";
-            videoDialog.querySelector("[data-video-frame]").innerHTML = '<iframe title="Pratinjau musik YouTube" src="https://www.youtube-nocookie.com/embed/' + videoId + '?autoplay=1' + startParameter + '" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
+            videoDialog.querySelector("[data-video-frame]").innerHTML = '<iframe title="Pratinjau musik YouTube" src="https://www.youtube.com/embed/' + videoId + '?autoplay=1' + startParameter + '" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
             videoDialog.showModal();
         }
         if (event.target.closest("[data-dialog-close]")) {
@@ -496,6 +511,148 @@
             }
         }, true);
     }
+
+    document.querySelectorAll("[data-music-time-picker]").forEach(function (picker) {
+        var minutesInput = picker.querySelector("[data-music-minutes]");
+        var secondsInput = picker.querySelector("[data-music-seconds]");
+        var startInput = picker.querySelector("[data-music-start-value]");
+        var summary = picker.querySelector("[data-music-start-summary]");
+        var presets = picker.querySelectorAll("[data-music-start-preset]");
+
+        function updateMusicStart(normalizeFields) {
+            var minutes = Math.max(0, Math.min(720, parseInt(minutesInput.value, 10) || 0));
+            var seconds = Math.max(0, Math.min(59, parseInt(secondsInput.value, 10) || 0));
+            var total = Math.min(43200, minutes * 60 + seconds);
+
+            startInput.value = String(total);
+            summary.textContent = "Musik mulai dari " + String(Math.floor(total / 60)).padStart(2, "0") + ":" + String(total % 60).padStart(2, "0") + ". Tombol putar mengikuti waktu ini.";
+            presets.forEach(function (preset) {
+                preset.setAttribute("aria-pressed", String(Number(preset.dataset.musicStartPreset) === total));
+            });
+
+            if (normalizeFields) {
+                minutesInput.value = String(Math.floor(total / 60));
+                secondsInput.value = String(total % 60);
+            }
+        }
+
+        [minutesInput, secondsInput].forEach(function (input) {
+            input.addEventListener("input", function () { updateMusicStart(false); });
+            input.addEventListener("change", function () { updateMusicStart(true); });
+        });
+        presets.forEach(function (preset) {
+            preset.addEventListener("click", function () {
+                var total = Number(preset.dataset.musicStartPreset);
+                minutesInput.value = String(Math.floor(total / 60));
+                secondsInput.value = String(total % 60);
+                updateMusicStart(true);
+            });
+        });
+        updateMusicStart(true);
+    });
+
+    document.querySelectorAll("[data-youtube-search]").forEach(function (search) {
+        var queryInput = search.querySelector("[data-youtube-search-query]");
+        var searchButton = search.querySelector("[data-youtube-search-submit]");
+        var status = search.querySelector("[data-youtube-search-status]");
+        var results = search.querySelector("[data-youtube-search-results]");
+        var form = search.closest("form");
+
+        function renderResults(items) {
+            results.replaceChildren();
+            results.hidden = items.length === 0;
+
+            items.forEach(function (item) {
+                if (!/^[A-Za-z0-9_-]{11}$/.test(item.id || "")) {
+                    return;
+                }
+
+                var card = document.createElement("article");
+                card.className = "youtube-search-result";
+                var image = document.createElement("img");
+                image.src = "https://i.ytimg.com/vi/" + item.id + "/hqdefault.jpg";
+                image.alt = "";
+                image.loading = "lazy";
+                var details = document.createElement("div");
+                details.className = "youtube-search-result-details";
+                var title = document.createElement("strong");
+                title.textContent = item.title || "Video YouTube";
+                var channel = document.createElement("small");
+                channel.textContent = item.channel || "YouTube";
+                details.append(title, channel);
+                var actions = document.createElement("div");
+                actions.className = "youtube-search-result-actions";
+                var previewButton = document.createElement("button");
+                previewButton.type = "button";
+                previewButton.className = "button secondary small";
+                previewButton.dataset.youtubePreview = item.id;
+                previewButton.textContent = "Putar";
+                var chooseButton = document.createElement("button");
+                chooseButton.type = "button";
+                chooseButton.className = "button gold small";
+                chooseButton.textContent = "Pilih";
+                chooseButton.addEventListener("click", function () {
+                    var urlInput = form.querySelector('[name="youtube_url"]');
+                    urlInput.value = "https://www.youtube.com/watch?v=" + item.id;
+                    urlInput.dispatchEvent(new Event("input", { bubbles: true }));
+
+                    if (search.hasAttribute("data-youtube-search-fill-title")) {
+                        var titleInput = form.querySelector('[name="title"]');
+                        if (titleInput && !titleInput.value.trim()) {
+                            titleInput.value = item.title || "";
+                        }
+                    }
+
+                    results.querySelectorAll(".youtube-search-result").forEach(function (result) {
+                        result.classList.toggle("is-selected", result === card);
+                    });
+                    status.textContent = "Dipilih: " + (item.title || "Video YouTube") + ". Simpan formulir untuk menggunakan musik ini.";
+                });
+                actions.append(previewButton, chooseButton);
+                card.append(image, details, actions);
+                results.appendChild(card);
+            });
+        }
+
+        async function runSearch() {
+            var query = queryInput.value.trim();
+            if (query.length < 2) {
+                status.textContent = "Masukkan minimal 2 karakter untuk mencari musik.";
+                queryInput.focus();
+                return;
+            }
+
+            searchButton.disabled = true;
+            status.textContent = "Mencari musik di YouTube...";
+            results.hidden = true;
+
+            try {
+                var response = await fetch(search.dataset.searchEndpoint + "?q=" + encodeURIComponent(query), {
+                    headers: { Accept: "application/json" },
+                    credentials: "same-origin"
+                });
+                var data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.message || "Pencarian gagal. Coba lagi.");
+                }
+                var items = Array.isArray(data.results) ? data.results : [];
+                renderResults(items);
+                status.textContent = items.length ? "Pilih musik dari hasil pencarian." : "Musik tidak ditemukan. Coba kata kunci lain.";
+            } catch (error) {
+                status.textContent = error.message || "Pencarian gagal. Coba lagi.";
+            } finally {
+                searchButton.disabled = false;
+            }
+        }
+
+        searchButton.addEventListener("click", runSearch);
+        queryInput.addEventListener("keydown", function (event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                runSearch();
+            }
+        });
+    });
 
     enhanceUploads();
 })();

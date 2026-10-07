@@ -20,6 +20,12 @@
                         <option value="{{ $category }}" @selected(old('category') === $category)>{{ $category }}</option>
                     @endforeach
                 </select></div>
+                <div class="youtube-search" data-youtube-search data-youtube-search-fill-title data-search-endpoint="{{ route('youtube.music.search') }}">
+                    <label for="admin_youtube_music_search">Cari musik di YouTube</label>
+                    <div class="youtube-search-controls"><input class="input" id="admin_youtube_music_search" type="search" placeholder="Judul lagu atau penyanyi" maxlength="100" data-youtube-search-query><button class="button secondary" type="button" data-youtube-search-submit>Cari</button></div>
+                    <p data-youtube-search-status role="status" aria-live="polite">Pilih hasil untuk mengisi judul dan tautan musik.</p>
+                    <div class="youtube-search-results" data-youtube-search-results hidden></div>
+                </div>
                 <div class="field"><label for="music-url">Tautan YouTube</label><input class="input" id="music-url" name="youtube_url" type="url" placeholder="https://www.youtube.com/watch?v=..." value="{{ old('youtube_url') }}" required><small>Gambar mini dibuat otomatis dari video.</small></div>
                 <label class="music-active-check"><input type="checkbox" name="is_active" value="1" @checked(old('is_active', true))><span><strong>Aktifkan musik</strong><small>Tampilkan pada pilihan musik pelanggan.</small></span></label>
                 <button class="button gold music-submit" type="submit">Tambah ke Katalog</button>

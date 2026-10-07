@@ -26,6 +26,7 @@ use App\Http\Controllers\PublicInvitationController;
 use App\Http\Controllers\PublicRsvpController;
 use App\Http\Controllers\PublicWishController;
 use App\Http\Controllers\TemplateBrowserController;
+use App\Http\Controllers\YouTubeMusicSearchController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomeController::class);
@@ -50,6 +51,7 @@ Route::middleware('auth')->group(function (): void {
         Route::get('/wishes', [CustomerInvitationSectionController::class, 'wishes'])->name('wishes.index');
     });
     Route::get('/templates', [TemplateBrowserController::class, 'index'])->name('templates.index');
+    Route::get('/youtube/music/search', YouTubeMusicSearchController::class)->middleware('throttle:youtube-search')->name('youtube.music.search');
     Route::get('/templates/{template}', [TemplateBrowserController::class, 'show'])->name('templates.show');
     Route::get('/checkout/{template}', [PaymentController::class, 'create'])->name('payments.create');
     Route::resource('payments', PaymentController::class)->only(['index', 'store', 'show']);

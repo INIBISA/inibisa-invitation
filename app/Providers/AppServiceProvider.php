@@ -37,5 +37,9 @@ class AppServiceProvider extends ServiceProvider
 
             return Limit::perMinute(5)->by($invitationKey.'|'.$request->ip());
         });
+
+        RateLimiter::for('youtube-search', function (Request $request) {
+            return Limit::perMinute(10)->by((string) $request->user()?->getAuthIdentifier());
+        });
     }
 }
