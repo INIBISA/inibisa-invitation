@@ -64,6 +64,24 @@
                     'icon' => 'M3 3h8v8H3zM13 3h8v8h-8zM3 13h8v8H3zM13 13h8v8h-8z',
                 ],
                 ['route' => 'payments.index', 'label' => 'Pembayaran', 'icon' => 'M2 6h20v13H2zM2 10h20M6 15h5'],
+                [
+                    'route' => 'customer.guests.index',
+                    'label' => 'Tamu Undangan',
+                    'icon' => 'M4 20v-2a5 5 0 0 1 5-5h6a5 5 0 0 1 5 5v2M12 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8',
+                    'related_routes' => ['invitations.guests.index'],
+                ],
+                [
+                    'route' => 'customer.rsvps.index',
+                    'label' => 'RSVP',
+                    'icon' => 'M4 5h16v15H4zM8 10l2 2 5-5M8 16h8',
+                    'related_routes' => ['invitations.rsvps'],
+                ],
+                [
+                    'route' => 'customer.wishes.index',
+                    'label' => 'Ucapan',
+                    'icon' => 'M20.8 4.6a5 5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.7-7.5a5.5 5.5 0 0 0 1.1-8.9Z',
+                    'related_routes' => ['invitations.wishes'],
+                ],
             ];
     @endphp
     <div class="dashboard-shell">
@@ -79,9 +97,10 @@
             <nav class="sidebar-nav" aria-label="Menu utama">
                 <p class="sidebar-label">Ruang Kerja</p>
                 @foreach ($navigation as $item)
+                    @php($isActive = request()->routeIs($item['route'], str_replace('.index', '.*', $item['route']), ...($item['related_routes'] ?? [])))
                     <a href="{{ route($item['route']) }}"
-                        class="{{ request()->routeIs($item['route']) || request()->routeIs(str_replace('.index', '.*', $item['route'])) ? 'active' : '' }}"
-                        @if (request()->routeIs($item['route'])) aria-current="page" @endif>
+                        class="{{ $isActive ? 'active' : '' }}"
+                        @if ($isActive) aria-current="page" @endif>
                         <svg viewBox="0 0 24 24" aria-hidden="true">
                             <path d="{{ $item['icon'] }}" />
                         </svg><span>{{ $item['label'] }}</span>

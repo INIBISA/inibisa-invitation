@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\WishController as AdminWishController;
 use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\SessionController;
+use App\Http\Controllers\CustomerInvitationSectionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GuestController;
 use App\Http\Controllers\HomeController;
@@ -43,6 +44,11 @@ Route::middleware('guest')->group(function (): void {
 Route::middleware('auth')->group(function (): void {
     Route::post('/logout', [SessionController::class, 'destroy'])->name('logout');
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
+    Route::prefix('customer')->name('customer.')->group(function (): void {
+        Route::get('/guests', [CustomerInvitationSectionController::class, 'guests'])->name('guests.index');
+        Route::get('/rsvps', [CustomerInvitationSectionController::class, 'rsvps'])->name('rsvps.index');
+        Route::get('/wishes', [CustomerInvitationSectionController::class, 'wishes'])->name('wishes.index');
+    });
     Route::get('/templates', [TemplateBrowserController::class, 'index'])->name('templates.index');
     Route::get('/templates/{template}', [TemplateBrowserController::class, 'show'])->name('templates.show');
     Route::get('/checkout/{template}', [PaymentController::class, 'create'])->name('payments.create');
