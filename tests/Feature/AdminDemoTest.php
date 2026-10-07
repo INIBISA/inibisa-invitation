@@ -46,10 +46,12 @@ class AdminDemoTest extends TestCase
         $this->assertTrue($demo->data['settings']['story']);
         $this->assertFalse($demo->data['settings']['gift']);
         $this->assertSame('dQw4w9WgXcQ', $demo->data['music']['youtube_video_id']);
+        $this->assertSame(30, $demo->data['music']['start_seconds']);
 
         $this->actingAs($admin)->get(route('templates.show', $demo->template))
             ->assertOk()
             ->assertSee('Admin Demo')
+            ->assertSee('data-youtube-start="30"', false)
             ->assertSee('Selamat untuk kedua mempelai.');
     }
 
@@ -146,6 +148,7 @@ class AdminDemoTest extends TestCase
                 'message' => 'Selamat untuk kedua mempelai.',
             ]],
             'youtube_url' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+            'music_start_seconds' => 30,
             'settings' => ['countdown' => 1, 'gallery' => 1, 'story' => 1, 'rsvp' => 1, 'wishes' => 1, 'music' => 1],
         ];
     }

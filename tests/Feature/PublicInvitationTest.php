@@ -37,18 +37,20 @@ class PublicInvitationTest extends TestCase
 
         $this->get(route('public.invitation', $invitation->slug))
             ->assertOk()
-            ->assertSee('data-youtube-music="'.config('music.default_youtube_video_id').'"', false);
+            ->assertSee('data-youtube-music="'.config('music.default_youtube_video_id').'"', false)
+            ->assertSee('data-youtube-start="0"', false);
     }
 
     public function test_invitation_with_chosen_music_keeps_it(): void
     {
         $data = $this->invitationData();
-        $data['music'] = ['youtube_url' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'youtube_video_id' => 'dQw4w9WgXcQ', 'title' => 'Pilihan Saya'];
+        $data['music'] = ['youtube_url' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'youtube_video_id' => 'dQw4w9WgXcQ', 'title' => 'Pilihan Saya', 'start_seconds' => 45];
         $invitation = Invitation::factory()->published()->create(['slug' => 'dengan-musik', 'data' => $data]);
 
         $this->get(route('public.invitation', $invitation->slug))
             ->assertOk()
             ->assertSee('data-youtube-music="dQw4w9WgXcQ"', false)
+            ->assertSee('data-youtube-start="45"', false)
             ->assertDontSee('data-youtube-music="'.config('music.default_youtube_video_id').'"', false);
     }
 

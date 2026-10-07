@@ -62,7 +62,7 @@
     </div>
     @include('templates.partials.youtube-music')
     @if (!$musicVideoId && $musicMedia && data_get($settings, 'music', true))
-        <audio id="wedding-music" loop preload="none">
+        <audio id="wedding-music" loop preload="none" data-start-seconds="{{ (int) data_get($data, 'music.start_seconds', 0) }}">
             <source src="{{ asset('storage/' . $musicMedia->file_path) }}">
         </audio><button class="music-toggle" type="button" aria-label="Putar atau jeda musik"
             hidden><span></span></button>

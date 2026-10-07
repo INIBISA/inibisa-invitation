@@ -78,6 +78,7 @@ class StoreInvitationRequest extends FormRequest
             'music' => ['nullable', 'file', 'mimes:mp3,ogg,wav', 'max:10240'],
             'wedding_music_id' => ['nullable', Rule::exists('wedding_music', 'id')->where('is_active', true)],
             'youtube_url' => ['nullable', 'string', 'max:255'],
+            'music_start_seconds' => ['nullable', 'integer', 'min:0', 'max:43200'],
         ];
     }
 

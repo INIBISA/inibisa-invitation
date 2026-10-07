@@ -6,9 +6,11 @@ use App\Models\Invitation;
 use App\Models\Payment;
 use App\Models\Template;
 use App\Models\User;
+use App\Models\WeddingMusic;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 class InvitationManagementTest extends TestCase
@@ -28,6 +30,60 @@ class InvitationManagementTest extends TestCase
         $this->assertSame('Haikal', $invitation->data['groom']['nickname']);
         $this->assertSame(Invitation::STATUS_DRAFT, $invitation->status);
         $this->assertArrayNotHasKey('unexpected', $invitation->data['settings']);
+    }
+
+    public function test_customer_can_choose_where_catalog_music_starts(): void
+    {
+        $customer = User::factory()->active()->create();
+        $template = Template::factory()->create();
+        $music = WeddingMusic::factory()->create();
+        Payment::factory()->for($customer)->for($template)->create(['status' => Payment::STATUS_PAID, 'invitation_id' => null]);
+        $payload = $this->validPayload($template);
+        $payload['wedding_music_id'] = $music->id;
+        $payload['music_start_seconds'] = 45;
+
+        $this->actingAs($customer)->post(route('invitations.store'), $payload)->assertRedirect();
+
+        $invitation = Invitation::query()->firstOrFail();
+        $this->assertSame($music->id, $invitation->wedding_music_id);
+        $this->assertSame(45, $invitation->data['music']['start_seconds']);
+    }
+
+    public function test_customer_can_update_where_custom_music_starts(): void
+    {
+        $customer = User::factory()->active()->create();
+        $invitation = Invitation::factory()->for($customer)->create();
+        $payload = $this->validPayload($invitation->template);
+        $payload['youtube_url'] = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
+        $payload['music_start_seconds'] = 90;
+
+        $this->actingAs($customer)->put(route('invitations.update', $invitation), $payload)->assertRedirect();
+
+        $this->assertSame(90, $invitation->refresh()->data['music']['start_seconds']);
+    }
+
+    #[DataProvider('invalidMusicStartSeconds')]
+    public function test_customer_cannot_set_invalid_music_start_seconds(mixed $startSeconds): void
+    {
+        $customer = User::factory()->active()->create();
+        $template = Template::factory()->create();
+        Payment::factory()->for($customer)->for($template)->create(['status' => Payment::STATUS_PAID, 'invitation_id' => null]);
+        $payload = $this->validPayload($template);
+        $payload['music_start_seconds'] = $startSeconds;
+
+        $this->actingAs($customer)->post(route('invitations.store'), $payload)
+            ->assertSessionHasErrors('music_start_seconds');
+
+        $this->assertDatabaseCount('invitations', 0);
+    }
+
+    public static function invalidMusicStartSeconds(): array
+    {
+        return [
+            'negative' => [-1],
+            'fractional' => ['1.5'],
+            'beyond_limit' => [43201],
+        ];
     }
 
     public function test_customer_cannot_update_another_customers_invitation(): void

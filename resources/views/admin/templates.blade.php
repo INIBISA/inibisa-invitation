@@ -5,7 +5,7 @@
         <div>
             <p class="overline">Katalog Produk</p>
             <h1>Templat</h1>
-            <p>Atur harga, status, dan demo templat.</p>
+            <p>Atur harga, status, thumbnail, dan demo templat.</p>
         </div>
     </section>
     <div class="template-grid">
@@ -30,13 +30,14 @@
                     </div>
                     <details>
                         <summary>Pengaturan Templat</summary>
-                        <form method="POST" action="{{ route('admin.templates.update', $template) }}">@csrf
+                        <form method="POST" action="{{ route('admin.templates.update', $template) }}" enctype="multipart/form-data">@csrf
                             @method('PATCH')<div class="field"><label>Nama</label><input class="input" name="name"
                                     value="{{ $template->name }}" required></div>
                             <div class="field"><label>Kategori</label><input class="input" name="category"
                                     value="{{ $template->category }}" required></div>
                             <div class="field"><label>Harga (Rp)</label><input class="input" type="number" min="1000"
-                                    name="price" value="{{ $template->price }}" required></div><label
+                                    name="price" value="{{ $template->price }}" required></div>
+                            <div class="field"><label for="thumbnail-{{ $template->id }}">Thumbnail Paket</label><input class="input" id="thumbnail-{{ $template->id }}" type="file" name="thumbnail" accept="image/jpeg,image/png,image/webp" data-max-mb="5"><small>JPG, PNG, atau WebP. Maksimal 5 MB. Rasio disarankan 16:10.</small></div><label
                                 class="check"><input type="checkbox" name="is_active" value="1"
                                     @checked($template->is_active)> Aktif</label><button class="button gold small"
                                 type="submit">Simpan</button>

@@ -7,6 +7,7 @@
     }
 
     var videoId = root.dataset.youtubeMusic;
+    var startSeconds = Math.max(0, parseInt(root.dataset.youtubeStart || "0", 10) || 0);
     var toggle = root.querySelector("[data-youtube-toggle]");
     var frame = root.querySelector("[data-youtube-frame]");
     var label = root.querySelector("[data-youtube-label]");
@@ -51,11 +52,16 @@
             return;
         }
 
+        var playerVars = { controls: 0, playsinline: 1, rel: 0, loop: 1, playlist: videoId, origin: window.location.origin };
+        if (startSeconds > 0) {
+            playerVars.start = startSeconds;
+        }
+
         player = new window.YT.Player(frame, {
             width: 200,
             height: 200,
             videoId: videoId,
-            playerVars: { controls: 0, playsinline: 1, rel: 0, loop: 1, playlist: videoId, origin: window.location.origin },
+            playerVars: playerVars,
             events: {
                 onReady: function (event) {
                     try {

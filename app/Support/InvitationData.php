@@ -17,7 +17,7 @@ class InvitationData
             'events' => [],
             'stories' => [],
             'banks' => [],
-            'music' => ['youtube_url' => null, 'youtube_video_id' => null, 'title' => null],
+            'music' => ['youtube_url' => null, 'youtube_video_id' => null, 'title' => null, 'start_seconds' => 0],
             'settings' => [
                 'countdown' => true,
                 'gallery' => true,
@@ -51,6 +51,8 @@ class InvitationData
         } elseif ($music) {
             $data['music'] = ['youtube_url' => $music->youtube_url, 'youtube_video_id' => $music->youtube_video_id, 'title' => $music->title];
         }
+
+        $data['music']['start_seconds'] = (int) ($validated['music_start_seconds'] ?? 0);
 
         return $data;
     }

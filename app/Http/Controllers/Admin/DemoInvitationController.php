@@ -41,6 +41,7 @@ class DemoInvitationController extends Controller
             'youtube_url' => $youtubeUrl ?: null,
             'youtube_video_id' => YouTubeVideo::idFromUrl($youtubeUrl),
             'title' => $youtubeUrl ? 'Musik demo' : null,
+            'start_seconds' => (int) ($validated['music_start_seconds'] ?? 0),
         ];
         $data['wishes'] = collect($validated['wishes'] ?? [])->map(fn (array $wish): array => [
             ...$wish,

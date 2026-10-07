@@ -61,6 +61,7 @@ class UpdateDemoInvitationRequest extends FormRequest
             'settings' => ['nullable', 'array'],
             'settings.*' => ['nullable', 'boolean'],
             'youtube_url' => ['nullable', 'string', 'max:255'],
+            'music_start_seconds' => ['nullable', 'integer', 'min:0', 'max:43200'],
             'cover' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'groom_photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'bride_photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],

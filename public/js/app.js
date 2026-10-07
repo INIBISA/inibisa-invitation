@@ -73,6 +73,30 @@
         return Promise.resolve();
     }
 
+    function youtubeVideoIdFromUrl(value) {
+        try {
+            var url = new URL(value);
+            if (url.protocol !== "https:" && url.protocol !== "http:") {
+                return null;
+            }
+            var host = url.hostname.toLowerCase();
+            var path = url.pathname.split("/").filter(Boolean);
+            var videoId = null;
+            if (host === "youtu.be" || host === "www.youtu.be") {
+                videoId = path[0];
+            } else if (["youtube.com", "www.youtube.com", "m.youtube.com", "www.youtube-nocookie.com"].includes(host)) {
+                if (["embed", "shorts", "live"].includes(path[0])) {
+                    videoId = path[1];
+                } else if (path[0] === "watch") {
+                    videoId = url.searchParams.get("v");
+                }
+            }
+            return /^[A-Za-z0-9_-]{11}$/.test(videoId || "") ? videoId : null;
+        } catch (error) {
+            return null;
+        }
+    }
+
     document.addEventListener("click", function (event) {
         if (profileDropdown && !event.target.closest(".profile-menu")) {
             profileDropdown.classList.remove("open");
@@ -208,14 +232,25 @@
             imageDialog.querySelector("[data-image-target]").src = imagePreview.dataset.imagePreview;
             imageDialog.showModal();
         }
-        var videoPreview = event.target.closest("[data-youtube-preview]");
+        var videoPreview = event.target.closest("[data-youtube-preview], [data-youtube-url-preview]");
         if (videoPreview) {
             var videoDialog = document.querySelector("[data-video-dialog]");
-            var videoId = videoPreview.dataset.youtubePreview;
-            if (/^[A-Za-z0-9_-]{11}$/.test(videoId)) {
-                videoDialog.querySelector("[data-video-frame]").innerHTML = '<iframe title="Pratinjau musik YouTube" src="https://www.youtube-nocookie.com/embed/' + videoId + '?autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
-                videoDialog.showModal();
+            var previewForm = videoPreview.closest("form");
+            var urlInput = previewForm && previewForm.querySelector('[name="youtube_url"]');
+            var isCustomUrl = videoPreview.hasAttribute("data-youtube-url-preview");
+            var videoId = isCustomUrl ? youtubeVideoIdFromUrl(urlInput ? urlInput.value : "") : videoPreview.dataset.youtubePreview;
+            if (!videoDialog || !/^[A-Za-z0-9_-]{11}$/.test(videoId || "")) {
+                if (isCustomUrl) {
+                    showToast("Masukkan tautan YouTube yang valid untuk diputar.");
+                    urlInput?.focus();
+                }
+                return;
             }
+            var startInput = previewForm && previewForm.querySelector('[name="music_start_seconds"]');
+            var startSeconds = startInput ? Math.min(43200, Math.max(0, parseInt(startInput.value, 10) || 0)) : 0;
+            var startParameter = startSeconds > 0 ? "&start=" + startSeconds : "";
+            videoDialog.querySelector("[data-video-frame]").innerHTML = '<iframe title="Pratinjau musik YouTube" src="https://www.youtube-nocookie.com/embed/' + videoId + '?autoplay=1' + startParameter + '" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
+            videoDialog.showModal();
         }
         if (event.target.closest("[data-dialog-close]")) {
             event.target.closest("dialog").close();

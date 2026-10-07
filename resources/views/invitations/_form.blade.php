@@ -12,7 +12,7 @@
             str_starts_with($errorKey, 'groom.'), str_starts_with($errorKey, 'bride.') => 2,
             $errorKey === 'wedding_date', $errorKey === 'quote', str_starts_with($errorKey, 'events.') => 3,
             str_starts_with($errorKey, 'stories.'), str_starts_with($errorKey, 'banks.') => 4,
-            in_array($errorKey, ['cover', 'groom_photo', 'bride_photo', 'qris', 'gallery', 'story_photos', 'wedding_music_id', 'youtube_url'], true) => 5,
+            in_array($errorKey, ['cover', 'groom_photo', 'bride_photo', 'qris', 'gallery', 'story_photos', 'wedding_music_id', 'youtube_url', 'music_start_seconds'], true) => 5,
             str_starts_with($errorKey, 'settings.'), str_starts_with($errorKey, 'wishes.') => 6,
             default => 1,
         };
@@ -201,11 +201,12 @@
             <div class="music-picker invitation-music-picker">
                 <label class="music-choice music-choice-none"><input type="radio" name="wedding_music_id" value="" @checked(!old('wedding_music_id', $invitation?->wedding_music_id))><span><strong>Tanpa musik katalog</strong><small>Gunakan link sendiri atau tampilkan tanpa musik.</small></span></label>
                 @foreach ($musicChoices as $song)
-                    <div class="music-choice"><label><input type="radio" name="wedding_music_id" value="{{ $song->id }}" @checked((string) old('wedding_music_id', $invitation?->wedding_music_id) === (string) $song->id)><img src="{{ $song->thumbnail }}" alt="" loading="lazy"><span><strong>{{ $song->title }}</strong><small>{{ $song->category }}</small></span></label><button class="button secondary small" type="button" data-youtube-preview="{{ $song->youtube_video_id }}">Pratinjau</button></div>
+                    <div class="music-choice"><label><input type="radio" name="wedding_music_id" value="{{ $song->id }}" @checked((string) old('wedding_music_id', $invitation?->wedding_music_id) === (string) $song->id)><img src="{{ $song->thumbnail }}" alt="" loading="lazy"><span><strong>{{ $song->title }}</strong><small>{{ $song->category }}</small></span></label><button class="button secondary small" type="button" data-youtube-preview="{{ $song->youtube_video_id }}">Putar Musik</button></div>
                 @endforeach
             </div>
             <div class="music-custom-divider"><span>atau gunakan link sendiri</span></div>
-            <div class="field"><label for="youtube_url">Tautan YouTube <em>Opsional</em></label><input class="input" id="youtube_url" name="youtube_url" type="url" value="{{ old('youtube_url', $invitation?->wedding_music_id ? '' : data_get($data, 'music.youtube_url')) }}" placeholder="https://www.youtube.com/watch?v=..."><small>Tautan ini diprioritaskan jika musik katalog juga dipilih.</small>@error('youtube_url')<small class="field-error">{{ $message }}</small>@enderror</div>
+            <div class="field"><label for="youtube_url">Tautan YouTube <em>Opsional</em></label><input class="input" id="youtube_url" name="youtube_url" type="url" value="{{ old('youtube_url', $invitation?->wedding_music_id ? '' : data_get($data, 'music.youtube_url')) }}" placeholder="https://www.youtube.com/watch?v=..."><small>Tautan ini diprioritaskan jika musik katalog juga dipilih.</small><button class="button secondary small" type="button" data-youtube-url-preview>Putar Tautan Ini</button>@error('youtube_url')<small class="field-error">{{ $message }}</small>@enderror</div>
+            <div class="field"><label for="music_start_seconds">Mulai dari detik ke-</label><input class="input" id="music_start_seconds" name="music_start_seconds" type="number" min="0" max="43200" step="1" value="{{ old('music_start_seconds', data_get($data, 'music.start_seconds', 0)) }}"><small>Isi 0 untuk memutar dari awal. Contoh: 45 untuk mulai pada detik ke-45.</small>@error('music_start_seconds')<small class="field-error">{{ $message }}</small>@enderror</div>
         </div>
     </section>
 
