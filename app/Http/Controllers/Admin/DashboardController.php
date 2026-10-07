@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Guest;
 use App\Models\Invitation;
+use App\Models\Payment;
 use App\Models\Rsvp;
-use App\Models\Template;
 use App\Models\User;
 use App\Models\Wish;
 use Illuminate\View\View;
@@ -15,12 +16,16 @@ class DashboardController extends Controller
     public function __invoke(): View
     {
         $statistics = [
-            'pending_customers' => User::query()->where('role', User::ROLE_CUSTOMER)->where('status', User::STATUS_PENDING)->count(),
-            'active_customers' => User::query()->where('role', User::ROLE_CUSTOMER)->where('status', User::STATUS_ACTIVE)->count(),
+            'customers' => User::query()->where('role', User::ROLE_CUSTOMER)->count(),
+            'payments' => Payment::query()->count(),
+            'payments_today' => Payment::query()->whereDate('created_at', today())->count(),
+            'pending_payments' => Payment::query()->where('status', Payment::STATUS_PENDING)->count(),
+            'waiting_approval' => Payment::query()->where('status', Payment::STATUS_WAITING_APPROVAL)->count(),
             'invitations' => Invitation::query()->count(),
             'published_invitations' => Invitation::query()->where('status', Invitation::STATUS_PUBLISHED)->count(),
-            'new_rsvps' => Rsvp::query()->where('created_at', '>=', now()->subDays(7))->count(),
-            'templates' => Template::query()->count(),
+            'guests' => Guest::query()->count(),
+            'rsvps' => Rsvp::query()->count(),
+            'wishes' => Wish::query()->count(),
         ];
 
         $recentInvitations = Invitation::query()

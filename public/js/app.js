@@ -87,27 +87,32 @@
             var index = Number(root.dataset.nextIndex || list.children.length);
             list.insertAdjacentHTML("beforeend", template.replaceAll("__INDEX__", String(index)));
             root.dataset.nextIndex = String(index + 1);
+            enhanceUploads();
+            updateRepeater(root);
+            list.lastElementChild.querySelector("input, textarea, select")?.focus();
         }
 
         var remove = event.target.closest("[data-remove-repeater]");
         if (remove) {
+            var repeater = remove.closest("[data-repeater]");
             remove.closest(".repeater-item").remove();
+            updateRepeater(repeater);
         }
 
         var copy = event.target.closest("[data-copy-link]");
         if (copy) {
             copyText(copy.dataset.copyLink).then(function () {
-                copy.setAttribute("title", "Link copied");
-                showToast("Invitation link copied");
+                copy.setAttribute("title", "Tautan disalin");
+                showToast("Tautan undangan disalin");
             });
         }
 
         if (event.target.closest("[data-auth-help]")) {
-            showToast("Please contact the administrator to reset your password.");
+            showToast("Hubungi administrator untuk mengatur ulang kata sandi.");
         }
 
         if (event.target.closest(".notification-button")) {
-            showToast("You're all caught up.");
+            showToast("Tidak ada pemberitahuan baru.");
         }
     });
 
@@ -117,7 +122,7 @@
             var willShow = input.type === "password";
             input.type = willShow ? "text" : "password";
             button.classList.toggle("showing", willShow);
-            button.setAttribute("aria-label", willShow ? "Hide password" : "Show password");
+            button.setAttribute("aria-label", willShow ? "Sembunyikan kata sandi" : "Tampilkan kata sandi");
         });
     });
 
@@ -161,4 +166,294 @@
             }
         }
     });
+
+    var confirmDialog = document.querySelector("[data-confirm-dialog]");
+    var pendingForm = null;
+    document.addEventListener("submit", function (event) {
+        var form = event.target;
+        if (form.dataset.confirm && !form.dataset.confirmed) {
+            event.preventDefault();
+            pendingForm = form;
+            confirmDialog.querySelector("[data-confirm-message]").textContent = form.dataset.confirm;
+            confirmDialog.showModal();
+            return;
+        }
+        form.classList.add("is-submitting");
+    });
+    if (confirmDialog) {
+        confirmDialog.addEventListener("close", function () {
+            if (confirmDialog.returnValue === "confirm" && pendingForm) {
+                pendingForm.dataset.confirmed = "true";
+                pendingForm.requestSubmit();
+            }
+            pendingForm = null;
+        });
+    }
+
+    document.addEventListener("click", function (event) {
+        var reject = event.target.closest("[data-reject-payment]");
+        if (reject) {
+            document.querySelector('[data-reject-dialog="' + reject.dataset.rejectPayment + '"]').showModal();
+        }
+        var imagePreview = event.target.closest("[data-image-preview]");
+        if (imagePreview) {
+            var imageDialog = document.querySelector("[data-image-dialog]");
+            imageDialog.querySelector("[data-image-target]").src = imagePreview.dataset.imagePreview;
+            imageDialog.showModal();
+        }
+        var videoPreview = event.target.closest("[data-youtube-preview]");
+        if (videoPreview) {
+            var videoDialog = document.querySelector("[data-video-dialog]");
+            var videoId = videoPreview.dataset.youtubePreview;
+            if (/^[A-Za-z0-9_-]{11}$/.test(videoId)) {
+                videoDialog.querySelector("[data-video-frame]").innerHTML = '<iframe title="Pratinjau musik YouTube" src="https://www.youtube-nocookie.com/embed/' + videoId + '?autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
+                videoDialog.showModal();
+            }
+        }
+        if (event.target.closest("[data-dialog-close]")) {
+            event.target.closest("dialog").close();
+        }
+        var midtrans = event.target.closest("[data-midtrans-token]");
+        if (midtrans && window.snap) {
+            window.snap.pay(midtrans.dataset.midtransToken, {
+                onSuccess: function () { window.location.reload(); },
+                onPending: function () { window.location.reload(); },
+                onError: function () { window.location.reload(); },
+                onClose: function () { window.location.reload(); }
+            });
+        }
+        var quotePreset = event.target.closest("[data-quote-value]");
+        if (quotePreset) {
+            var quoteField = document.getElementById("quote");
+            quoteField.value = quotePreset.dataset.quoteValue;
+            document.querySelectorAll("[data-quote-value]").forEach(function (button) {
+                button.classList.toggle("is-selected", button === quotePreset);
+            });
+        }
+        if (event.target.closest("[data-quote-custom]")) {
+            var customQuote = document.getElementById("quote");
+            customQuote.value = "";
+            document.querySelectorAll("[data-quote-value]").forEach(function (button) {
+                button.classList.remove("is-selected");
+            });
+            customQuote.focus();
+        }
+        var share = event.target.closest("[data-share-whatsapp]");
+        if (share) {
+            var number = share.dataset.shareWhatsapp.replace(/\D/g, "");
+            if (number.startsWith("0")) { number = "62" + number.slice(1); }
+            var message = "Halo, berikut undangan personal untuk Anda: " + share.dataset.personalLink;
+            window.open("https://wa.me/" + number + "?text=" + encodeURIComponent(message), "_blank", "noopener");
+        }
+    });
+    document.querySelectorAll("[data-video-dialog]").forEach(function (dialog) {
+        dialog.addEventListener("close", function () {
+            dialog.querySelector("[data-video-frame]").innerHTML = "";
+        });
+    });
+
+    function enhanceUploads() {
+        document.querySelectorAll('input[type="file"]:not([data-upload-ready])').forEach(function (input) {
+            input.dataset.uploadReady = "true";
+            var zone = input.closest("[data-upload-zone]");
+            if (!zone) {
+                zone = document.createElement("div");
+                zone.className = "upload-zone";
+                zone.dataset.uploadZone = "";
+                input.parentNode.insertBefore(zone, input);
+                zone.appendChild(input);
+                zone.insertAdjacentHTML("beforeend", '<span class="upload-icon">↑</span><strong>Tarik file ke sini atau klik untuk memilih</strong><small>JPG, PNG, atau WebP</small><span data-upload-info></span><button class="button small secondary" type="button" data-upload-remove hidden>Hapus file</button>');
+            }
+            var info = zone.querySelector("[data-upload-info]");
+            var removeButton = zone.querySelector("[data-upload-remove]");
+            var preview = zone.querySelector("[data-upload-preview]");
+            var previews = zone.querySelector(".upload-previews");
+            if (!previews && !preview) {
+                previews = document.createElement("div");
+                previews.className = "upload-previews";
+                zone.insertBefore(previews, info);
+            }
+            var error = document.createElement("span");
+            error.dataset.uploadError = "";
+            zone.appendChild(error);
+
+            function renderFiles() {
+                var files = Array.from(input.files || []);
+                var maxMb = Number(input.dataset.maxMb || 5);
+                var maxFiles = Number(input.dataset.maxFiles || (input.multiple ? 12 : 1));
+                error.textContent = "";
+                if (files.length > maxFiles) {
+                    error.textContent = "Maksimal " + maxFiles + " file.";
+                    input.value = "";
+                    files = [];
+                } else if (files.some(function (file) { return file.size > maxMb * 1024 * 1024; })) {
+                    error.textContent = "Ukuran gambar maksimal " + maxMb + " MB.";
+                    input.value = "";
+                    files = [];
+                } else if (files.some(function (file) { return input.accept && !input.accept.split(",").map(function (type) { return type.trim(); }).includes(file.type); })) {
+                    error.textContent = "Format file tidak sesuai.";
+                    input.value = "";
+                    files = [];
+                }
+                if (previews) {
+                    previews.innerHTML = "";
+                }
+                if (preview) {
+                    preview.hidden = true;
+                    preview.removeAttribute("src");
+                }
+                files.forEach(function (file, index) {
+                    if (!file.type.startsWith("image/")) { return; }
+                    var image = index === 0 && preview ? preview : document.createElement("img");
+                    image.src = URL.createObjectURL(file);
+                    image.onload = function () { URL.revokeObjectURL(image.src); };
+                    image.hidden = false;
+                    if (image !== preview) { previews.appendChild(image); }
+                });
+                info.textContent = files.map(function (file) { return file.name + " (" + (file.size / 1024 / 1024).toFixed(1) + " MB)"; }).join(", ");
+                removeButton.hidden = files.length === 0;
+            }
+            input.addEventListener("change", renderFiles);
+            removeButton.addEventListener("click", function () { input.value = ""; renderFiles(); });
+            zone.addEventListener("dragover", function (event) { event.preventDefault(); zone.classList.add("is-dragging"); });
+            zone.addEventListener("dragleave", function () { zone.classList.remove("is-dragging"); });
+            zone.addEventListener("drop", function (event) {
+                event.preventDefault();
+                zone.classList.remove("is-dragging");
+                if (event.dataTransfer && event.dataTransfer.files) {
+                    input.files = event.dataTransfer.files;
+                    renderFiles();
+                }
+            });
+        });
+    }
+
+    function updateRepeater(root) {
+        if (!root) {
+            return;
+        }
+        var items = Array.from(root.querySelectorAll("[data-repeater-list] > .repeater-item"));
+        var empty = root.querySelector("[data-repeater-empty]");
+        var name = root.dataset.repeaterName || "Butir";
+        items.forEach(function (item, index) {
+            var title = item.querySelector("[data-repeater-title]");
+            if (title) {
+                title.textContent = name + " " + (index + 1);
+            }
+        });
+        if (empty) {
+            empty.hidden = items.length > 0;
+        }
+        updateInvitationSummary();
+    }
+
+    var invitationForm = document.querySelector("[data-invitation-form]");
+    var invitationWizard = document.querySelector("[data-invitation-wizard]");
+    var currentInvitationStep = 1;
+
+    function invitationSteps() {
+        return invitationWizard ? Array.from(invitationWizard.querySelectorAll("[data-wizard-step]")) : [];
+    }
+
+    function showInvitationStep(step) {
+        if (!invitationWizard) {
+            return;
+        }
+        var steps = invitationSteps();
+        currentInvitationStep = Math.max(1, Math.min(step, steps.length));
+        steps.forEach(function (panel) {
+            panel.hidden = Number(panel.dataset.wizardStep) !== currentInvitationStep;
+        });
+        invitationWizard.querySelectorAll("[data-wizard-tab]").forEach(function (tab) {
+            var tabStep = Number(tab.dataset.wizardTab);
+            tab.toggleAttribute("aria-current", tabStep === currentInvitationStep);
+            tab.classList.toggle("is-complete", tabStep < currentInvitationStep);
+        });
+        invitationWizard.querySelector("[data-wizard-progress]").style.width = (currentInvitationStep / steps.length * 100) + "%";
+        invitationWizard.querySelector("[data-wizard-status]").textContent = "Langkah " + currentInvitationStep + " dari " + steps.length;
+        invitationWizard.querySelector("[data-wizard-previous]").hidden = currentInvitationStep === 1;
+        invitationWizard.querySelector("[data-wizard-next]").hidden = currentInvitationStep === steps.length;
+        invitationWizard.querySelector("[data-wizard-submit]").hidden = currentInvitationStep !== steps.length;
+        updateInvitationSummary();
+    }
+
+    function firstInvalidInStep(step) {
+        return invitationWizard.querySelector('[data-wizard-step="' + step + '"]')?.querySelector(":invalid");
+    }
+
+    function validateInvitationStep(step) {
+        var invalid = firstInvalidInStep(step);
+        if (!invalid) {
+            return true;
+        }
+        invalid.reportValidity();
+        invalid.focus();
+        return false;
+    }
+
+    function summaryValue(name) {
+        return invitationForm?.querySelector('[data-summary-source="' + name + '"]')?.value.trim() || "";
+    }
+
+    function updateInvitationSummary() {
+        if (!invitationWizard || !invitationForm) {
+            return;
+        }
+        var template = invitationForm.querySelector("#template_id");
+        var date = summaryValue("date");
+        var eventCount = invitationForm.querySelectorAll('[data-repeater-name="Acara"] [data-repeater-list] > .repeater-item').length;
+        var values = {
+            template: template?.selectedOptions[0]?.value ? template.selectedOptions[0].textContent : "Belum dipilih",
+            title: summaryValue("title") || "Belum diisi",
+            slug: summaryValue("slug") ? window.location.origin + "/" + summaryValue("slug") : "Belum diisi",
+            couple: [summaryValue("groom"), summaryValue("bride")].filter(Boolean).join(" & ") || "Belum diisi",
+            date: date ? new Intl.DateTimeFormat("id-ID", { dateStyle: "long" }).format(new Date(date + "T00:00:00")) : "Belum diisi",
+            events: eventCount + " acara"
+        };
+        Object.keys(values).forEach(function (key) {
+            var target = invitationWizard.querySelector('[data-summary="' + key + '"]');
+            if (target) {
+                target.textContent = values[key];
+            }
+        });
+    }
+
+    if (invitationWizard && invitationForm) {
+        invitationWizard.querySelectorAll("[data-repeater]").forEach(updateRepeater);
+        showInvitationStep(Number(invitationWizard.dataset.initialStep || 1));
+
+        invitationWizard.querySelector("[data-wizard-next]").addEventListener("click", function () {
+            if (validateInvitationStep(currentInvitationStep)) {
+                showInvitationStep(currentInvitationStep + 1);
+                invitationWizard.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+        });
+        invitationWizard.querySelector("[data-wizard-previous]").addEventListener("click", function () {
+            showInvitationStep(currentInvitationStep - 1);
+            invitationWizard.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+        invitationWizard.querySelectorAll("[data-wizard-tab]").forEach(function (tab) {
+            tab.addEventListener("click", function () {
+                var targetStep = Number(tab.dataset.wizardTab);
+                if (targetStep <= currentInvitationStep || validateInvitationStep(currentInvitationStep)) {
+                    showInvitationStep(targetStep);
+                }
+            });
+        });
+        invitationForm.addEventListener("input", updateInvitationSummary);
+        invitationForm.addEventListener("change", updateInvitationSummary);
+        invitationForm.addEventListener("submit", function (event) {
+            for (var step = 1; step <= invitationSteps().length; step += 1) {
+                if (firstInvalidInStep(step)) {
+                    event.preventDefault();
+                    event.stopImmediatePropagation();
+                    showInvitationStep(step);
+                    window.setTimeout(function () { validateInvitationStep(currentInvitationStep); }, 0);
+                    return;
+                }
+            }
+        }, true);
+    }
+
+    enhanceUploads();
 })();

@@ -30,7 +30,7 @@ class User extends Authenticatable
 
     protected $attributes = [
         'role' => self::ROLE_CUSTOMER,
-        'status' => self::STATUS_PENDING,
+        'status' => self::STATUS_ACTIVE,
     ];
 
     public function invitations(): HasMany
@@ -38,14 +38,14 @@ class User extends Authenticatable
         return $this->hasMany(Invitation::class);
     }
 
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
+
     public function isAdmin(): bool
     {
         return $this->role === self::ROLE_ADMIN;
-    }
-
-    public function isActiveCustomer(): bool
-    {
-        return $this->role === self::ROLE_CUSTOMER && $this->status === self::STATUS_ACTIVE;
     }
 
     /**

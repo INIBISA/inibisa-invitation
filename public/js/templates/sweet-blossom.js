@@ -50,6 +50,7 @@
         html.classList.remove("invitation-locked");
         body.classList.add("invitation-opened");
         releasePetals();
+        document.dispatchEvent(new CustomEvent("invitation:opened"));
 
         if (audio) {
             audio

@@ -3,7 +3,9 @@
 namespace Tests\Feature;
 
 use App\Models\Invitation;
+use App\Models\Payment;
 use App\Models\Rsvp;
+use App\Models\Setting;
 use App\Models\User;
 use App\Models\Wish;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
@@ -83,5 +85,20 @@ class AdminManagementPagesTest extends TestCase
 
         $response->assertRedirect(route('admin.settings.edit'))->assertSessionHasErrors('current_password');
         $this->assertTrue(Hash::check('password', $admin->refresh()->password));
+    }
+
+    public function test_admin_cannot_enable_midtrans_without_credentials(): void
+    {
+        config()->set('payments.midtrans.server_key');
+        config()->set('payments.midtrans.client_key');
+        $admin = User::factory()->admin()->create();
+
+        $this->actingAs($admin)->patch(route('admin.settings.update'), [
+            'name' => $admin->name,
+            'email' => $admin->email,
+            'active_payment_method' => Payment::METHOD_MIDTRANS,
+        ])->assertSessionHasErrors('active_payment_method');
+
+        $this->assertDatabaseMissing('settings', ['key' => Setting::KEY_ACTIVE_PAYMENT_METHOD]);
     }
 }

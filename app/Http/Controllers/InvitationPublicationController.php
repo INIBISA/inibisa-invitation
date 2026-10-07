@@ -12,6 +12,14 @@ class InvitationPublicationController extends Controller
     {
         Gate::authorize('update', $invitation);
         abort_unless($invitation->template()->where('is_active', true)->exists(), 422, 'Template tidak aktif.');
+        $data = $invitation->data ?? [];
+        abort_unless(
+            filled(data_get($data, 'groom.nickname')) && filled(data_get($data, 'groom.full_name'))
+            && filled(data_get($data, 'bride.nickname')) && filled(data_get($data, 'bride.full_name'))
+            && filled(data_get($data, 'wedding_date')) && count(data_get($data, 'events', [])) > 0,
+            422,
+            'Lengkapi nama mempelai, tanggal, dan minimal satu acara sebelum publish.',
+        );
 
         $invitation->update([
             'status' => Invitation::STATUS_PUBLISHED,

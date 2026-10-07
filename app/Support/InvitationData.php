@@ -2,6 +2,7 @@
 
 namespace App\Support;
 
+use App\Models\WeddingMusic;
 use Illuminate\Support\Arr;
 
 class InvitationData
@@ -16,6 +17,7 @@ class InvitationData
             'events' => [],
             'stories' => [],
             'banks' => [],
+            'music' => ['youtube_url' => null, 'youtube_video_id' => null, 'title' => null],
             'settings' => [
                 'countdown' => true,
                 'gallery' => true,
@@ -37,6 +39,17 @@ class InvitationData
 
         foreach (array_keys(self::defaults()['settings']) as $setting) {
             $data['settings'][$setting] = (bool) Arr::get($validated, 'settings.'.$setting, false);
+        }
+
+        $music = isset($validated['wedding_music_id'])
+            ? WeddingMusic::query()->where('is_active', true)->find($validated['wedding_music_id'])
+            : null;
+        $url = trim($validated['youtube_url'] ?? '');
+
+        if ($url !== '') {
+            $data['music'] = ['youtube_url' => $url, 'youtube_video_id' => YouTubeVideo::idFromUrl($url), 'title' => 'Musik pilihan Anda'];
+        } elseif ($music) {
+            $data['music'] = ['youtube_url' => $music->youtube_url, 'youtube_video_id' => $music->youtube_video_id, 'title' => $music->title];
         }
 
         return $data;

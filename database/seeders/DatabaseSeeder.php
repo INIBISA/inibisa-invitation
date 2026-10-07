@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             AdminSeeder::class,
             TemplateSeeder::class,
             DemoInvitationSeeder::class,
+            WeddingMusicSeeder::class,
         ]);
     }
 }

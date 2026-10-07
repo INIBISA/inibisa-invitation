@@ -14,7 +14,7 @@ class InvitationPolicy
 
     public function update(User $user, Invitation $invitation): bool
     {
-        return $user->isActiveCustomer() && $invitation->user_id === $user->id;
+        return ! $user->isAdmin() && $invitation->user_id === $user->id;
     }
 
     public function delete(User $user, Invitation $invitation): bool

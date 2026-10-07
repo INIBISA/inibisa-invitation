@@ -4,33 +4,55 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateDemoInvitationRequest;
-use App\Models\Invitation;
-use App\Models\Template;
-use App\Services\InvitationMediaManager;
+use App\Models\TemplateDemo;
+use App\Services\TemplateDemoMediaManager;
 use App\Support\InvitationData;
+use App\Support\YouTubeVideo;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
 class DemoInvitationController extends Controller
 {
-    public function edit(Invitation $invitation): View
+    public function edit(TemplateDemo $demo): View
     {
-        $invitation->load('media');
-        $templates = Template::query()->where('is_active', true)->orderBy('name')->get();
+        $demo->load('template');
 
-        return view('admin.demos.edit', compact('invitation', 'templates'));
+        return view('admin.demos.edit', compact('demo'));
     }
 
-    public function update(UpdateDemoInvitationRequest $request, Invitation $invitation, InvitationMediaManager $mediaManager): RedirectResponse
+    public function update(UpdateDemoInvitationRequest $request, TemplateDemo $demo, TemplateDemoMediaManager $mediaManager): RedirectResponse
     {
-        $invitation->update([
-            'template_id' => $request->integer('template_id'),
-            'title' => $request->string('title')->toString(),
-            'slug' => $request->string('slug')->toString(),
-            'data' => InvitationData::fromValidated($request->validated()),
-        ]);
+        $validated = $request->validated();
+        $data = array_replace_recursive(
+            InvitationData::defaults(),
+            $demo->data,
+            collect($validated)->only(['groom', 'bride', 'wedding_date', 'quote', 'events', 'stories', 'banks'])->all(),
+        );
+        $data['events'] = $validated['events'] ?? [];
+        $data['stories'] = $validated['stories'] ?? [];
+        $data['banks'] = $validated['banks'] ?? [];
 
-        $mediaManager->syncFromRequest($invitation, $request);
+        foreach (array_keys(InvitationData::defaults()['settings']) as $setting) {
+            $data['settings'][$setting] = (bool) data_get($validated, 'settings.'.$setting, false);
+        }
+
+        $youtubeUrl = trim($validated['youtube_url'] ?? '');
+        $data['music'] = [
+            'youtube_url' => $youtubeUrl ?: null,
+            'youtube_video_id' => YouTubeVideo::idFromUrl($youtubeUrl),
+            'title' => $youtubeUrl ? 'Musik demo' : null,
+        ];
+        $data['wishes'] = collect($validated['wishes'] ?? [])->map(fn (array $wish): array => [
+            ...$wish,
+            'created_at' => now()->toISOString(),
+        ])->all();
+        $data = $mediaManager->syncFromRequest($demo, $request, $data);
+
+        $demo->update([
+            'title' => $validated['title'],
+            'slug' => $validated['slug'],
+            'data' => $data,
+        ]);
 
         return back()->with('success', 'Demo berhasil diperbarui.');
     }

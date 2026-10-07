@@ -1,10 +1,39 @@
 @extends('layouts.app')
-@section('title', 'Settings')
+@section('title', 'Pengaturan')
 @section('content')
-<section class="dashboard-intro"><div><p class="overline">Account Preferences</p><h1>Settings</h1><p>Manage your administrator profile and account security.</p></div></section>
-<form class="settings-layout" method="POST" action="{{ route('admin.settings.update') }}">@csrf @method('PATCH')
-    <div class="settings-main"><section class="panel settings-card"><div class="panel-header"><div><h2>Profile Information</h2><p>Update the identity shown throughout the admin workspace.</p></div></div><div class="settings-fields"><div class="settings-avatar-row"><span class="settings-avatar">{{ mb_strtoupper(mb_substr(auth()->user()->name,0,1)) }}</span><div><strong>{{ auth()->user()->name }}</strong><small>Administrator account</small></div></div><div class="form-grid"><div class="form-field"><label for="name">Full Name</label><div class="input-shell @error('name') invalid @enderror"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><input id="name" name="name" value="{{ old('name', auth()->user()->name) }}" required></div>@error('name')<span class="field-error">{{ $message }}</span>@enderror</div><div class="form-field"><label for="email">Email Address</label><div class="input-shell @error('email') invalid @enderror"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM4 7l8 6 8-6"/></svg><input id="email" type="email" name="email" value="{{ old('email', auth()->user()->email) }}" required></div>@error('email')<span class="field-error">{{ $message }}</span>@enderror</div></div></div></section>
-    <section class="panel settings-card"><div class="panel-header"><div><h2>Change Password</h2><p>Leave these fields empty when you do not want to change your password.</p></div></div><div class="settings-fields"><div class="form-field"><label for="current_password">Current Password</label><div class="input-shell @error('current_password') invalid @enderror"><svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input id="current_password" type="password" name="current_password" autocomplete="current-password" placeholder="Required to set a new password"><button class="password-toggle" type="button" data-password-toggle="current_password" aria-label="Show password"><svg class="eye-open" viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="2.5"/></svg><svg class="eye-closed" viewBox="0 0 24 24"><path d="m3 3 18 18M10.7 6.2c.43-.13.86-.2 1.3-.2M6.6 6.6C3.6 8.3 2 12 2 12s3.5 6 10 6"/></svg></button></div>@error('current_password')<span class="field-error">{{ $message }}</span>@enderror</div><div class="auth-password-grid"><div class="form-field"><label for="password">New Password</label><div class="input-shell @error('password') invalid @enderror"><svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input id="password" type="password" name="password" autocomplete="new-password" placeholder="Minimum 8 characters"><button class="password-toggle" type="button" data-password-toggle="password" aria-label="Show password"><svg class="eye-open" viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="2.5"/></svg><svg class="eye-closed" viewBox="0 0 24 24"><path d="m3 3 18 18M10.7 6.2c.43-.13.86-.2 1.3-.2M6.6 6.6C3.6 8.3 2 12 2 12s3.5 6 10 6"/></svg></button></div></div><div class="form-field"><label for="password_confirmation">Confirm Password</label><div class="input-shell"><svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input id="password_confirmation" type="password" name="password_confirmation" autocomplete="new-password" placeholder="Repeat new password"><button class="password-toggle" type="button" data-password-toggle="password_confirmation" aria-label="Show password"><svg class="eye-open" viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="2.5"/></svg><svg class="eye-closed" viewBox="0 0 24 24"><path d="m3 3 18 18M10.7 6.2c.43-.13.86-.2 1.3-.2M6.6 6.6C3.6 8.3 2 12 2 12s3.5 6 10 6"/></svg></button></div></div></div>@error('password')<span class="field-error">{{ $message }}</span>@enderror</div></section></div>
-    <aside class="settings-aside"><section class="panel settings-note"><span class="metric-icon gold"><svg viewBox="0 0 24 24"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20ZM12 7v5M12 16h.01"/></svg></span><h3>Account security</h3><p>Use a unique password containing letters and numbers. Updating your password will not affect customer accounts.</p></section><button class="primary-button full-button" type="submit">Save Changes <svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg></button></aside>
-</form>
+    <section class="dashboard-intro">
+        <div><p class="overline">Konfigurasi</p><h1>Pengaturan</h1><p>Kelola profil, keamanan, dan metode pembayaran.</p></div>
+    </section>
+    <form class="settings-layout" method="POST" action="{{ route('admin.settings.update') }}">
+        @csrf @method('PATCH')
+        <div class="settings-main">
+            <section class="panel settings-card">
+                <div class="panel-header"><div><h2>Profil</h2><p>Informasi akun administrator.</p></div></div>
+                <div class="settings-fields"><div class="form-grid">
+                    <div class="form-field"><label>Nama</label><input class="input" name="name" value="{{ old('name', auth()->user()->name) }}" required></div>
+                    <div class="form-field"><label>Email</label><input class="input" name="email" type="email" value="{{ old('email', auth()->user()->email) }}" required></div>
+                </div></div>
+            </section>
+            <section class="panel settings-card">
+                <div class="panel-header"><div><h2>Metode Pembayaran</h2><p>Satu metode aktif untuk seluruh transaksi baru.</p></div></div>
+                <div class="settings-fields">
+                    <div class="payment-method-settings">
+                        <label class="payment-setting-option"><input type="radio" name="active_payment_method" value="manual_transfer" @checked(old('active_payment_method', $activePaymentMethod) === 'manual_transfer')><span><strong>Transfer Manual</strong><small>Pelanggan mengunggah bukti transfer untuk diperiksa admin.</small></span></label>
+                        <label class="payment-setting-option {{ $isMidtransReady ? '' : 'is-disabled' }}"><input type="radio" name="active_payment_method" value="midtrans" @checked(old('active_payment_method', $activePaymentMethod) === 'midtrans') @disabled(! $isMidtransReady)><span><strong>Midtrans</strong><small>{{ $isMidtransReady ? 'Pembayaran diproses otomatis melalui Midtrans.' : 'Server key dan client key Midtrans belum dikonfigurasi.' }}</small></span></label>
+                    </div>
+                    @error('active_payment_method')<small class="field-error">{{ $message }}</small>@enderror
+                    <div class="editor-note">Perubahan hanya berlaku untuk transaksi baru. Transaksi lama tetap memakai metode sebelumnya.</div>
+                    <div class="form-field"><label>Informasi rekening transfer manual</label><textarea class="input" name="manual_transfer" rows="5" placeholder="Contoh: BCA 1234567890 a.n. Nama Pemilik">{{ old('manual_transfer', $manualTransfer) }}</textarea><small>Wajib diisi saat Transfer Manual aktif.</small>@error('manual_transfer')<small class="field-error">{{ $message }}</small>@enderror</div>
+                </div>
+            </section>
+            <section class="panel settings-card">
+                <div class="panel-header"><div><h2>Ubah Kata Sandi</h2><p>Kosongkan bila tidak ingin mengganti kata sandi.</p></div></div>
+                <div class="settings-fields">
+                    <div class="form-field"><label>Kata sandi saat ini</label><input class="input" name="current_password" type="password"></div>
+                    <div class="form-grid"><div class="form-field"><label>Kata sandi baru</label><input class="input" name="password" type="password"></div><div class="form-field"><label>Konfirmasi kata sandi</label><input class="input" name="password_confirmation" type="password"></div></div>
+                </div>
+            </section>
+        </div>
+        <aside class="settings-aside"><button class="primary-button full-button" type="submit">Simpan Pengaturan</button></aside>
+    </form>
 @endsection

@@ -7,18 +7,23 @@ use App\Http\Controllers\Admin\InvitationController as AdminInvitationController
 use App\Http\Controllers\Admin\RsvpController as AdminRsvpController;
 use App\Http\Controllers\Admin\SettingController as AdminSettingController;
 use App\Http\Controllers\Admin\TemplateController as AdminTemplateController;
+use App\Http\Controllers\Admin\WeddingMusicController as AdminWeddingMusicController;
 use App\Http\Controllers\Admin\WishController as AdminWishController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\SessionController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\GuestController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\InvitationPreviewController;
 use App\Http\Controllers\InvitationPublicationController;
 use App\Http\Controllers\InvitationResponseController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PaymentWebhookController;
 use App\Http\Controllers\PublicInvitationController;
 use App\Http\Controllers\PublicRsvpController;
 use App\Http\Controllers\PublicWishController;
+use App\Http\Controllers\TemplateBrowserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomeController::class);
@@ -32,33 +37,44 @@ Route::middleware('guest')->group(function (): void {
 
 Route::middleware('auth')->group(function (): void {
     Route::post('/logout', [SessionController::class, 'destroy'])->name('logout');
-    Route::view('/approval-pending', 'auth.approval-pending')->name('approval.pending');
-});
-
-Route::middleware(['auth', 'customer.active'])->group(function (): void {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
+    Route::get('/templates', [TemplateBrowserController::class, 'index'])->name('templates.index');
+    Route::get('/templates/{template}', [TemplateBrowserController::class, 'show'])->name('templates.show');
+    Route::get('/checkout/{template}', [PaymentController::class, 'create'])->name('payments.create');
+    Route::resource('payments', PaymentController::class)->only(['index', 'store', 'show']);
+    Route::post('/payments/{payment}/proof', [PaymentController::class, 'uploadProof'])->name('payments.proof.store');
+    Route::get('/payments/{payment}/proof', [PaymentController::class, 'proof'])->name('payments.proof.show');
     Route::resource('invitations', InvitationController::class)->except(['index', 'show']);
     Route::get('/invitations/{invitation}/preview', InvitationPreviewController::class)->name('invitations.preview');
     Route::post('/invitations/{invitation}/publication', [InvitationPublicationController::class, 'store'])->name('invitations.publication.store');
     Route::delete('/invitations/{invitation}/publication', [InvitationPublicationController::class, 'destroy'])->name('invitations.publication.destroy');
     Route::get('/invitations/{invitation}/rsvps', [InvitationResponseController::class, 'rsvps'])->name('invitations.rsvps');
     Route::get('/invitations/{invitation}/wishes', [InvitationResponseController::class, 'wishes'])->name('invitations.wishes');
+    Route::get('/invitations/{invitation}/guests', [GuestController::class, 'index'])->name('invitations.guests.index');
+    Route::post('/invitations/{invitation}/guests', [GuestController::class, 'store'])->name('invitations.guests.store');
+    Route::put('/guests/{guest}', [GuestController::class, 'update'])->name('guests.update');
+    Route::delete('/guests/{guest}', [GuestController::class, 'destroy'])->name('guests.destroy');
 });
 
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function (): void {
     Route::get('/', AdminDashboardController::class)->name('dashboard');
     Route::get('/customers', [AdminCustomerController::class, 'index'])->name('customers.index');
-    Route::patch('/customers/{customer}', [AdminCustomerController::class, 'update'])->name('customers.update');
     Route::get('/invitations', AdminInvitationController::class)->name('invitations.index');
     Route::get('/templates', AdminTemplateController::class)->name('templates.index');
-    Route::get('/demos/{invitation}/edit', [AdminDemoInvitationController::class, 'edit'])->name('demos.edit');
-    Route::put('/demos/{invitation}', [AdminDemoInvitationController::class, 'update'])->name('demos.update');
+    Route::patch('/templates/{template}', [AdminTemplateController::class, 'update'])->name('templates.update');
+    Route::get('/demos/{demo}/edit', [AdminDemoInvitationController::class, 'edit'])->name('demos.edit');
+    Route::put('/demos/{demo}', [AdminDemoInvitationController::class, 'update'])->name('demos.update');
+    Route::resource('music', AdminWeddingMusicController::class)->except(['show', 'create', 'edit']);
     Route::get('/rsvps', AdminRsvpController::class)->name('rsvps.index');
     Route::get('/wishes', AdminWishController::class)->name('wishes.index');
+    Route::get('/guests', App\Http\Controllers\Admin\GuestController::class)->name('guests.index');
     Route::get('/settings', [AdminSettingController::class, 'edit'])->name('settings.edit');
     Route::patch('/settings', [AdminSettingController::class, 'update'])->name('settings.update');
+    Route::get('/payments', [App\Http\Controllers\Admin\PaymentController::class, 'index'])->name('payments.index');
+    Route::patch('/payments/{payment}', [App\Http\Controllers\Admin\PaymentController::class, 'update'])->name('payments.update');
 });
 
+Route::post('/payments/midtrans/webhook', PaymentWebhookController::class)->withoutMiddleware('web')->name('payments.midtrans.webhook');
 Route::post('/{invitation:slug}/rsvp', [PublicRsvpController::class, 'store'])->middleware('throttle:guest-interaction')->name('public.rsvp');
 Route::post('/{invitation:slug}/wishes', [PublicWishController::class, 'store'])->middleware('throttle:guest-interaction')->name('public.wishes');
 Route::get('/{slug}', PublicInvitationController::class)->name('public.invitation');

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -13,8 +14,11 @@ class DashboardController extends Controller
             ->with('template:id,name')
             ->withCount(['rsvps', 'wishes'])
             ->latest('id')
-            ->get();
+            ->paginate(10);
 
-        return view('dashboard.index', compact('invitations'));
+        $payments = $request->user()->payments()->with('template')->latest()->limit(10)->get();
+        $availablePayments = $request->user()->payments()->with('template')->where('status', Payment::STATUS_PAID)->whereNull('invitation_id')->get();
+
+        return view('dashboard.index', compact('invitations', 'payments', 'availablePayments'));
     }
 }

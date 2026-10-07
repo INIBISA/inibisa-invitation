@@ -2,27 +2,15 @@
 
 namespace Database\Seeders;
 
-use App\Models\Invitation;
 use App\Models\Template;
-use App\Models\User;
+use App\Models\TemplateDemo;
 use Illuminate\Database\Seeder;
 
 class DemoInvitationSeeder extends Seeder
 {
     public function run(): void
     {
-        $customer = User::query()->updateOrCreate(
-            ['email' => 'alexander@example.com'],
-            [
-                'name' => 'Alexander',
-                'password' => 'password',
-                'role' => User::ROLE_CUSTOMER,
-                'status' => User::STATUS_ACTIVE,
-            ],
-        );
-
         $this->seedDemo(
-            $customer,
             'eternal-ivory',
             'alexander-cyntia',
             'Alexander & Cyntia',
@@ -66,7 +54,6 @@ class DemoInvitationSeeder extends Seeder
         );
 
         $this->seedDemo(
-            $customer,
             'sweet-blossom',
             'dimas-ayu',
             'Dimas & Ayu',
@@ -115,7 +102,7 @@ class DemoInvitationSeeder extends Seeder
      * @param  array<int, array<string, mixed>>  $rsvps
      * @param  array<int, array<string, mixed>>  $wishes
      */
-    private function seedDemo(User $customer, string $templateKey, string $slug, string $title, array $data, array $rsvps, array $wishes): void
+    private function seedDemo(string $templateKey, string $slug, string $title, array $data, array $rsvps, array $wishes): void
     {
         $template = Template::query()->where('key', $templateKey)->firstOrFail();
 
@@ -128,35 +115,15 @@ class DemoInvitationSeeder extends Seeder
             'wishes' => true,
             'music' => true,
         ];
+        $data['wishes'] = $wishes;
 
-        $invitation = Invitation::query()->firstOrCreate(
-            ['slug' => $slug],
-            [
-                'user_id' => $customer->id,
-                'template_id' => $template->id,
-                'title' => $title,
-                'status' => Invitation::STATUS_PUBLISHED,
-                'published_at' => now(),
-                'data' => $data,
-            ],
+        $demo = TemplateDemo::query()->firstOrCreate(
+            ['template_id' => $template->id],
+            ['slug' => $slug, 'title' => $title, 'data' => $data],
         );
 
-        if (! $invitation->wasRecentlyCreated) {
-            return;
-        }
-
-        foreach ($rsvps as $rsvp) {
-            $invitation->rsvps()->firstOrCreate(
-                ['guest_name' => $rsvp['guest_name']],
-                ['attendance' => $rsvp['attendance'], 'guest_count' => $rsvp['guest_count']],
-            );
-        }
-
-        foreach ($wishes as $wish) {
-            $invitation->wishes()->firstOrCreate(
-                ['guest_name' => $wish['guest_name']],
-                ['message' => $wish['message']],
-            );
+        if (! array_key_exists('wishes', $demo->data)) {
+            $demo->update(['data' => [...$demo->data, 'wishes' => $wishes]]);
         }
     }
 }
