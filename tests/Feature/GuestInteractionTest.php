@@ -25,6 +25,41 @@ class GuestInteractionTest extends TestCase
         $this->assertDatabaseHas('rsvps', ['invitation_id' => $invitation->id, 'guest_name' => 'Muhammad Rizky', 'guest_count' => 2]);
     }
 
+    public function test_guest_submits_rsvp_as_json_without_redirect(): void
+    {
+        $invitation = Invitation::factory()->published()->create(['data' => $this->invitationData()]);
+
+        $this->postJson(route('public.rsvp', $invitation), [
+            'guest_name' => 'Muhammad Rizky',
+            'attendance' => 'attending',
+            'guest_count' => 2,
+        ])->assertOk()->assertJsonPath('message', 'Konfirmasi kehadiran Anda telah tersimpan.');
+
+        $this->assertDatabaseHas('rsvps', ['invitation_id' => $invitation->id, 'guest_name' => 'Muhammad Rizky']);
+    }
+
+    public function test_guest_submits_wish_as_json_and_receives_render_data(): void
+    {
+        $invitation = Invitation::factory()->published()->create(['data' => $this->invitationData()]);
+
+        $this->postJson(route('public.wishes', $invitation), [
+            'guest_name' => 'Siti',
+            'message' => 'Semoga bahagia selalu',
+        ])->assertOk()
+            ->assertJsonPath('message', 'Ucapan Anda telah dikirim.')
+            ->assertJsonPath('data.guest_name', 'Siti')
+            ->assertJsonPath('data.message', 'Semoga bahagia selalu');
+    }
+
+    public function test_ajax_wish_validation_returns_json_errors(): void
+    {
+        $invitation = Invitation::factory()->published()->create(['data' => $this->invitationData()]);
+
+        $this->postJson(route('public.wishes', $invitation), ['guest_name' => '', 'message' => ''])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['guest_name', 'message']);
+    }
+
     public function test_guest_wish_is_escaped_when_rendered(): void
     {
         $invitation = Invitation::factory()->published()->create(['data' => $this->invitationData()]);

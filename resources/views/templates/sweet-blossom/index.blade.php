@@ -41,6 +41,7 @@
         <script src="{{ asset('js/youtube-player.js') }}" defer></script>
     @endif
     <script src="{{ asset('js/templates/sweet-blossom.js') }}" defer></script>
+    <script src="{{ asset('js/invitation-forms.js') }}" defer></script>
 </head>
 
 <body>

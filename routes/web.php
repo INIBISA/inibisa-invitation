@@ -65,7 +65,10 @@ Route::middleware('auth')->group(function (): void {
     Route::get('/invitations/{invitation}/wishes', [InvitationResponseController::class, 'wishes'])->name('invitations.wishes');
     Route::get('/invitations/{invitation}/guests', [GuestController::class, 'index'])->name('invitations.guests.index');
     Route::post('/invitations/{invitation}/guests', [GuestController::class, 'store'])->name('invitations.guests.store');
+    Route::post('/invitations/{invitation}/guests/import', [GuestController::class, 'import'])->name('invitations.guests.import');
+    Route::get('/invitations/{invitation}/guests/template', [GuestController::class, 'template'])->name('invitations.guests.template');
     Route::put('/guests/{guest}', [GuestController::class, 'update'])->name('guests.update');
+    Route::patch('/guests/{guest}/delivery', [GuestController::class, 'delivery'])->name('guests.delivery');
     Route::delete('/guests/{guest}', [GuestController::class, 'destroy'])->name('guests.destroy');
 });
 

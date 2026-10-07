@@ -12,10 +12,15 @@ class Guest extends Model
     /** @use HasFactory<GuestFactory> */
     use HasFactory;
 
-    protected $fillable = ['invitation_id', 'name', 'whatsapp'];
+    protected $fillable = ['invitation_id', 'name', 'whatsapp', 'sent_at'];
 
     public function invitation(): BelongsTo
     {
         return $this->belongsTo(Invitation::class);
+    }
+
+    protected function casts(): array
+    {
+        return ['sent_at' => 'datetime'];
     }
 }

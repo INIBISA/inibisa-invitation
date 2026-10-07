@@ -17,13 +17,6 @@
         </div>
     </section>
 
-    <form class="invitation-editor-form" method="POST" action="{{ route('invitations.update', $invitation) }}"
-        enctype="multipart/form-data" data-invitation-form novalidate>
-        @csrf
-        @method('PUT')
-        @include('invitations._form')
-    </form>
-
     <section class="panel invitation-publication">
         <div>
             <p class="overline">Publikasi</p>
@@ -48,4 +41,11 @@
                     type="submit">Hapus Undangan</button></form>
         </div>
     </section>
+
+    <form class="invitation-editor-form" method="POST" action="{{ route('invitations.update', $invitation) }}"
+        enctype="multipart/form-data" data-invitation-form novalidate>
+        @csrf
+        @method('PUT')
+        @include('invitations._form')
+    </form>
 @endsection

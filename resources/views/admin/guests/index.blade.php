@@ -18,6 +18,7 @@
                         <th>No.</th>
                         <th>Tamu</th>
                         <th>WhatsApp</th>
+                        <th>Status Kirim</th>
                         <th>Undangan</th>
                         <th>Pelanggan</th>
                     </tr>
@@ -28,10 +29,11 @@
                             <td>{{ $guests->firstItem() + $loop->index }}</td>
                             <td>{{ $guest->name }}</td>
                             <td>{{ $guest->whatsapp }}</td>
+                            <td><span class="status-badge {{ $guest->sent_at ? 'published' : 'draft' }}"><i></i>{{ $guest->sent_at ? 'Terkirim' : 'Belum dikirim' }}</span></td>
                             <td>{{ $guest->invitation->title }}</td>
                             <td>{{ $guest->invitation->user->name }}</td>
                     </tr>@empty<tr>
-                            <td colspan="5">Belum ada tamu.</td>
+                            <td colspan="6">Belum ada tamu.</td>
                         </tr>
                     @endforelse
                 </tbody>

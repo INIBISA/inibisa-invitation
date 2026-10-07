@@ -301,6 +301,19 @@
             if (number.startsWith("0")) { number = "62" + number.slice(1); }
             var message = "Halo, berikut undangan personal untuk Anda: " + share.dataset.personalLink;
             window.open("https://wa.me/" + number + "?text=" + encodeURIComponent(message), "_blank", "noopener");
+            if (share.dataset.deliveryEndpoint) {
+                fetch(share.dataset.deliveryEndpoint, {
+                    method: "PATCH",
+                    headers: {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({ sent: true })
+                }).then(function (response) {
+                    if (response.ok) { window.location.reload(); }
+                });
+            }
         }
     });
     document.querySelectorAll("[data-video-dialog]").forEach(function (dialog) {
