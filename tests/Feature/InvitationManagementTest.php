@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Invitation;
+use App\Models\Payment;
 use App\Models\Template;
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
@@ -18,6 +19,7 @@ class InvitationManagementTest extends TestCase
     {
         $customer = User::factory()->active()->create();
         $template = Template::factory()->create();
+        Payment::factory()->for($customer)->for($template)->create(['status' => Payment::STATUS_PAID, 'invitation_id' => null]);
 
         $response = $this->actingAs($customer)->post(route('invitations.store'), $this->validPayload($template));
 
@@ -43,6 +45,7 @@ class InvitationManagementTest extends TestCase
     {
         $customer = User::factory()->active()->create();
         $template = Template::factory()->create();
+        Payment::factory()->for($customer)->for($template)->create(['status' => Payment::STATUS_PAID, 'invitation_id' => null]);
         $payload = $this->validPayload($template);
         $payload['slug'] = 'admin';
 
@@ -57,6 +60,7 @@ class InvitationManagementTest extends TestCase
         Storage::fake('public');
         $customer = User::factory()->active()->create();
         $template = Template::factory()->create();
+        Payment::factory()->for($customer)->for($template)->create(['status' => Payment::STATUS_PAID, 'invitation_id' => null]);
         $payload = $this->validPayload($template);
         $payload['cover'] = UploadedFile::fake()->image('cover.jpg', 900, 1200);
 
@@ -72,12 +76,20 @@ class InvitationManagementTest extends TestCase
     {
         $customer = User::factory()->active()->create();
         $invitation = Invitation::factory()->for($customer)->create();
+        Payment::factory()->for($customer)->for($invitation->template)->create(['status' => Payment::STATUS_PAID, 'invitation_id' => null]);
 
-        $this->actingAs($customer)->get(route('dashboard'))->assertOk()->assertSee('Create Invitation');
+        $this->actingAs($customer)->get(route('dashboard'))->assertOk()->assertSee('Undangan Anda');
         $this->actingAs($customer)->get(route('invitations.create'))->assertOk();
         $this->actingAs($customer)->get(route('invitations.edit', $invitation))->assertOk();
         $this->actingAs($customer)->get(route('invitations.rsvps', $invitation))->assertOk();
         $this->actingAs($customer)->get(route('invitations.wishes', $invitation))->assertOk();
+
+        $invitation->update(['data' => array_replace_recursive($invitation->data, [
+            'groom' => ['nickname' => 'Haikal', 'full_name' => 'Muhammad Haikal'],
+            'bride' => ['nickname' => 'Fitria', 'full_name' => 'Fitria Putri'],
+            'wedding_date' => '2026-09-20',
+            'events' => [['name' => 'Akad Nikah', 'date' => '2026-09-20', 'time' => '08:00', 'location' => 'Gedung Serbaguna', 'address' => 'Jl. Merdeka No. 1']],
+        ])]);
 
         $this->actingAs($customer)->post(route('invitations.publication.store', $invitation))->assertRedirect();
         $this->assertSame(Invitation::STATUS_PUBLISHED, $invitation->refresh()->status);

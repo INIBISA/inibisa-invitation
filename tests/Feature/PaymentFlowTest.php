@@ -18,14 +18,14 @@ class PaymentFlowTest extends TestCase
         $customer = User::factory()->active()->create();
         $template = Template::factory()->create();
 
-        $this->actingAs($customer)->get(route('invitations.create'))->assertOk()->assertDontSee('option value="'.$template->id.'"', false);
+        $this->actingAs($customer)->get(route('invitations.create'))->assertRedirect(route('templates.index'));
         $this->actingAs($customer)->post(route('invitations.store'), ['template_id' => $template->id])->assertForbidden();
     }
 
     public function test_admin_approves_manual_payment(): void
     {
         $admin = User::factory()->admin()->create();
-        $payment = Payment::factory()->create(['status' => Payment::STATUS_WAITING_APPROVAL]);
+        $payment = Payment::factory()->create(['status' => Payment::STATUS_WAITING_APPROVAL, 'proof_path' => 'payment-proofs/test.png']);
 
         $this->actingAs($admin)->patch(route('admin.payments.update', $payment), ['status' => Payment::STATUS_PAID])->assertRedirect();
         $this->assertSame(Payment::STATUS_PAID, $payment->refresh()->status);

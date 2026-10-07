@@ -15,7 +15,7 @@ class AuthenticationTest extends TestCase
         $this->get(route('login'))
             ->assertOk()
             ->assertSee('Welcome Back')
-            ->assertSee('Premium Templates')
+            ->assertSee('Templat Premium')
             ->assertSee('data-password-toggle', false);
 
         $this->get(route('register'))

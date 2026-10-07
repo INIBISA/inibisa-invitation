@@ -289,6 +289,8 @@ form.is-submitting button[type="submit"] { opacity: .65; pointer-events: none; }
 .quote-presets button { padding: 11px 12px; border: 1px solid var(--border); border-radius: 10px; color: var(--muted); background: #fcfbf8; font-size: .67rem; line-height: 1.45; text-align: left; cursor: pointer; transition: .18s; }
 .quote-presets button:hover, .quote-presets button.is-selected { border-color: var(--primary); color: var(--primary-dark); background: #fcf8f0; }
 .quote-presets [data-quote-custom] { color: var(--text); font-weight: 700; text-align: center; }
+@media(max-width: 860px) { .payment-method-settings { grid-template-columns: 1fr; } }
+@media(max-width: 640px) { .quote-presets { grid-template-columns: 1fr; } }
 .media-upload-grid .upload-zone { min-height: 150px; }
 .invitation-music-picker { margin-bottom: 16px; }
 .invitation-music-picker .music-choice-none { align-content: center; min-height: 82px; padding: 14px; }
