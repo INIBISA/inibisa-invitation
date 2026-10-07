@@ -7,7 +7,8 @@
     $media = $invitation->media->groupBy('collection');
     $coverMedia = $media->get('cover')?->first();
     $musicMedia = $media->get('music')?->first();
-    $musicVideoId = data_get($data, 'music.youtube_video_id');
+    $musicVideoId = data_get($data, 'music.youtube_video_id')
+        ?: ((!$musicMedia && data_get($settings, 'music', true)) ? config('music.default_youtube_video_id') : null);
     $canonical =
         $invitation instanceof \App\Models\TemplateDemo
             ? route('templates.show', $invitation->template)

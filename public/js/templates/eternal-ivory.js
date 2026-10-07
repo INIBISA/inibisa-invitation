@@ -46,23 +46,41 @@
     }
 
     function openInvitation() {
-        opening.classList.add("is-open");
-        html.classList.remove("invitation-locked");
-        body.classList.add("invitation-opened");
-        releasePetals();
-        document.dispatchEvent(new CustomEvent("invitation:opened"));
+        if (opening.classList.contains("is-open")) {
+            return;
+        }
 
-        if (audio) {
-            audio
-                .play()
-                .then(function () {
-                    musicButton.hidden = false;
-                    musicButton.setAttribute("aria-label", "Jeda musik");
-                })
-                .catch(function () {
-                    musicButton.hidden = false;
-                    musicButton.classList.add("paused");
-                });
+        var label = openButton.textContent;
+        openButton.disabled = true;
+        openButton.textContent = "Menyiapkan musik…";
+
+        function proceed() {
+            openButton.disabled = false;
+            openButton.textContent = label;
+            opening.classList.add("is-open");
+            html.classList.remove("invitation-locked");
+            body.classList.add("invitation-opened");
+            releasePetals();
+            document.dispatchEvent(new CustomEvent("invitation:opened"));
+
+            if (audio) {
+                audio
+                    .play()
+                    .then(function () {
+                        musicButton.hidden = false;
+                        musicButton.setAttribute("aria-label", "Jeda musik");
+                    })
+                    .catch(function () {
+                        musicButton.hidden = false;
+                        musicButton.classList.add("paused");
+                    });
+            }
+        }
+
+        if (window.WeddingMusic && typeof window.WeddingMusic.whenReady === "function") {
+            window.WeddingMusic.whenReady(3000).then(proceed, proceed);
+        } else {
+            proceed();
         }
     }
 

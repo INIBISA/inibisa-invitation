@@ -28,6 +28,41 @@ class PublicInvitationTest extends TestCase
             ->assertSee('Navigasi undangan');
     }
 
+    public function test_invitation_without_music_uses_default_song(): void
+    {
+        $invitation = Invitation::factory()->published()->create([
+            'slug' => 'tanpa-musik',
+            'data' => $this->invitationData(),
+        ]);
+
+        $this->get(route('public.invitation', $invitation->slug))
+            ->assertOk()
+            ->assertSee('data-youtube-music="'.config('music.default_youtube_video_id').'"', false);
+    }
+
+    public function test_invitation_with_chosen_music_keeps_it(): void
+    {
+        $data = $this->invitationData();
+        $data['music'] = ['youtube_url' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'youtube_video_id' => 'dQw4w9WgXcQ', 'title' => 'Pilihan Saya'];
+        $invitation = Invitation::factory()->published()->create(['slug' => 'dengan-musik', 'data' => $data]);
+
+        $this->get(route('public.invitation', $invitation->slug))
+            ->assertOk()
+            ->assertSee('data-youtube-music="dQw4w9WgXcQ"', false)
+            ->assertDontSee('data-youtube-music="'.config('music.default_youtube_video_id').'"', false);
+    }
+
+    public function test_disabled_music_section_has_no_player(): void
+    {
+        $data = $this->invitationData();
+        $data['settings']['music'] = false;
+        $invitation = Invitation::factory()->published()->create(['slug' => 'musik-mati', 'data' => $data]);
+
+        $this->get(route('public.invitation', $invitation->slug))
+            ->assertOk()
+            ->assertDontSee('data-youtube-music', false);
+    }
+
     public function test_draft_and_inactive_invitations_are_not_public(): void
     {
         $draft = Invitation::factory()->create(['slug' => 'draft-invitation']);
