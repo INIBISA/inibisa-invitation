@@ -10,45 +10,83 @@ class AuthenticationTest extends TestCase
 {
     use LazilyRefreshDatabase;
 
-    public function test_authentication_pages_render_premium_forms(): void
+    public function test_authentication_pages_render_indonesian_forms(): void
     {
         $this->get(route('login'))
             ->assertOk()
-            ->assertSee('Welcome Back')
+            ->assertSee('Selamat Datang Kembali')
             ->assertSee('Templat Premium')
             ->assertSee('data-password-toggle', false);
 
         $this->get(route('register'))
             ->assertOk()
-            ->assertSee('Create Account')
-            ->assertSee('Admin approval required');
+            ->assertSee('Buat Akun')
+            ->assertSee('Syarat dan Ketentuan')
+            ->assertSee('Kebijakan Privasi');
     }
 
-    public function test_registration_creates_pending_customer(): void
+    public function test_registration_creates_active_customer_with_terms_consent(): void
     {
         $response = $this->post('/register', [
             'name' => 'Customer Baru',
             'email' => 'customer@example.com',
             'password' => 'secret123',
             'password_confirmation' => 'secret123',
+            'terms' => '1',
         ]);
 
-        $response->assertRedirect(route('login'));
+        $response->assertRedirect(route('dashboard'));
+        $this->assertAuthenticated();
         $this->assertDatabaseHas('users', [
             'email' => 'customer@example.com',
             'role' => User::ROLE_CUSTOMER,
-            'status' => User::STATUS_PENDING,
+            'status' => User::STATUS_ACTIVE,
+            'terms_version' => config('legal.terms_version'),
         ]);
+        $this->assertNotNull(User::query()->where('email', 'customer@example.com')->firstOrFail()->terms_accepted_at);
     }
 
-    public function test_pending_customer_cannot_login(): void
+    public function test_registration_accepts_simple_six_character_password(): void
     {
-        User::factory()->create(['email' => 'pending@example.com']);
+        $response = $this->post('/register', [
+            'name' => 'Customer Mudah',
+            'email' => 'mudah@example.com',
+            'password' => 'abcdef',
+            'password_confirmation' => 'abcdef',
+            'terms' => '1',
+        ]);
 
-        $response = $this->post('/login', ['email' => 'pending@example.com', 'password' => 'password']);
+        $response->assertRedirect(route('dashboard'));
+        $this->assertDatabaseHas('users', ['email' => 'mudah@example.com']);
+    }
 
-        $response->assertSessionHasErrors('email');
+    public function test_registration_rejects_short_password_with_indonesian_message(): void
+    {
+        $response = $this->from(route('register'))->post('/register', [
+            'name' => 'Customer Baru',
+            'email' => 'pendek@example.com',
+            'password' => 'abc',
+            'password_confirmation' => 'abc',
+            'terms' => '1',
+        ]);
+
+        $response->assertSessionHasErrors('password');
         $this->assertGuest();
+        $this->assertStringContainsString('minimal 6 karakter', session('errors')->first('password'));
+    }
+
+    public function test_registration_requires_terms_acceptance(): void
+    {
+        $response = $this->from(route('register'))->post('/register', [
+            'name' => 'Customer Baru',
+            'email' => 'tanpa-setuju@example.com',
+            'password' => 'secret123',
+            'password_confirmation' => 'secret123',
+        ]);
+
+        $response->assertSessionHasErrors('terms');
+        $this->assertGuest();
+        $this->assertDatabaseMissing('users', ['email' => 'tanpa-setuju@example.com']);
     }
 
     public function test_active_customer_logs_in_to_dashboard_and_logs_out(): void

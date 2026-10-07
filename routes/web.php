@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\SettingController as AdminSettingController;
 use App\Http\Controllers\Admin\TemplateController as AdminTemplateController;
 use App\Http\Controllers\Admin\WeddingMusicController as AdminWeddingMusicController;
 use App\Http\Controllers\Admin\WishController as AdminWishController;
+use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\SessionController;
 use App\Http\Controllers\DashboardController;
@@ -33,6 +34,10 @@ Route::middleware('guest')->group(function (): void {
     Route::post('/register', [RegisterController::class, 'store'])->middleware('throttle:5,1');
     Route::get('/login', [SessionController::class, 'create'])->name('login');
     Route::post('/login', [SessionController::class, 'store'])->middleware('throttle:login');
+    Route::get('/auth/google', [GoogleAuthController::class, 'redirect'])->name('google.redirect');
+    Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('google.callback');
+    Route::get('/auth/google/confirm', [GoogleAuthController::class, 'confirm'])->name('google.confirm');
+    Route::post('/auth/google/confirm', [GoogleAuthController::class, 'storeConfirm'])->name('google.confirm.store');
 });
 
 Route::middleware('auth')->group(function (): void {
@@ -73,6 +78,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('/payments', [App\Http\Controllers\Admin\PaymentController::class, 'index'])->name('payments.index');
     Route::patch('/payments/{payment}', [App\Http\Controllers\Admin\PaymentController::class, 'update'])->name('payments.update');
 });
+
+Route::view('/syarat-ketentuan', 'legal.terms')->name('terms');
+Route::view('/kebijakan-privasi', 'legal.privacy')->name('privacy');
 
 Route::post('/payments/midtrans/webhook', PaymentWebhookController::class)->withoutMiddleware('web')->name('payments.midtrans.webhook');
 Route::post('/{invitation:slug}/rsvp', [PublicRsvpController::class, 'store'])->middleware('throttle:guest-interaction')->name('public.rsvp');

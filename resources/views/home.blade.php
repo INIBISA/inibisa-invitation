@@ -184,7 +184,8 @@
         </div>
     </div>
     <div class="landing-container footer-bottom">
-        <span>© {{ now()->year }} {{ config('app.name', 'Undangan Digital') }}. Crafted with care.</span>
+        <span>© {{ now()->year }} {{ config('app.name', 'Undangan Digital') }}.</span>
+        <span><a href="{{ route('terms') }}">Syarat dan Ketentuan</a> · <a href="{{ route('privacy') }}">Kebijakan Privasi</a></span>
     </div>
 </footer>
 </body>

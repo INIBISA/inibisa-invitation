@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'accepted' => ':attribute harus diterima.',
+    'accepted' => ':attribute harus disetujui.',
     'array' => ':attribute harus berupa daftar.',
     'boolean' => ':attribute harus bernilai benar atau salah.',
     'confirmed' => 'Konfirmasi :attribute tidak cocok.',
@@ -42,5 +42,8 @@ return [
         'password' => 'kata sandi',
         'payment_method' => 'metode pembayaran',
         'template_id' => 'templat',
+        'name' => 'nama',
+        'email' => 'email',
+        'terms' => 'persetujuan Syarat dan Ketentuan',
     ],
 ];

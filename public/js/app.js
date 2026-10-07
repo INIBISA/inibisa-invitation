@@ -107,6 +107,13 @@
             });
         }
 
+        var copyTextButton = event.target.closest("[data-copy-text]");
+        if (copyTextButton) {
+            copyText(copyTextButton.dataset.copyText).then(function () {
+                showToast(copyTextButton.dataset.copyMessage || "Berhasil disalin");
+            });
+        }
+
         if (event.target.closest("[data-auth-help]")) {
             showToast("Hubungi administrator untuk mengatur ulang kata sandi.");
         }

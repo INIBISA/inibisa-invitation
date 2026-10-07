@@ -46,6 +46,8 @@ class PaymentFlowTest extends TestCase
         $this->actingAs($customer)->get(route('payments.create', $template))
             ->assertOk()
             ->assertSee('Transfer Manual')
+            ->assertSee('Ringkasan Pesanan')
+            ->assertSee('Salin')
             ->assertDontSee('name="payment_method"', false);
     }
 
