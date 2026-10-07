@@ -108,6 +108,94 @@ class DemoInvitationSeeder extends Seeder
                 ['guest_name' => 'Nadia Putri', 'message' => 'Bahagia selalu, tidak sabar hadir di hari bahagianya!'],
             ],
         );
+
+        $this->seedDemo(
+            $customer,
+            'rustic-forest',
+            'raka-nadira',
+            'Raka & Nadira',
+            [
+                'groom' => [
+                    'nickname' => 'Raka',
+                    'full_name' => 'Raka Mahendra',
+                    'father' => 'Bapak Yusuf',
+                    'mother' => 'Ibu Lilis',
+                    'instagram' => '@raka',
+                ],
+                'bride' => [
+                    'nickname' => 'Nadira',
+                    'full_name' => 'Nadira Safira',
+                    'father' => 'Bapak Arman',
+                    'mother' => 'Ibu Maya',
+                    'instagram' => '@nadira',
+                ],
+                'wedding_date' => '2026-11-07',
+                'quote' => 'Di bawah rindang pepohonan, kami memilih tumbuh bersama.',
+                'events' => [
+                    ['name' => 'Akad Nikah', 'date' => '2026-11-07', 'time' => '09:00', 'location' => 'Forest Pavilion', 'address' => 'Jl. Pinus Raya No. 7, Bogor', 'maps_url' => 'https://maps.google.com'],
+                    ['name' => 'Resepsi', 'date' => '2026-11-07', 'time' => '13:00', 'location' => 'Forest Pavilion', 'address' => 'Jl. Pinus Raya No. 7, Bogor', 'maps_url' => 'https://maps.google.com'],
+                ],
+                'stories' => [
+                    ['title' => 'Satu Pendakian', 'date' => '2022-08-14', 'story' => 'Perjalanan kecil di alam membuka percakapan yang tidak pernah selesai.'],
+                    ['title' => 'Janji Sederhana', 'date' => '2026-02-22', 'story' => 'Kami memilih merayakan cinta dengan hangat dan dekat.'],
+                ],
+                'banks' => [
+                    ['bank_name' => 'Mandiri', 'account_number' => '1122334455', 'account_name' => 'Raka Mahendra'],
+                ],
+            ],
+            [
+                ['guest_name' => 'Fajar Nugroho', 'attendance' => 'attending', 'guest_count' => 2],
+                ['guest_name' => 'Mira Andini', 'attendance' => 'attending', 'guest_count' => 1],
+            ],
+            [
+                ['guest_name' => 'Fajar Nugroho', 'message' => 'Selamat Raka dan Nadira, semoga selalu hangat seperti hari bahagia ini.'],
+                ['guest_name' => 'Mira Andini', 'message' => 'Bahagia selalu dan lancar sampai acara.'],
+            ],
+        );
+
+        $this->seedDemo(
+            $customer,
+            'modern-minimalist',
+            'kevin-laras',
+            'Kevin & Laras',
+            [
+                'groom' => [
+                    'nickname' => 'Kevin',
+                    'full_name' => 'Kevin Wijaya',
+                    'father' => 'Bapak Daniel',
+                    'mother' => 'Ibu Maria',
+                    'instagram' => '@kevin',
+                ],
+                'bride' => [
+                    'nickname' => 'Laras',
+                    'full_name' => 'Laras Kirana',
+                    'father' => 'Bapak Surya',
+                    'mother' => 'Ibu Amalia',
+                    'instagram' => '@laras',
+                ],
+                'wedding_date' => '2026-12-12',
+                'quote' => 'Cinta yang sederhana, dijalani dengan penuh kesadaran.',
+                'events' => [
+                    ['name' => 'Pemberkatan', 'date' => '2026-12-12', 'time' => '10:00', 'location' => 'The White Studio', 'address' => 'Jl. Senja No. 12, Surabaya', 'maps_url' => 'https://maps.google.com'],
+                    ['name' => 'Dinner Reception', 'date' => '2026-12-12', 'time' => '18:30', 'location' => 'The White Studio', 'address' => 'Jl. Senja No. 12, Surabaya', 'maps_url' => 'https://maps.google.com'],
+                ],
+                'stories' => [
+                    ['title' => 'Awal Cerita', 'date' => '2023-01-09', 'story' => 'Kami bertemu di ruang yang sederhana, lalu saling menemukan ritme.'],
+                    ['title' => 'Menuju Rumah', 'date' => '2026-04-04', 'story' => 'Satu keputusan tenang untuk berjalan lebih jauh bersama.'],
+                ],
+                'banks' => [
+                    ['bank_name' => 'BNI', 'account_number' => '5566778899', 'account_name' => 'Kevin Wijaya'],
+                ],
+            ],
+            [
+                ['guest_name' => 'Rani Putri', 'attendance' => 'attending', 'guest_count' => 1],
+                ['guest_name' => 'Dewa Pramana', 'attendance' => 'attending', 'guest_count' => 2],
+            ],
+            [
+                ['guest_name' => 'Rani Putri', 'message' => 'Selamat Kevin dan Laras, acaranya pasti indah dan hangat.'],
+                ['guest_name' => 'Dewa Pramana', 'message' => 'Semoga menjadi keluarga yang tenang dan saling menguatkan.'],
+            ],
+        );
     }
 
     /**

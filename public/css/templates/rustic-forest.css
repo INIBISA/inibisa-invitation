@@ -1,0 +1,72 @@
+@import url("eternal-ivory.css");
+
+:root {
+    --ivory: #efe7d8;
+    --paper: #fffaf0;
+    --charcoal: #2f2a21;
+    --gold: #9d7b45;
+    --line: #d0b991;
+    --muted: #786b58;
+    --serif: Georgia, "Times New Roman", serif;
+}
+
+html,
+body {
+    background: #d5c4a9;
+}
+
+.invitation-wrapper {
+    background: var(--ivory);
+}
+
+.opening {
+    background: #2f2a21;
+}
+
+.opening-shade {
+    background: linear-gradient(180deg, rgba(32, 27, 20, .28), rgba(32, 27, 20, .82));
+}
+
+.hero {
+    background:
+        radial-gradient(circle at 50% 30%, rgba(255, 250, 240, .95), rgba(239, 231, 216, .74) 58%),
+        linear-gradient(180deg, #f8f0df, #e7dac2);
+}
+
+.quote {
+    background: radial-gradient(circle at 50% 50%, #554730, #2c261d 72%);
+}
+
+.couple,
+.events,
+.gallery,
+.wishes {
+    background: var(--paper);
+}
+
+.story,
+.gift {
+    background: #e6d8be;
+}
+
+.date-panel,
+.closing,
+.response {
+    background: var(--ivory);
+}
+
+.portrait,
+.hero-photo {
+    border-color: #8d6d3a;
+    box-shadow: 0 18px 35px rgba(60, 45, 28, .18);
+}
+
+.bank-card,
+.music-toggle {
+    background: #2f2a21;
+}
+
+.bottom-navigation {
+    border-color: rgba(157, 123, 69, .42);
+    background: rgba(255, 250, 240, .94);
+}

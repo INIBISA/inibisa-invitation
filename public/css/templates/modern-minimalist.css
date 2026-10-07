@@ -1,0 +1,101 @@
+@import url("eternal-ivory.css");
+
+:root {
+    --ivory: #f7f5f1;
+    --paper: #ffffff;
+    --charcoal: #1f2326;
+    --gold: #4f6f78;
+    --line: #d8ddde;
+    --muted: #697174;
+    --serif: Georgia, "Times New Roman", serif;
+}
+
+html,
+body {
+    background: #e3e4e1;
+}
+
+.invitation-wrapper {
+    background: var(--ivory);
+}
+
+.opening {
+    background: #f7f5f1;
+    color: var(--charcoal);
+}
+
+.opening-shade {
+    background: linear-gradient(180deg, rgba(247, 245, 241, .08), rgba(247, 245, 241, .78));
+}
+
+.opening-frame {
+    border-color: rgba(31, 35, 38, .18);
+}
+
+.opening h1,
+.hero h2,
+.section-head h2,
+.closing h2 {
+    letter-spacing: -.06em;
+}
+
+.hero {
+    background: linear-gradient(180deg, #ffffff, #f0eee9);
+}
+
+.hero-photo,
+.portrait {
+    border-color: #cdd4d5;
+    border-radius: 10px;
+    box-shadow: none;
+}
+
+.portrait img {
+    border-radius: 6px;
+}
+
+.hero-wreath,
+.floral-corner,
+.section-sprig,
+.quote-floral,
+.event-accent,
+.response-floral,
+.closing-bouquet {
+    opacity: .16;
+    filter: grayscale(1);
+}
+
+.quote {
+    color: #f7f5f1;
+    background: #202326;
+}
+
+.story,
+.gift,
+.date-panel,
+.response,
+.closing {
+    background: #f1efea;
+}
+
+.couple,
+.events,
+.gallery,
+.wishes {
+    background: #ffffff;
+}
+
+.bank-card {
+    border-color: #d8ddde;
+    background: #202326;
+}
+
+.bottom-navigation {
+    border-color: rgba(79, 111, 120, .24);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, .96);
+}
+
+.music-toggle {
+    background: #202326;
+}

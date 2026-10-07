@@ -28,5 +28,25 @@ class TemplateSeeder extends Seeder
                 'is_active' => true,
             ],
         );
+
+        Template::query()->updateOrCreate(
+            ['key' => 'rustic-forest'],
+            [
+                'name' => 'Rustic Forest',
+                'view_path' => 'templates.rustic-forest.index',
+                'thumbnail' => 'images/templates/rustic-forest/thumbnail.svg',
+                'is_active' => true,
+            ],
+        );
+
+        Template::query()->updateOrCreate(
+            ['key' => 'modern-minimalist'],
+            [
+                'name' => 'Modern Minimalist',
+                'view_path' => 'templates.modern-minimalist.index',
+                'thumbnail' => 'images/templates/modern-minimalist/thumbnail.svg',
+                'is_active' => true,
+            ],
+        );
     }
 }

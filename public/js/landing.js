@@ -100,6 +100,65 @@
         });
     }
 
+    var themeModal = document.querySelector("[data-theme-modal]");
+    var themeModalTitle = document.querySelector("[data-theme-modal-title]");
+    var themeModalImage = document.querySelector("[data-theme-modal-image]");
+    var lastThemeTrigger = null;
+
+    function openDemoModal(title, imageUrl) {
+        if (!themeModal || !themeModalTitle || !themeModalImage) {
+            return;
+        }
+
+        themeModalTitle.textContent = title;
+        themeModalImage.src = imageUrl;
+        themeModalImage.alt = title + " preview";
+        themeModal.removeAttribute("hidden");
+        document.documentElement.style.overflow = "hidden";
+
+        var closeButton = themeModal.querySelector("[data-theme-modal-close]");
+        if (closeButton) {
+            closeButton.focus();
+        }
+    }
+
+    function closeDemoModal() {
+        if (!themeModal || themeModal.hasAttribute("hidden")) {
+            return;
+        }
+
+        themeModal.setAttribute("hidden", "");
+        document.documentElement.style.removeProperty("overflow");
+
+        if (themeModalImage) {
+            themeModalImage.removeAttribute("src");
+            themeModalImage.removeAttribute("alt");
+        }
+
+        if (lastThemeTrigger) {
+            lastThemeTrigger.focus();
+        }
+    }
+
+    window.openDemoModal = openDemoModal;
+
+    document.querySelectorAll("[data-demo-title][data-demo-image]").forEach(function (button) {
+        button.addEventListener("click", function () {
+            lastThemeTrigger = button;
+            openDemoModal(button.dataset.demoTitle, button.dataset.demoImage);
+        });
+    });
+
+    document.querySelectorAll("[data-theme-modal-close]").forEach(function (closeTarget) {
+        closeTarget.addEventListener("click", closeDemoModal);
+    });
+
+    document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+            closeDemoModal();
+        }
+    });
+
     if (!prefersReducedMotion) {
         var parallaxItems = document.querySelectorAll("[data-parallax]");
         var ticking = false;
