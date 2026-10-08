@@ -69,7 +69,7 @@
         </form>
     </section>
 
-    <script type="application/json" data-whatsapp-message-template>{{ Illuminate\Support\Js::encode($whatsAppMessageTemplate) }}</script>
+    <script type="application/json" data-whatsapp-message-template>{!! Illuminate\Support\Js::encode($whatsAppMessageTemplate) !!}</script>
 
     <section class="panel guest-list-panel">
         <div class="panel-header"><div><p class="overline">Penerima</p><h2>Daftar Tamu</h2><p>Gunakan pencarian dan penyaring untuk mengelola tamu.</p></div></div>

@@ -138,6 +138,8 @@ class DemoInvitationSeeder extends Seeder
                 ['guest_name' => 'Sekar Ayuningtyas', 'message' => 'Selamat Aruna dan Bima, bahagia hingga selamanya!'],
             ],
         );
+
+        $this->call(VoxelVoyageDemoSeeder::class);
     }
 
     /**

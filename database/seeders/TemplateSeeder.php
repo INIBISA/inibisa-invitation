@@ -68,5 +68,7 @@ class TemplateSeeder extends Seeder
                 'is_active' => true,
             ],
         );
+
+        $this->call(VoxelVoyageTemplateSeeder::class);
     }
 }

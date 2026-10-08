@@ -190,7 +190,7 @@
                         <p>{{ $descriptions[$template->key] ?? 'Desain premium yang siap pakai untuk hari bahagiamu.' }}</p>
                         <div class="template-card-actions">
                             @if($demo)
-                            <a class="secondary-button" href="{{ route('public.invitation', $demo->slug) }}" target="_blank" rel="noopener">Lihat Demo</a>
+                            <a class="secondary-button" href="{{ route('templates.show', $template) }}" target="_blank" rel="noopener">Lihat Demo</a>
                             @endif
                             <a class="landing-cta" href="{{ route('register') }}">Buat Undangan</a>
                         </div>

@@ -2,36 +2,54 @@
     "use strict";
 
     var body = document.body;
+    var dashboardShell = document.querySelector(".dashboard-shell");
     var sidebar = document.querySelector("[data-sidebar]");
     var sidebarOverlay = document.querySelector("[data-sidebar-overlay]");
     var sidebarTrigger = document.querySelector("[data-sidebar-open]");
+    var sidebarClose = document.querySelector("[data-sidebar-close]");
+    var desktopSidebar = window.matchMedia("(min-width: 861px)");
     var profileTrigger = document.querySelector("[data-profile-trigger]");
     var profileDropdown = document.querySelector("[data-profile-dropdown]");
 
-    function openSidebar() {
-        if (!sidebar) {
+    function setSidebarOpen(isOpen) {
+        if (!sidebar || !sidebarTrigger) {
             return;
         }
-        sidebar.classList.add("open");
-        sidebarOverlay.classList.add("open");
-        sidebarTrigger.setAttribute("aria-expanded", "true");
-        body.classList.add("sidebar-open");
+
+        if (desktopSidebar.matches) {
+            dashboardShell.classList.toggle("sidebar-collapsed", !isOpen);
+            sidebar.classList.remove("open");
+            sidebarOverlay.classList.remove("open");
+            body.classList.remove("sidebar-open");
+        } else {
+            dashboardShell.classList.remove("sidebar-collapsed");
+            sidebar.classList.toggle("open", isOpen);
+            sidebarOverlay.classList.toggle("open", isOpen);
+            body.classList.toggle("sidebar-open", isOpen);
+        }
+
+        sidebar.inert = !isOpen;
+        sidebarTrigger.setAttribute("aria-expanded", String(isOpen));
+        sidebarTrigger.setAttribute("aria-label", isOpen ? "Tutup menu" : "Buka menu");
     }
 
     function closeSidebar() {
-        if (!sidebar) {
-            return;
-        }
-        sidebar.classList.remove("open");
-        sidebarOverlay.classList.remove("open");
-        sidebarTrigger.setAttribute("aria-expanded", "false");
-        body.classList.remove("sidebar-open");
+        setSidebarOpen(false);
     }
 
     if (sidebarTrigger) {
-        sidebarTrigger.addEventListener("click", openSidebar);
+        setSidebarOpen(desktopSidebar.matches);
+        sidebarTrigger.addEventListener("click", function () {
+            var isOpen = desktopSidebar.matches
+                ? !dashboardShell.classList.contains("sidebar-collapsed")
+                : sidebar.classList.contains("open");
+            setSidebarOpen(!isOpen);
+        });
         sidebarOverlay.addEventListener("click", closeSidebar);
-        document.querySelector("[data-sidebar-close]").addEventListener("click", closeSidebar);
+        sidebarClose.addEventListener("click", closeSidebar);
+        desktopSidebar.addEventListener("change", function () {
+            setSidebarOpen(desktopSidebar.matches);
+        });
     }
 
     if (profileTrigger) {
@@ -205,7 +223,9 @@
             search.focus();
         }
         if (event.key === "Escape") {
-            closeSidebar();
+            if (!desktopSidebar.matches) {
+                closeSidebar();
+            }
             if (profileDropdown) {
                 profileDropdown.classList.remove("open");
                 profileTrigger.setAttribute("aria-expanded", "false");
