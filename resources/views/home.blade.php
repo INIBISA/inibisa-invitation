@@ -5,15 +5,16 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>{{ config('app.name', 'Undangan Digital') }} — Undangan Pernikahan Digital yang Elegan</title>
     <meta name="description" content="Buat undangan pernikahan digital yang elegan, bagikan dengan satu tautan, dan kelola RSVP serta ucapan tamu dalam satu dashboard.">
+    <link rel="icon" type="image/webp" href="{{ asset('favicon.webp') }}">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/landing.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/landing.css') }}?v={{ filemtime(public_path('css/landing.css')) }}">
     <script src="{{ asset('js/landing.js') }}" defer></script>
 </head>
 <body class="landing-body">
 <header class="landing-header" data-landing-header>
     <div class="landing-container header-inner">
         <a class="landing-brand" href="/" aria-label="{{ config('app.name', 'Undangan Digital') }}">
-            <span class="brand-mark"><span>U</span></span>
+            <img class="brand-icon" src="{{ asset('logo.webp') }}" alt="" width="42" height="42">
             <span><strong>Undangan</strong><small>Digital Studio</small></span>
         </a>
         <nav class="landing-nav" aria-label="Navigasi utama">
@@ -164,9 +165,8 @@
 <footer class="landing-footer">
     <div class="landing-container footer-grid">
         <div>
-            <a class="landing-brand" href="/">
-                <span class="brand-mark light"><span>U</span></span>
-                <span><strong>Undangan</strong><small>Digital Studio</small></span>
+            <a class="landing-brand" href="/" aria-label="Undangan Digital Studio">
+                <img class="brand-wordmark" src="{{ asset('logotext.webp') }}" alt="" width="230" height="102" loading="lazy">
             </a>
             <p>Undangan pernikahan digital yang premium dan mudah dikelola.</p>
         </div>

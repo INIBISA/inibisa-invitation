@@ -28,6 +28,19 @@
     text-decoration: none;
     color: inherit;
 }
+.landing-brand .brand-icon {
+    display: block;
+    width: 42px;
+    height: 42px;
+    flex: none;
+    object-fit: contain;
+}
+.landing-brand .brand-wordmark {
+    display: block;
+    width: 230px;
+    max-width: 100%;
+    height: auto;
+}
 .landing-brand > span:last-child {
     display: grid;
     line-height: 1.1;

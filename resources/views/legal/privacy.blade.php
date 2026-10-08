@@ -5,14 +5,15 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Kebijakan Privasi · {{ config('app.name', 'Undangan Digital') }}</title>
     <meta name="description" content="Kebijakan Privasi layanan {{ config('legal.operator', 'Undangan Digital') }}.">
+    <link rel="icon" type="image/webp" href="{{ asset('favicon.webp') }}">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/landing.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/landing.css') }}?v={{ filemtime(public_path('css/landing.css')) }}">
 </head>
 <body class="landing-body">
 <header class="landing-header">
     <div class="landing-container header-inner">
         <a class="landing-brand" href="/" aria-label="{{ config('app.name', 'Undangan Digital') }}">
-            <span class="brand-mark"><span>U</span></span>
+            <img class="brand-icon" src="{{ asset('logo.webp') }}" alt="" width="42" height="42">
             <span><strong>Undangan</strong><small>Digital Studio</small></span>
         </a>
         <div class="landing-actions">

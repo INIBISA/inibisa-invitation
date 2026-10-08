@@ -24,6 +24,7 @@
     <meta name="description"
         content="Undangan pernikahan {{ data_get($groom, 'nickname') }} dan {{ data_get($bride, 'nickname') }} pada {{ $weddingDate->translatedFormat('d F Y') }}.">
     <meta name="theme-color" content="#F8F4ED">
+    <link rel="icon" type="image/webp" href="{{ asset('favicon.webp') }}">
     <link rel="canonical" href="{{ $canonical }}">
     <meta property="og:type" content="website">
     <meta property="og:title"

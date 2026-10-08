@@ -1,4 +1,6 @@
 :root { --sidebar: 238px; --focus: 0 0 0 3px rgba(184,150,91,.24); }
+.brand-icon { display: block; width: 42px; height: 42px; flex: none; object-fit: contain; }
+.brand-wordmark { display: block; width: 260px; max-width: 100%; height: auto; }
 .dashboard-body { background: #f7f5f1; }
 .dashboard-header { height: 72px; background: rgba(247,245,241,.94); }
 .header-title { display: grid; line-height: 1.2; }

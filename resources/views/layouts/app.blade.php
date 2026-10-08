@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', config('app.name')) · {{ config('app.name') }}</title>
+    <link rel="icon" type="image/webp" href="{{ asset('favicon.webp') }}">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <link rel="stylesheet" href="{{ asset('css/app-interactions.css') }}">
     <link rel="stylesheet" href="{{ asset('css/app-polish.css') }}?v={{ filemtime(public_path('css/app-polish.css')) }}">
@@ -88,8 +89,8 @@
         <div class="sidebar-overlay" data-sidebar-overlay></div>
         <aside class="sidebar" data-sidebar id="app-sidebar">
             <div class="sidebar-brand">
-                <a href="{{ $isAdmin ? route('admin.dashboard') : route('dashboard') }}"><span
-                        class="brand-mark">U</span><span><strong>Undangan</strong><small>Digital
+                <a href="{{ $isAdmin ? route('admin.dashboard') : route('dashboard') }}"><img
+                        class="brand-icon" src="{{ asset('logo.webp') }}" alt="" width="42" height="42"><span><strong>Undangan</strong><small>Digital
                             Studio</small></span></a>
                 <button class="icon-button sidebar-close" type="button" data-sidebar-close
                     aria-label="Tutup menu">×</button>
