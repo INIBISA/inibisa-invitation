@@ -21,17 +21,21 @@ class TemplateSeeder extends Seeder
             ],
         );
 
-        Template::query()->firstOrCreate(
+        $sweetBlossom = Template::query()->firstOrCreate(
             ['key' => 'sweet-blossom'],
             [
                 'name' => 'Sweet Blossom',
                 'view_path' => 'templates.sweet-blossom.index',
-                'thumbnail' => 'images/templates/sweet-blossom/floral-banner.webp',
+                'thumbnail' => 'images/templates/sweet-blossom/thumbnail.webp',
                 'price' => 150000,
                 'category' => 'Floral',
                 'is_active' => true,
             ],
         );
+
+        if ($sweetBlossom->thumbnail === 'images/templates/sweet-blossom/floral-banner.webp') {
+            $sweetBlossom->update(['thumbnail' => 'images/templates/sweet-blossom/thumbnail.webp']);
+        }
 
         Template::query()->firstOrCreate(
             ['key' => 'midnight-nusantara'],

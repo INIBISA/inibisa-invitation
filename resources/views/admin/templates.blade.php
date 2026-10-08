@@ -37,7 +37,7 @@
                                     value="{{ $template->category }}" required></div>
                             <div class="field"><label>Harga (Rp)</label><input class="input" type="number" min="1000"
                                     name="price" value="{{ $template->price }}" required></div>
-                            <div class="field"><label for="thumbnail-{{ $template->id }}">Thumbnail Paket</label><input class="input" id="thumbnail-{{ $template->id }}" type="file" name="thumbnail" accept="image/jpeg,image/png,image/webp" data-max-mb="5"><small>JPG, PNG, atau WebP. Maksimal 5 MB. Rasio disarankan 16:10.</small></div><label
+                            <div class="field"><label for="thumbnail-{{ $template->id }}">Thumbnail Paket</label><input class="input" id="thumbnail-{{ $template->id }}" type="file" name="thumbnail" accept="image/jpeg,image/png,image/webp" data-max-mb="5"><small>JPG, PNG, atau WebP. Maksimal 5 MB. Rasio 4:3 disarankan agar sama dengan thumbnail lainnya.</small></div><label
                                 class="check"><input type="checkbox" name="is_active" value="1"
                                     @checked($template->is_active)> Aktif</label><button class="button gold small"
                                 type="submit">Simpan</button>

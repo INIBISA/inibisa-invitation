@@ -51,9 +51,9 @@ form.is-submitting button[type="submit"] { opacity: .65; pointer-events: none; }
 .status-badge.expired, .badge.expired, .status-badge.cancelled, .badge.cancelled { color: #77746f; background: #eeece8; }
 .template-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(275px,1fr)); gap: 19px; }
 .template-card { overflow: hidden; border: 1px solid var(--border); border-radius: 16px; background: #fff; box-shadow: var(--shadow); }
-.template-card-image { position: relative; aspect-ratio: 16 / 10; overflow: hidden; background: #ede7dd; }
-.template-card-image img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .3s; }
-.template-card:hover .template-card-image img { transform: scale(1.025); }
+.template-card-image { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: #ede7dd; }
+.template-card-image img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.template-card:hover .template-card-image img { transform: none; }
 .template-category { position: absolute; left: 13px; bottom: 13px; padding: 5px 9px; border-radius: 7px; color: #604725; background: rgba(255,255,255,.92); font-size: .68rem; font-weight: 750; }
 .template-card-body { padding: 20px; display: grid; gap: 11px; }
 .template-card-body h2 { margin: 0; font: 1.45rem var(--serif); }
@@ -86,7 +86,7 @@ form.is-submitting button[type="submit"] { opacity: .65; pointer-events: none; }
 .checkout-method-summary strong { font-size: .78rem; }
 .checkout-method-summary p { margin: 0; color: var(--muted); font-size: .7rem; }
 .checkout-summary { padding: 16px; }
-.checkout-summary img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 10px; }
+.checkout-summary img { width: 100%; aspect-ratio: 4 / 3; object-fit: contain; border-radius: 10px; background: var(--bg); }
 .checkout-summary h2 { margin: 12px 0 15px; font: 1.35rem var(--serif); }
 .checkout-summary > div { display: flex; justify-content: space-between; padding-top: 12px; border-top: 1px solid var(--border); font-size: .78rem; }
 .checkout-summary strong { color: var(--primary-dark); }
@@ -113,7 +113,7 @@ form.is-submitting button[type="submit"] { opacity: .65; pointer-events: none; }
 .proof-current img { width: 100%; max-height: 240px; object-fit: contain; border: 1px solid var(--border); border-radius: 10px; background: #faf9f6; transition: border-color .2s; }
 .proof-current:hover img { border-color: var(--primary); }
 .payment-summary { padding: 16px; }
-.payment-summary > img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 10px; background: var(--bg); }
+.payment-summary > img { width: 100%; aspect-ratio: 4 / 3; object-fit: contain; border-radius: 10px; background: var(--bg); }
 .payment-summary-title { padding: 14px 2px; }
 .payment-summary-title span { color: var(--muted); font-size: .65rem; text-transform: uppercase; letter-spacing: .1em; }
 .payment-summary-title h2 { margin: 3px 0 0; font: 1.35rem var(--serif); }

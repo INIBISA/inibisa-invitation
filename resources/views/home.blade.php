@@ -116,7 +116,7 @@
                 @foreach($templates as $template)
                 @php($demo = ($demos ?? collect())->get($template->id))
                 <article class="template-card" data-reveal>
-                    <img src="{{ asset($template->thumbnail) }}" alt="Preview template {{ $template->name }}" width="640" height="480" loading="lazy" decoding="async">
+                    <img src="{{ asset($template->thumbnail) }}" alt="Preview template {{ $template->name }}" loading="lazy" decoding="async">
                     <div class="template-card-body">
                         <h3>{{ $template->name }}</h3>
                         <p>{{ $descriptions[$template->key] ?? 'Desain premium yang siap pakai untuk hari bahagiamu.' }}</p>
