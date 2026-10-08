@@ -9,6 +9,7 @@ use App\Http\Requests\UpdateGuestRequest;
 use App\Imports\GuestsImport;
 use App\Models\Guest;
 use App\Models\Invitation;
+use App\Support\WhatsAppInvitationMessage;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -33,8 +34,9 @@ class GuestController extends Controller
             ->when($request->query('delivery') === 'sent', fn ($query) => $query->whereNotNull('sent_at'))
             ->when($request->query('delivery') === 'unsent', fn ($query) => $query->whereNull('sent_at'))
             ->orderBy('name')->paginate(30)->withQueryString();
+        $whatsAppMessageTemplate = $request->user()->whatsapp_message_template ?: WhatsAppInvitationMessage::defaultTemplate();
 
-        return view('guests.index', compact('invitation', 'guests', 'guestStats'));
+        return view('guests.index', compact('invitation', 'guests', 'guestStats', 'whatsAppMessageTemplate'));
     }
 
     public function store(StoreGuestRequest $request, Invitation $invitation): RedirectResponse

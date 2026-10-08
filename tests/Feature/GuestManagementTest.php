@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Guest;
 use App\Models\Invitation;
 use App\Models\User;
+use App\Support\WhatsAppInvitationMessage;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Maatwebsite\Excel\Facades\Excel;
@@ -74,5 +75,71 @@ class GuestManagementTest extends TestCase
         $this->actingAs($customer)->get(route('invitations.guests.template', $invitation))->assertOk();
 
         Excel::assertDownloaded('template-tamu.xlsx');
+    }
+
+    public function test_guest_page_uses_default_whatsapp_message_template(): void
+    {
+        $customer = User::factory()->active()->create(['whatsapp_message_template' => null]);
+        $invitation = Invitation::factory()->for($customer)->create();
+
+        $this->actingAs($customer)->get(route('invitations.guests.index', $invitation))
+            ->assertOk()
+            ->assertSee('Template Pesan WhatsApp')
+            ->assertSee('{nama_tamu}')
+            ->assertSee(WhatsAppInvitationMessage::defaultTemplate());
+    }
+
+    public function test_customer_saves_one_whatsapp_template_for_all_invitations_and_can_reset_it(): void
+    {
+        $customer = User::factory()->active()->create();
+        $firstInvitation = Invitation::factory()->for($customer)->create();
+        $secondInvitation = Invitation::factory()->for($customer)->create();
+        $template = "Halo *{nama_tamu}*\nUndangan {nama_mempelai}: {tautan_undangan}";
+
+        $this->actingAs($customer)->patch(route('customer.whatsapp-message.update'), ['message_template' => $template])
+            ->assertRedirect()
+            ->assertSessionHas('success');
+        $this->assertSame($template, $customer->refresh()->whatsapp_message_template);
+
+        $this->actingAs($customer)->get(route('invitations.guests.index', $firstInvitation))->assertSee($template);
+        $this->actingAs($customer)->get(route('invitations.guests.index', $secondInvitation))->assertSee($template);
+
+        $this->actingAs($customer)->delete(route('customer.whatsapp-message.destroy'))->assertRedirect();
+        $this->assertNull($customer->refresh()->whatsapp_message_template);
+    }
+
+    public function test_whatsapp_template_rejects_unknown_placeholder_and_is_isolated_per_customer(): void
+    {
+        $firstCustomer = User::factory()->active()->create();
+        $secondCustomer = User::factory()->active()->create(['whatsapp_message_template' => 'Pesan customer kedua']);
+
+        $this->actingAs($firstCustomer)->patch(route('customer.whatsapp-message.update'), [
+            'message_template' => 'Halo {nama_tamu}, lokasi {lokasi_rahasia}',
+        ])->assertSessionHasErrors('message_template');
+
+        $this->assertNull($firstCustomer->refresh()->whatsapp_message_template);
+        $this->assertSame('Pesan customer kedua', $secondCustomer->refresh()->whatsapp_message_template);
+    }
+
+    public function test_admin_cannot_change_customer_whatsapp_template(): void
+    {
+        $admin = User::factory()->admin()->create();
+
+        $this->actingAs($admin)->patch(route('customer.whatsapp-message.update'), [
+            'message_template' => 'Pesan admin',
+        ])->assertForbidden();
+    }
+
+    public function test_whatsapp_template_is_safely_encoded_in_page_json(): void
+    {
+        $customer = User::factory()->active()->create([
+            'whatsapp_message_template' => '</script><script>alert(1)</script> {nama_tamu}',
+        ]);
+        $invitation = Invitation::factory()->for($customer)->create();
+
+        $this->actingAs($customer)->get(route('invitations.guests.index', $invitation))
+            ->assertOk()
+            ->assertDontSee('</script><script>alert(1)</script>', false)
+            ->assertSee('\\u003C\\/script\\u003E', false);
     }
 }

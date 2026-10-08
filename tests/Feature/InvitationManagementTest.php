@@ -7,6 +7,7 @@ use App\Models\Payment;
 use App\Models\Template;
 use App\Models\User;
 use App\Models\WeddingMusic;
+use App\Support\InvitationData;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -30,6 +31,84 @@ class InvitationManagementTest extends TestCase
         $this->assertSame('Haikal', $invitation->data['groom']['nickname']);
         $this->assertSame(Invitation::STATUS_DRAFT, $invitation->status);
         $this->assertArrayNotHasKey('unexpected', $invitation->data['settings']);
+    }
+
+    public function test_customer_saves_invitation_draft_step_by_step(): void
+    {
+        $customer = User::factory()->active()->create();
+        $template = Template::factory()->create();
+        $payment = Payment::factory()->for($customer)->for($template)->create(['status' => Payment::STATUS_PAID, 'invitation_id' => null]);
+
+        $response = $this->actingAs($customer)->postJson(route('invitations.steps.store'), [
+            'step' => 1,
+            'template_id' => $template->id,
+            'title' => 'Haikal & Fitria',
+            'slug' => 'Haikal dan Fitria',
+        ]);
+
+        $invitation = Invitation::query()->where('slug', 'haikal-dan-fitria')->firstOrFail();
+        $response->assertOk()
+            ->assertJsonPath('invitation_id', $invitation->id)
+            ->assertJsonPath('next_step', 2);
+        $this->assertSame($invitation->id, $payment->refresh()->invitation_id);
+        $this->assertSame(2, $invitation->editing_step);
+
+        $this->actingAs($customer)->patchJson(route('invitations.steps.update', [$invitation, 2]), [
+            'step' => 2,
+            'groom' => ['nickname' => 'Haikal', 'full_name' => 'Muhammad Haikal'],
+            'bride' => ['nickname' => 'Fitria', 'full_name' => 'Fitria Putri'],
+        ])->assertOk()->assertJsonPath('next_step', 3);
+
+        $invitation->refresh();
+        $this->assertSame('Haikal & Fitria', $invitation->title);
+        $this->assertSame('Haikal', $invitation->data['groom']['nickname']);
+        $this->assertSame(3, $invitation->editing_step);
+    }
+
+    public function test_step_save_merges_data_without_erasing_other_steps(): void
+    {
+        $customer = User::factory()->active()->create();
+        $invitation = Invitation::factory()->for($customer)->create([
+            'data' => array_replace_recursive(InvitationData::defaults(), [
+                'groom' => ['nickname' => 'Haikal'],
+                'bride' => ['nickname' => 'Fitria'],
+            ]),
+        ]);
+
+        $this->actingAs($customer)->patchJson(route('invitations.steps.update', [$invitation, 3]), [
+            'step' => 3,
+            'wedding_date' => '2026-09-20',
+            'quote' => 'Bersama selamanya',
+            'events' => [[
+                'name' => 'Akad',
+                'date' => '2026-09-20',
+                'time' => '08:00',
+                'location' => 'Gedung',
+                'address' => 'Jalan Merdeka',
+            ]],
+        ])->assertOk();
+
+        $invitation->refresh();
+        $this->assertSame('Haikal', $invitation->data['groom']['nickname']);
+        $this->assertSame('2026-09-20', $invitation->data['wedding_date']);
+        $this->assertSame('Akad', $invitation->data['events'][0]['name']);
+    }
+
+    public function test_step_save_validates_only_active_step_and_enforces_owner(): void
+    {
+        $owner = User::factory()->active()->create();
+        $other = User::factory()->active()->create();
+        $invitation = Invitation::factory()->for($owner)->create();
+
+        $this->actingAs($owner)->patchJson(route('invitations.steps.update', [$invitation, 3]), [
+            'step' => 3,
+            'events' => [['name' => 'Akad']],
+        ])->assertUnprocessable()->assertJsonValidationErrors(['events.0.date', 'events.0.time', 'events.0.location', 'events.0.address']);
+
+        $this->actingAs($other)->patchJson(route('invitations.steps.update', [$invitation, 2]), [
+            'step' => 2,
+            'groom' => ['nickname' => 'Bukan Pemilik'],
+        ])->assertForbidden();
     }
 
     public function test_customer_can_choose_where_catalog_music_starts(): void

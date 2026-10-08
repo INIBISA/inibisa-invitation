@@ -8,7 +8,7 @@
     $selectedMusicId = old('wedding_music_id', $isDemoEditor ? data_get($data, 'music.catalog_music_id') : $invitation?->wedding_music_id);
     $musicStartSeconds = max(0, min(43200, (int) old('music_start_seconds', data_get($data, 'music.start_seconds', 0))));
     $selectedTemplateId = old('template_id', $invitation?->template_id ?? request('template_id'));
-    $errorStep = 1;
+    $errorStep = $invitation?->editing_step ?? 1;
     foreach ($errors->keys() as $errorKey) {
         $errorStep = match (true) {
             str_starts_with($errorKey, 'groom.'), str_starts_with($errorKey, 'bride.') => 2,
@@ -22,7 +22,7 @@
     }
 @endphp
 
-<div class="invitation-wizard" data-invitation-wizard data-initial-step="{{ $errorStep }}">
+<div class="invitation-wizard" data-invitation-wizard data-initial-step="{{ $errorStep }}" @if(! $isDemoEditor) data-step-save @endif>
     <nav class="invitation-wizard-nav" aria-label="Langkah pengisian undangan">
         @foreach ([1 => 'Informasi', 2 => 'Mempelai', 3 => 'Acara', 4 => 'Cerita & Hadiah', 5 => 'Media & Musik', 6 => 'Konfirmasi'] as $step => $label)
             <button type="button" data-wizard-tab="{{ $step }}" @if ($step === $errorStep) aria-current="step" @endif>
@@ -272,9 +272,14 @@
 
     <div class="invitation-wizard-actions">
         <button class="button secondary" type="button" data-wizard-previous>Kembali</button>
-        <span data-wizard-status>Langkah {{ $errorStep }} dari 6</span>
-        <button class="button gold" type="button" data-wizard-next>Lanjutkan</button>
-        <button class="button gold" type="submit" data-wizard-submit>{{ $isDemoEditor ? 'Simpan Demo' : ($invitation ? 'Simpan Perubahan' : 'Buat Undangan') }}</button>
+        <span data-wizard-status role="status" aria-live="polite">Langkah {{ $errorStep }} dari 6</span>
+        @if ($isDemoEditor)
+            <button class="button gold" type="button" data-wizard-next>Lanjutkan</button>
+            <button class="button gold" type="submit" data-wizard-submit>Simpan Demo</button>
+        @else
+            <button class="button gold" type="button" data-wizard-next data-save-step>Simpan &amp; Lanjutkan</button>
+            <button class="button gold" type="button" data-wizard-submit data-save-step>Simpan &amp; Selesai</button>
+        @endif
     </div>
 </div>
 

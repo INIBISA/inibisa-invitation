@@ -367,6 +367,13 @@ form.is-submitting button[type="submit"] { opacity: .65; pointer-events: none; }
 .guest-empty { padding: 28px; display: grid; gap: 4px; text-align: center; }
 .guest-empty span, .guest-delivery-note { color: var(--muted); font-size: .66rem; }
 .guest-delivery-note { margin: 13px 0 0; line-height: 1.6; }
+.whatsapp-template-card { margin-bottom: 16px; padding: 22px; }
+.whatsapp-template-card > form { display: grid; gap: 12px; }
+.whatsapp-template-input { min-height: 290px; resize: vertical; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .72rem; line-height: 1.65; }
+.whatsapp-placeholder-list { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; }
+.whatsapp-placeholder-list > span { color: var(--muted); font-size: .67rem; font-weight: 700; }
+.whatsapp-placeholder-list button { padding: 6px 9px; border: 1px solid var(--border); border-radius: 7px; color: var(--primary-dark); background: var(--primary-soft); font: 600 .65rem ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; cursor: pointer; }
+.whatsapp-placeholder-list button:hover { border-color: var(--primary); }
 .invitation-editor-intro + .invitation-publication { margin-top: 0; margin-bottom: 20px; }
 .demo-editor-notice { max-width: 980px; margin: 0 auto 18px; padding: 14px 17px; display: grid; grid-template-columns: auto minmax(0,1fr) auto; align-items: center; gap: 13px; border: 1px solid #ddc99f; border-radius: 13px; background: #fcf8ef; }
 .demo-editor-notice > span { padding: 5px 8px; border-radius: 7px; color: var(--primary-dark); background: #fff; font-size: .62rem; font-weight: 750; text-transform: uppercase; letter-spacing: .08em; }

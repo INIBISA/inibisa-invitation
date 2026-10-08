@@ -21,6 +21,7 @@ class Invitation extends Model
         'title',
         'slug',
         'status',
+        'editing_step',
         'data',
         'published_at',
     ];
@@ -87,6 +88,7 @@ class Invitation extends Model
     {
         return [
             'data' => 'array',
+            'editing_step' => 'integer',
             'published_at' => 'datetime',
         ];
     }

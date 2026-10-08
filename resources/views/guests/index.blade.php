@@ -43,6 +43,33 @@
         </section>
     </div>
 
+    <section class="panel whatsapp-template-card">
+        <div class="panel-header">
+            <div><p class="overline">Pesan Global</p><h2>Template Pesan WhatsApp</h2><p>Berlaku untuk semua undangan Anda. Nama tamu dan tautan akan berubah otomatis.</p></div>
+            @if(auth()->user()->whatsapp_message_template)
+                <form method="POST" action="{{ route('customer.whatsapp-message.destroy') }}" data-confirm="Kembalikan pesan WhatsApp ke template default?">@csrf @method('DELETE')<button class="button secondary small" type="submit">Gunakan Default</button></form>
+            @endif
+        </div>
+        <form method="POST" action="{{ route('customer.whatsapp-message.update') }}">
+            @csrf @method('PATCH')
+            <div class="field">
+                <label for="message_template">Isi pesan</label>
+                <textarea class="input whatsapp-template-input" id="message_template" name="message_template" rows="14" maxlength="5000" required data-whatsapp-template-input>{{ old('message_template', $whatsAppMessageTemplate) }}</textarea>
+                @error('message_template')<small class="field-error">{{ $message }}</small>@enderror
+            </div>
+            <div class="whatsapp-placeholder-list" aria-label="Placeholder pesan">
+                <span>Masukkan placeholder:</span>
+                @foreach (\App\Support\WhatsAppInvitationMessage::PLACEHOLDERS as $placeholder)
+                    <button type="button" data-insert-placeholder="{{ $placeholder }}">{{ $placeholder }}</button>
+                @endforeach
+            </div>
+            <small>Format WhatsApp: <code>*tebal*</code> dan <code>_miring_</code>. Maksimal 5.000 karakter.</small>
+            <div class="actions"><button class="button gold" type="submit">Simpan Pesan</button></div>
+        </form>
+    </section>
+
+    <script type="application/json" data-whatsapp-message-template>{{ Illuminate\Support\Js::encode($whatsAppMessageTemplate) }}</script>
+
     <section class="panel guest-list-panel">
         <div class="panel-header">
             <div><p class="overline">Penerima</p><h2>Daftar Tamu</h2><p>{{ $guests->total() }} hasil ditemukan</p></div>
@@ -74,7 +101,7 @@
                             <td><span class="status-badge {{ $guest->sent_at ? 'published' : 'draft' }}"><i></i>{{ $guest->sent_at ? 'Terkirim' : 'Belum dikirim' }}</span>@if($guest->sent_at)<small class="guest-sent-time">{{ $guest->sent_at->format('d M Y, H:i') }}</small>@endif</td>
                             <td><div class="table-actions">
                                 <button class="button secondary small" type="button" data-copy-link="{{ route('public.invitation', ['slug' => $invitation->slug, 'to' => $guest->name]) }}">Salin Tautan</button>
-                                @if($guest->whatsapp)<button class="button success small" type="button" data-share-whatsapp="{{ $guest->whatsapp }}" data-personal-link="{{ route('public.invitation', ['slug' => $invitation->slug, 'to' => $guest->name]) }}" data-delivery-endpoint="{{ route('guests.delivery', $guest) }}">WhatsApp</button>@endif
+                                @if($guest->whatsapp)<button class="button success small" type="button" data-share-whatsapp="{{ $guest->whatsapp }}" data-guest-name="{{ $guest->name }}" data-couple-name="{{ data_get($invitation->data, 'groom.nickname') }} &amp; {{ data_get($invitation->data, 'bride.nickname') }}" data-personal-link="{{ route('public.invitation', ['slug' => $invitation->slug, 'to' => $guest->name]) }}" data-delivery-endpoint="{{ route('guests.delivery', $guest) }}">WhatsApp</button>@endif
                             </div></td>
                             <td><div class="table-actions">
                                 <form method="POST" action="{{ route('guests.delivery', $guest) }}">@csrf @method('PATCH')<input type="hidden" name="sent" value="{{ $guest->sent_at ? 0 : 1 }}"><button class="button secondary small" type="submit">{{ $guest->sent_at ? 'Batalkan Terkirim' : 'Tandai Terkirim' }}</button></form>

@@ -14,7 +14,7 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    protected $fillable = ['name', 'email', 'password', 'role', 'status', 'terms_accepted_at', 'terms_version', 'google_id', 'google_avatar'];
+    protected $fillable = ['name', 'email', 'password', 'role', 'status', 'terms_accepted_at', 'terms_version', 'google_id', 'google_avatar', 'whatsapp_message_template'];
 
     protected $hidden = ['password', 'remember_token'];
 

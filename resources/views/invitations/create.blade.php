@@ -10,7 +10,7 @@
         <a class="button secondary" href="{{ route('dashboard') }}">Batal</a>
     </section>
     <form class="invitation-editor-form" method="POST" action="{{ route('invitations.store') }}"
-        enctype="multipart/form-data" data-invitation-form novalidate>
+        enctype="multipart/form-data" data-invitation-form data-step-store-url="{{ route('invitations.steps.store') }}" novalidate>
         @csrf
         @include('invitations._form', ['invitation' => null])
     </form>

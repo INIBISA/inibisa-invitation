@@ -299,7 +299,11 @@
         if (share) {
             var number = share.dataset.shareWhatsapp.replace(/\D/g, "");
             if (number.startsWith("0")) { number = "62" + number.slice(1); }
-            var message = "Halo, berikut undangan personal untuk Anda: " + share.dataset.personalLink;
+            var templateElement = document.querySelector("[data-whatsapp-message-template]");
+            var message = JSON.parse(templateElement.textContent)
+                .replaceAll("{nama_tamu}", share.dataset.guestName)
+                .replaceAll("{nama_mempelai}", share.dataset.coupleName)
+                .replaceAll("{tautan_undangan}", share.dataset.personalLink);
             window.open("https://wa.me/" + number + "?text=" + encodeURIComponent(message), "_blank", "noopener");
             if (share.dataset.deliveryEndpoint) {
                 fetch(share.dataset.deliveryEndpoint, {
@@ -314,6 +318,15 @@
                     if (response.ok) { window.location.reload(); }
                 });
             }
+        }
+
+        var placeholder = event.target.closest("[data-insert-placeholder]");
+        if (placeholder) {
+            var templateInput = document.querySelector("[data-whatsapp-template-input]");
+            var start = templateInput.selectionStart;
+            var token = placeholder.dataset.insertPlaceholder;
+            templateInput.setRangeText(token, start, templateInput.selectionEnd, "end");
+            templateInput.focus();
         }
     });
     document.querySelectorAll("[data-video-dialog]").forEach(function (dialog) {
@@ -420,6 +433,8 @@
     var invitationForm = document.querySelector("[data-invitation-form]");
     var invitationWizard = document.querySelector("[data-invitation-wizard]");
     var currentInvitationStep = 1;
+    var invitationStepDirty = false;
+    var invitationStepUpdateUrl = invitationForm?.dataset.stepUpdateUrl || "";
 
     function invitationSteps() {
         return invitationWizard ? Array.from(invitationWizard.querySelectorAll("[data-wizard-step]")) : [];
@@ -493,7 +508,7 @@
         showInvitationStep(Number(invitationWizard.dataset.initialStep || 1));
 
         invitationWizard.querySelector("[data-wizard-next]").addEventListener("click", function () {
-            if (validateInvitationStep(currentInvitationStep)) {
+            if (!invitationWizard.hasAttribute("data-step-save") && validateInvitationStep(currentInvitationStep)) {
                 showInvitationStep(currentInvitationStep + 1);
                 invitationWizard.scrollIntoView({ behavior: "smooth", block: "start" });
             }
@@ -505,13 +520,71 @@
         invitationWizard.querySelectorAll("[data-wizard-tab]").forEach(function (tab) {
             tab.addEventListener("click", function () {
                 var targetStep = Number(tab.dataset.wizardTab);
-                if (targetStep <= currentInvitationStep || validateInvitationStep(currentInvitationStep)) {
-                    showInvitationStep(targetStep);
+                if (invitationStepDirty && !window.confirm("Perubahan pada tahap ini belum disimpan. Tetap pindah?")) { return; }
+                invitationStepDirty = false;
+                showInvitationStep(targetStep);
+            });
+        });
+        invitationForm.addEventListener("input", function () { invitationStepDirty = true; updateInvitationSummary(); });
+        invitationForm.addEventListener("change", function () { invitationStepDirty = true; updateInvitationSummary(); });
+
+        invitationWizard.querySelectorAll("[data-save-step]").forEach(function (button) {
+            button.addEventListener("click", async function () {
+                if (!validateInvitationStep(currentInvitationStep)) { return; }
+                if (!invitationStepUpdateUrl && currentInvitationStep !== 1) {
+                    invitationWizard.querySelector("[data-wizard-status]").textContent = "Simpan langkah 1 terlebih dahulu untuk membuat draft.";
+                    return;
+                }
+
+                var panel = invitationWizard.querySelector('[data-wizard-step="' + currentInvitationStep + '"]');
+                var data = new FormData();
+                panel.querySelectorAll("input, select, textarea").forEach(function (field) {
+                    if (!field.name || field.disabled || ((field.type === "checkbox" || field.type === "radio") && !field.checked)) { return; }
+                    if (field.type === "file") {
+                        Array.from(field.files || []).forEach(function (file) { data.append(field.name, file); });
+                    } else {
+                        data.append(field.name, field.value);
+                    }
+                });
+                data.append("step", String(currentInvitationStep));
+                data.append("_token", invitationForm.querySelector('[name="_token"]').value);
+                if (invitationStepUpdateUrl) { data.append("_method", "PATCH"); }
+
+                var status = invitationWizard.querySelector("[data-wizard-status]");
+                var defaultLabel = button.textContent;
+                button.disabled = true;
+                button.textContent = "Menyimpan...";
+                status.textContent = "Menyimpan langkah " + currentInvitationStep + "...";
+
+                try {
+                    var response = await fetch(invitationStepUpdateUrl.replace("__STEP__", String(currentInvitationStep)) || invitationForm.dataset.stepStoreUrl, {
+                        method: "POST",
+                        headers: { "Accept": "application/json", "X-Requested-With": "XMLHttpRequest" },
+                        body: data
+                    });
+                    var payload = await response.json();
+                    if (!response.ok) {
+                        var errors = Object.values(payload.errors || {}).flat();
+                        throw new Error(errors[0] || payload.message || "Langkah belum dapat disimpan.");
+                    }
+
+                    invitationStepUpdateUrl = payload.step_url;
+                    invitationForm.dataset.stepUpdateUrl = payload.step_url;
+                    window.history.replaceState({}, "", payload.edit_url);
+                    invitationStepDirty = false;
+                    status.textContent = payload.message;
+                    if (currentInvitationStep < invitationSteps().length) {
+                        showInvitationStep(currentInvitationStep + 1);
+                        invitationWizard.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }
+                } catch (error) {
+                    status.textContent = error.message || "Koneksi bermasalah. Silakan coba lagi.";
+                } finally {
+                    button.disabled = false;
+                    button.textContent = defaultLabel;
                 }
             });
         });
-        invitationForm.addEventListener("input", updateInvitationSummary);
-        invitationForm.addEventListener("change", updateInvitationSummary);
         invitationForm.addEventListener("submit", function (event) {
             for (var step = 1; step <= invitationSteps().length; step += 1) {
                 if (firstInvalidInStep(step)) {
