@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
-use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
@@ -30,18 +29,6 @@ class SessionController extends Controller
 
         if ($user?->isAdmin()) {
             return redirect()->intended(route('admin.dashboard'));
-        }
-
-        if ($user?->status !== User::STATUS_ACTIVE) {
-            Auth::logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-
-            $message = $user?->status === User::STATUS_REJECTED
-                ? 'Pendaftaran Anda ditolak. Hubungi admin untuk informasi lebih lanjut.'
-                : 'Akun Anda masih menunggu persetujuan admin.';
-
-            return back()->withInput($request->only('email'))->withErrors(['email' => $message]);
         }
 
         return redirect()->intended(route('dashboard'));

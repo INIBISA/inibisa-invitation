@@ -1,6 +1,12 @@
 @extends('layouts.app')
-@section('title', 'Invitations')
+@section('title', 'Undangan')
 @section('content')
-<div class="page-head"><div><div class="eyebrow">Administration</div><h1>Invitations</h1></div></div>
-<div class="card table-wrap"><table class="table"><thead><tr><th>Undangan</th><th>Customer</th><th>Template</th><th>Status</th><th>Link</th></tr></thead><tbody>@forelse($invitations as $invitation)<tr><td><strong>{{ $invitation->title }}</strong><br><span class="muted">{{ $invitation->slug }}</span></td><td>{{ $invitation->user->name }}<br><span class="muted">{{ $invitation->user->email }}</span></td><td>{{ $invitation->template->name }}</td><td><span class="badge {{ $invitation->status }}">{{ $invitation->status }}</span></td><td>@if($invitation->status === 'published')<a href="{{ route('public.invitation', $invitation->slug) }}" target="_blank" rel="noopener">Buka</a>@else<span class="muted">Belum publik</span>@endif</td></tr>@empty<tr><td colspan="5">Belum ada undangan.</td></tr>@endforelse</tbody></table></div><div class="pagination">{{ $invitations->links() }}</div>
+    @include('partials.datatables-assets')
+    <section class="dashboard-intro"><div><p class="overline">Administrasi</p><h1>Undangan</h1><p>Pantau seluruh undangan pelanggan.</p></div></section>
+    <section class="panel datatable-panel"><div class="table-scroll">
+        <table class="premium-table" data-datatable data-source="{{ route('admin.invitations.data') }}">
+            <thead><tr><th>No.</th><th>Undangan</th><th>Pelanggan</th><th>Templat</th><th>Status</th><th>Tautan</th></tr></thead><tbody></tbody>
+        </table>
+        <script type="application/json" data-datatable-config>{!! Illuminate\Support\Js::encode(['columns' => [['data' => 'DT_RowIndex', 'name' => 'id', 'searchable' => false], ['data' => 'invitation', 'name' => 'invitation', 'orderable' => false], ['data' => 'customer', 'name' => 'customer', 'orderable' => false], ['data' => 'template_name', 'name' => 'template_name', 'orderable' => false], ['data' => 'status_label', 'name' => 'status'], ['data' => 'link', 'name' => 'link', 'orderable' => false, 'searchable' => false]], 'order' => [[0, 'desc']]]) !!}</script>
+    </div></section>
 @endsection

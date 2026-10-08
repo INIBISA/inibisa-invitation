@@ -14,7 +14,7 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    protected $fillable = ['name', 'email', 'password', 'role', 'status'];
+    protected $fillable = ['name', 'email', 'password', 'role', 'status', 'terms_accepted_at', 'terms_version', 'google_id', 'google_avatar', 'whatsapp_message_template'];
 
     protected $hidden = ['password', 'remember_token'];
 
@@ -30,7 +30,7 @@ class User extends Authenticatable
 
     protected $attributes = [
         'role' => self::ROLE_CUSTOMER,
-        'status' => self::STATUS_PENDING,
+        'status' => self::STATUS_ACTIVE,
     ];
 
     public function invitations(): HasMany
@@ -38,14 +38,14 @@ class User extends Authenticatable
         return $this->hasMany(Invitation::class);
     }
 
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
+
     public function isAdmin(): bool
     {
         return $this->role === self::ROLE_ADMIN;
-    }
-
-    public function isActiveCustomer(): bool
-    {
-        return $this->role === self::ROLE_CUSTOMER && $this->status === self::STATUS_ACTIVE;
     }
 
     /**
@@ -58,6 +58,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'terms_accepted_at' => 'datetime',
         ];
     }
 }

@@ -14,6 +14,7 @@ class StoreRsvpRequest extends FormRequest
 
         return $invitation instanceof Invitation
             && $invitation->status === Invitation::STATUS_PUBLISHED
+            && $invitation->template()->where('is_active', true)->exists()
             && (bool) data_get($invitation->data, 'settings.rsvp', true);
     }
 

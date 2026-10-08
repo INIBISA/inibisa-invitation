@@ -2,27 +2,15 @@
 
 namespace Database\Seeders;
 
-use App\Models\Invitation;
 use App\Models\Template;
-use App\Models\User;
+use App\Models\TemplateDemo;
 use Illuminate\Database\Seeder;
 
 class DemoInvitationSeeder extends Seeder
 {
     public function run(): void
     {
-        $customer = User::query()->updateOrCreate(
-            ['email' => 'alexander@example.com'],
-            [
-                'name' => 'Alexander',
-                'password' => 'password',
-                'role' => User::ROLE_CUSTOMER,
-                'status' => User::STATUS_ACTIVE,
-            ],
-        );
-
         $this->seedDemo(
-            $customer,
             'eternal-ivory',
             'alexander-cyntia',
             'Alexander & Cyntia',
@@ -66,7 +54,6 @@ class DemoInvitationSeeder extends Seeder
         );
 
         $this->seedDemo(
-            $customer,
             'sweet-blossom',
             'dimas-ayu',
             'Dimas & Ayu',
@@ -110,90 +97,45 @@ class DemoInvitationSeeder extends Seeder
         );
 
         $this->seedDemo(
-            $customer,
-            'rustic-forest',
-            'raka-nadira',
-            'Raka & Nadira',
+            'midnight-nusantara',
+            'aruna-bima',
+            'Aruna & Bima',
             [
                 'groom' => [
-                    'nickname' => 'Raka',
-                    'full_name' => 'Raka Mahendra',
-                    'father' => 'Bapak Yusuf',
-                    'mother' => 'Ibu Lilis',
-                    'instagram' => '@raka',
+                    'nickname' => 'Bima',
+                    'full_name' => 'Bima Adinata',
+                    'father' => 'Bapak Surya Adinata',
+                    'mother' => 'Ibu Larasati',
+                    'instagram' => '@bimaadinata',
                 ],
                 'bride' => [
-                    'nickname' => 'Nadira',
-                    'full_name' => 'Nadira Safira',
-                    'father' => 'Bapak Arman',
-                    'mother' => 'Ibu Maya',
-                    'instagram' => '@nadira',
+                    'nickname' => 'Aruna',
+                    'full_name' => 'Aruna Sekar',
+                    'father' => 'Bapak Bagus Pranata',
+                    'mother' => 'Ibu Ratih Sekar',
+                    'instagram' => '@arunasekar',
                 ],
-                'wedding_date' => '2026-11-07',
-                'quote' => 'Di bawah rindang pepohonan, kami memilih tumbuh bersama.',
+                'wedding_date' => '2026-10-18',
+                'quote' => 'Di bawah langit yang sama, dua perjalanan menemukan satu tujuan.',
                 'events' => [
-                    ['name' => 'Akad Nikah', 'date' => '2026-11-07', 'time' => '09:00', 'location' => 'Forest Pavilion', 'address' => 'Jl. Pinus Raya No. 7, Bogor', 'maps_url' => 'https://maps.google.com'],
-                    ['name' => 'Resepsi', 'date' => '2026-11-07', 'time' => '13:00', 'location' => 'Forest Pavilion', 'address' => 'Jl. Pinus Raya No. 7, Bogor', 'maps_url' => 'https://maps.google.com'],
+                    ['name' => 'Akad Nikah', 'date' => '2026-10-18', 'time' => '08:00', 'location' => 'Pendopo Agung', 'address' => 'Jl. Pusaka No. 18, Yogyakarta', 'maps_url' => 'https://maps.google.com'],
+                    ['name' => 'Resepsi', 'date' => '2026-10-18', 'time' => '19:00', 'location' => 'Pendopo Agung', 'address' => 'Jl. Pusaka No. 18, Yogyakarta', 'maps_url' => 'https://maps.google.com'],
                 ],
                 'stories' => [
-                    ['title' => 'Satu Pendakian', 'date' => '2022-08-14', 'story' => 'Perjalanan kecil di alam membuka percakapan yang tidak pernah selesai.'],
-                    ['title' => 'Janji Sederhana', 'date' => '2026-02-22', 'story' => 'Kami memilih merayakan cinta dengan hangat dan dekat.'],
+                    ['title' => 'Awal Cerita', 'date' => '2022-08-14', 'story' => 'Percakapan singkat menjelma perjalanan yang ingin kami jaga selamanya.'],
+                    ['title' => 'Satu Tujuan', 'date' => '2026-02-08', 'story' => 'Di hadapan keluarga, kami memilih melangkah menuju masa depan bersama.'],
                 ],
                 'banks' => [
-                    ['bank_name' => 'Mandiri', 'account_number' => '1122334455', 'account_name' => 'Raka Mahendra'],
+                    ['bank_name' => 'Mandiri', 'account_number' => '1357902468', 'account_name' => 'Bima Adinata'],
                 ],
             ],
             [
-                ['guest_name' => 'Fajar Nugroho', 'attendance' => 'attending', 'guest_count' => 2],
-                ['guest_name' => 'Mira Andini', 'attendance' => 'attending', 'guest_count' => 1],
+                ['guest_name' => 'Raka Pratama', 'attendance' => 'attending', 'guest_count' => 2],
+                ['guest_name' => 'Sekar Ayuningtyas', 'attendance' => 'attending', 'guest_count' => 1],
             ],
             [
-                ['guest_name' => 'Fajar Nugroho', 'message' => 'Selamat Raka dan Nadira, semoga selalu hangat seperti hari bahagia ini.'],
-                ['guest_name' => 'Mira Andini', 'message' => 'Bahagia selalu dan lancar sampai acara.'],
-            ],
-        );
-
-        $this->seedDemo(
-            $customer,
-            'modern-minimalist',
-            'kevin-laras',
-            'Kevin & Laras',
-            [
-                'groom' => [
-                    'nickname' => 'Kevin',
-                    'full_name' => 'Kevin Wijaya',
-                    'father' => 'Bapak Daniel',
-                    'mother' => 'Ibu Maria',
-                    'instagram' => '@kevin',
-                ],
-                'bride' => [
-                    'nickname' => 'Laras',
-                    'full_name' => 'Laras Kirana',
-                    'father' => 'Bapak Surya',
-                    'mother' => 'Ibu Amalia',
-                    'instagram' => '@laras',
-                ],
-                'wedding_date' => '2026-12-12',
-                'quote' => 'Cinta yang sederhana, dijalani dengan penuh kesadaran.',
-                'events' => [
-                    ['name' => 'Pemberkatan', 'date' => '2026-12-12', 'time' => '10:00', 'location' => 'The White Studio', 'address' => 'Jl. Senja No. 12, Surabaya', 'maps_url' => 'https://maps.google.com'],
-                    ['name' => 'Dinner Reception', 'date' => '2026-12-12', 'time' => '18:30', 'location' => 'The White Studio', 'address' => 'Jl. Senja No. 12, Surabaya', 'maps_url' => 'https://maps.google.com'],
-                ],
-                'stories' => [
-                    ['title' => 'Awal Cerita', 'date' => '2023-01-09', 'story' => 'Kami bertemu di ruang yang sederhana, lalu saling menemukan ritme.'],
-                    ['title' => 'Menuju Rumah', 'date' => '2026-04-04', 'story' => 'Satu keputusan tenang untuk berjalan lebih jauh bersama.'],
-                ],
-                'banks' => [
-                    ['bank_name' => 'BNI', 'account_number' => '5566778899', 'account_name' => 'Kevin Wijaya'],
-                ],
-            ],
-            [
-                ['guest_name' => 'Rani Putri', 'attendance' => 'attending', 'guest_count' => 1],
-                ['guest_name' => 'Dewa Pramana', 'attendance' => 'attending', 'guest_count' => 2],
-            ],
-            [
-                ['guest_name' => 'Rani Putri', 'message' => 'Selamat Kevin dan Laras, acaranya pasti indah dan hangat.'],
-                ['guest_name' => 'Dewa Pramana', 'message' => 'Semoga menjadi keluarga yang tenang dan saling menguatkan.'],
+                ['guest_name' => 'Raka Pratama', 'message' => 'Semoga perjalanan baru kalian selalu hangat dan penuh berkah.'],
+                ['guest_name' => 'Sekar Ayuningtyas', 'message' => 'Selamat Aruna dan Bima, bahagia hingga selamanya!'],
             ],
         );
     }
@@ -203,7 +145,7 @@ class DemoInvitationSeeder extends Seeder
      * @param  array<int, array<string, mixed>>  $rsvps
      * @param  array<int, array<string, mixed>>  $wishes
      */
-    private function seedDemo(User $customer, string $templateKey, string $slug, string $title, array $data, array $rsvps, array $wishes): void
+    private function seedDemo(string $templateKey, string $slug, string $title, array $data, array $rsvps, array $wishes): void
     {
         $template = Template::query()->where('key', $templateKey)->firstOrFail();
 
@@ -216,35 +158,15 @@ class DemoInvitationSeeder extends Seeder
             'wishes' => true,
             'music' => true,
         ];
+        $data['wishes'] = $wishes;
 
-        $invitation = Invitation::query()->firstOrCreate(
-            ['slug' => $slug],
-            [
-                'user_id' => $customer->id,
-                'template_id' => $template->id,
-                'title' => $title,
-                'status' => Invitation::STATUS_PUBLISHED,
-                'published_at' => now(),
-                'data' => $data,
-            ],
+        $demo = TemplateDemo::query()->firstOrCreate(
+            ['template_id' => $template->id],
+            ['slug' => $slug, 'title' => $title, 'data' => $data],
         );
 
-        if (! $invitation->wasRecentlyCreated) {
-            return;
-        }
-
-        foreach ($rsvps as $rsvp) {
-            $invitation->rsvps()->firstOrCreate(
-                ['guest_name' => $rsvp['guest_name']],
-                ['attendance' => $rsvp['attendance'], 'guest_count' => $rsvp['guest_count']],
-            );
-        }
-
-        foreach ($wishes as $wish) {
-            $invitation->wishes()->firstOrCreate(
-                ['guest_name' => $wish['guest_name']],
-                ['message' => $wish['message']],
-            );
+        if (! array_key_exists('wishes', $demo->data)) {
+            $demo->update(['data' => [...$demo->data, 'wishes' => $wishes]]);
         }
     }
 }

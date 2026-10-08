@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>{{ config('app.name', 'Undangan Digital') }} — Undangan Pernikahan Digital yang Elegan</title>
     <meta name="description" content="Buat undangan pernikahan digital yang elegan, bagikan dengan satu tautan, dan kelola RSVP serta ucapan tamu dalam satu dashboard.">
+    <link rel="icon" type="image/webp" href="{{ asset('favicon.webp') }}">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/landing.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/landing.css') }}?v={{ filemtime(public_path('css/landing.css')) }}">
     <script src="{{ asset('js/landing.js') }}" defer></script>
 </head>
 <body class="landing-body">
@@ -14,7 +15,7 @@
 <header class="landing-header" data-landing-header>
     <div class="landing-container header-inner">
         <a class="landing-brand" href="/" aria-label="{{ config('app.name', 'Undangan Digital') }}">
-            <span class="brand-mark"><span>U</span></span>
+            <img class="brand-icon" src="{{ asset('logo.webp') }}" alt="" width="42" height="42">
             <span><strong>Undangan</strong><small>Digital Studio</small></span>
         </a>
         <nav class="landing-nav" aria-label="Navigasi utama">
@@ -165,7 +166,7 @@
                 @foreach($templates as $template)
                 @php($demo = ($demos ?? collect())->get($template->id))
                 <article class="template-card" data-reveal>
-                    <img src="{{ asset($template->thumbnail) }}" alt="Preview template {{ $template->name }}" width="640" height="480" loading="lazy" decoding="async">
+                    <img src="{{ asset($template->thumbnail) }}" alt="Preview template {{ $template->name }}" loading="lazy" decoding="async">
                     <div class="template-card-body">
                         <h3>{{ $template->name }}</h3>
                         <p>{{ $descriptions[$template->key] ?? 'Desain premium yang siap pakai untuk hari bahagiamu.' }}</p>
@@ -246,9 +247,8 @@
 <footer class="landing-footer">
     <div class="landing-container footer-grid">
         <div>
-            <a class="landing-brand" href="/">
-                <span class="brand-mark light"><span>U</span></span>
-                <span><strong>Undangan</strong><small>Digital Studio</small></span>
+            <a class="landing-brand" href="/" aria-label="Undangan Digital Studio">
+                <img class="brand-wordmark" src="{{ asset('logotext.webp') }}" alt="" width="230" height="102" loading="lazy">
             </a>
             <p>Undangan pernikahan digital yang premium dan mudah dikelola.</p>
         </div>
@@ -266,7 +266,8 @@
         </div>
     </div>
     <div class="landing-container footer-bottom">
-        <span>© {{ now()->year }} {{ config('app.name', 'Undangan Digital') }}. Crafted with care.</span>
+        <span>© {{ now()->year }} {{ config('app.name', 'Undangan Digital') }}.</span>
+        <span><a href="{{ route('terms') }}">Syarat dan Ketentuan</a> · <a href="{{ route('privacy') }}">Kebijakan Privasi</a></span>
     </div>
 </footer>
 </body>

@@ -22,6 +22,7 @@ class WishController extends Controller
                         ->orWhereHas('invitation', fn ($query) => $query->where('title', 'like', '%'.$search.'%'));
                 });
             })
+            ->when($request->filled('customer'), fn ($query) => $query->whereHas('invitation.user', fn ($users) => $users->where('name', 'like', '%'.$request->string('customer')->toString().'%')))
             ->latest('id')
             ->paginate(30)
             ->withQueryString();

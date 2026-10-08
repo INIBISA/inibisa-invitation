@@ -7,6 +7,16 @@
     var openButton = document.getElementById("open-invitation");
     var audio = document.getElementById("wedding-music");
     var musicButton = document.querySelector(".music-toggle");
+    if (audio) {
+        var audioStartSeconds = Math.max(0, parseInt(audio.dataset.startSeconds || "0", 10) || 0);
+        if (audioStartSeconds > 0) {
+            audio.addEventListener("loadedmetadata", function () {
+                if (!Number.isFinite(audio.duration) || audioStartSeconds < audio.duration) {
+                    audio.currentTime = audioStartSeconds;
+                }
+            });
+        }
+    }
     var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     requestAnimationFrame(function () {
@@ -46,22 +56,41 @@
     }
 
     function openInvitation() {
-        opening.classList.add("is-open");
-        html.classList.remove("invitation-locked");
-        body.classList.add("invitation-opened");
-        releasePetals();
+        if (opening.classList.contains("is-open")) {
+            return;
+        }
 
-        if (audio) {
-            audio
-                .play()
-                .then(function () {
-                    musicButton.hidden = false;
-                    musicButton.setAttribute("aria-label", "Jeda musik");
-                })
-                .catch(function () {
-                    musicButton.hidden = false;
-                    musicButton.classList.add("paused");
-                });
+        var label = openButton.textContent;
+        openButton.disabled = true;
+        openButton.textContent = "Menyiapkan musik…";
+
+        function proceed() {
+            openButton.disabled = false;
+            openButton.textContent = label;
+            opening.classList.add("is-open");
+            html.classList.remove("invitation-locked");
+            body.classList.add("invitation-opened");
+            releasePetals();
+            document.dispatchEvent(new CustomEvent("invitation:opened"));
+
+            if (audio) {
+                audio
+                    .play()
+                    .then(function () {
+                        musicButton.hidden = false;
+                        musicButton.setAttribute("aria-label", "Jeda musik");
+                    })
+                    .catch(function () {
+                        musicButton.hidden = false;
+                        musicButton.classList.add("paused");
+                    });
+            }
+        }
+
+        if (window.WeddingMusic && typeof window.WeddingMusic.whenReady === "function") {
+            window.WeddingMusic.whenReady(3000).then(proceed, proceed);
+        } else {
+            proceed();
         }
     }
 

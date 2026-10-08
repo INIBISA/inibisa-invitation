@@ -3,7 +3,9 @@
 namespace Tests\Feature;
 
 use App\Models\Invitation;
+use App\Models\Payment;
 use App\Models\Rsvp;
+use App\Models\Setting;
 use App\Models\User;
 use App\Models\Wish;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
@@ -21,12 +23,22 @@ class AdminManagementPagesTest extends TestCase
         Rsvp::factory()->for($invitation)->create(['guest_name' => 'Rizky Special', 'attendance' => 'attending']);
         Rsvp::factory()->for($invitation)->create(['guest_name' => 'Other Guest', 'attendance' => 'not_attending']);
 
-        $response = $this->actingAs($admin)->get(route('admin.rsvps.index', [
-            'search' => 'Rizky',
+        $this->actingAs($admin)->get(route('admin.rsvps.index'))
+            ->assertOk()
+            ->assertSee(route('admin.rsvps.data'));
+
+        $response = $this->actingAs($admin)->getJson(route('admin.rsvps.data', [
+            'draw' => 1,
+            'start' => 0,
+            'length' => 25,
             'attendance' => 'attending',
         ]));
 
-        $response->assertOk()->assertSee('Rizky Special')->assertSee('Haikal &amp; Fitria', false)->assertDontSee('Other Guest');
+        $response
+            ->assertOk()
+            ->assertJsonPath('recordsTotal', 1)
+            ->assertJsonPath('data.0.guest_name', 'Rizky Special')
+            ->assertJsonPath('data.0.invitation_title', 'Haikal &amp; Fitria');
     }
 
     public function test_admin_can_search_all_wishes(): void
@@ -83,5 +95,20 @@ class AdminManagementPagesTest extends TestCase
 
         $response->assertRedirect(route('admin.settings.edit'))->assertSessionHasErrors('current_password');
         $this->assertTrue(Hash::check('password', $admin->refresh()->password));
+    }
+
+    public function test_admin_cannot_enable_midtrans_without_credentials(): void
+    {
+        config()->set('payments.midtrans.server_key');
+        config()->set('payments.midtrans.client_key');
+        $admin = User::factory()->admin()->create();
+
+        $this->actingAs($admin)->patch(route('admin.settings.update'), [
+            'name' => $admin->name,
+            'email' => $admin->email,
+            'active_payment_method' => Payment::METHOD_MIDTRANS,
+        ])->assertSessionHasErrors('active_payment_method');
+
+        $this->assertDatabaseMissing('settings', ['key' => Setting::KEY_ACTIVE_PAYMENT_METHOD]);
     }
 }

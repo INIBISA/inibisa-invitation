@@ -1,23 +1,89 @@
 @extends('layouts.app')
-@section('title', 'Dashboard')
+@section('title', 'Dasbor')
 @section('content')
-@php
-    $publishedCount = $invitations->where('status', 'published')->count();
-    $rsvpCount = $invitations->sum('rsvps_count');
-    $wishCount = $invitations->sum('wishes_count');
-@endphp
-<section class="dashboard-intro"><div><p class="overline">Your Workspace</p><h1>Welcome back, {{ auth()->user()->name }}</h1><p>Here's what's happening with your wedding invitations today.</p></div><a class="primary-button" href="{{ route('invitations.create') }}"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Create Invitation</a></section>
-
-<section class="metric-grid" aria-label="Dashboard statistics">
-    <article class="metric-card"><span class="metric-icon gold"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM4 7l8 6 8-6"/></svg></span><div><p>Total Invitations</p><strong>{{ number_format($invitations->count()) }}</strong><small>Your complete collection</small></div></article>
-    <article class="metric-card"><span class="metric-icon green"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/></svg></span><div><p>Published</p><strong>{{ number_format($publishedCount) }}</strong><small class="positive">Live wedding websites</small></div></article>
-    <article class="metric-card"><span class="metric-icon blue"><svg viewBox="0 0 24 24"><path d="M5 3v3M19 3v3M4 8h16M5 5h14a2 2 0 0 1 2 2v13H3V7a2 2 0 0 1 2-2Z"/><path d="m8 14 2 2 5-5"/></svg></span><div><p>Total RSVPs</p><strong>{{ number_format($rsvpCount) }}</strong><small>Guest confirmations</small></div></article>
-    <article class="metric-card"><span class="metric-icon rose"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.7-7.5a5.5 5.5 0 0 0 1.1-8.9Z"/></svg></span><div><p>Wishes Received</p><strong>{{ number_format($wishCount) }}</strong><small>Messages from your guests</small></div></article>
-</section>
-
-<div class="dashboard-content-grid customer-grid">
-    <section class="panel recent-panel" id="recent-invitations"><div class="panel-header"><div><h2>Recent Invitations</h2><p>Manage and share your wedding invitations.</p></div><a href="{{ route('invitations.create') }}">Create new <svg viewBox="0 0 24 24"><path d="M5 12h14M14 7l5 5-5 5"/></svg></a></div><div class="table-scroll"><table class="premium-table"><thead><tr><th>Couple</th><th>Template</th><th>Status</th><th>Responses</th><th>Action</th></tr></thead><tbody>@forelse($invitations->take(6) as $invitation)<tr data-searchable="{{ Str::lower($invitation->title.' '.$invitation->template->name.' '.$invitation->status) }}"><td><div class="couple-cell"><span>{{ mb_strtoupper(mb_substr($invitation->title, 0, 1)) }}</span><div><strong>{{ $invitation->title }}</strong><small>/{{ $invitation->slug }}</small></div></div></td><td>{{ $invitation->template->name }}</td><td><span class="status-badge {{ $invitation->status }}"><i></i>{{ ucfirst($invitation->status) }}</span></td><td><span class="response-count">{{ $invitation->rsvps_count }} RSVP</span><span class="response-count">{{ $invitation->wishes_count }} wishes</span></td><td><div class="row-actions"><a href="{{ route('invitations.edit', $invitation) }}" aria-label="Edit {{ $invitation->title }}"><svg viewBox="0 0 24 24"><path d="m4 20 4.5-1 10-10-3.5-3.5-10 10zM13.5 6.5 17 10"/></svg></a><a href="{{ route('invitations.preview', $invitation) }}" target="_blank" aria-label="Preview {{ $invitation->title }}"><svg viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="2.5"/></svg></a>@if($invitation->status === 'published')<button type="button" data-copy-link="{{ route('public.invitation', $invitation->slug) }}" aria-label="Copy link {{ $invitation->title }}"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg></button>@endif</div></td></tr>@empty<tr><td colspan="5"><div class="premium-empty"><span><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM4 7l8 6 8-6"/></svg></span><h3>Your first invitation starts here</h3><p>Choose a premium template and make it beautifully yours.</p><a class="primary-button" href="{{ route('invitations.create') }}">Create Invitation</a></div></td></tr>@endforelse</tbody></table></div></section>
-
-    <aside class="dashboard-side-stack"><section class="panel compact-panel"><div class="panel-header"><div><h2>Quick Actions</h2><p>Everything you need, one click away.</p></div></div><div class="quick-actions"><a href="{{ route('invitations.create') }}"><span class="metric-icon gold"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span><span><strong>Create Invitation</strong><small>Start with a premium template</small></span><svg class="action-arrow" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></a>@if($invitations->first())<a href="{{ route('invitations.edit', $invitations->first()) }}"><span class="metric-icon blue"><svg viewBox="0 0 24 24"><path d="m4 20 4.5-1 10-10-3.5-3.5-10 10zM13.5 6.5 17 10"/></svg></span><span><strong>Continue Editing</strong><small>{{ $invitations->first()->title }}</small></span><svg class="action-arrow" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></a>@endif</div></section><section class="panel compact-panel"><div class="panel-header"><div><h2>Recent Activity</h2><p>Latest invitation updates.</p></div></div><div class="activity-list">@forelse($invitations->take(4) as $invitation)<article><span class="activity-dot {{ $invitation->status === 'published' ? 'green' : 'gold' }}"></span><div><p><strong>{{ $invitation->title }}</strong> is {{ $invitation->status }}</p><small>Updated {{ $invitation->updated_at->diffForHumans() }}</small></div></article>@empty<div class="activity-empty">Your activity will appear here.</div>@endforelse</div></section></aside>
-</div>
+    <section class="dashboard-intro">
+        <div>
+            <p class="overline">Ruang Kerja</p>
+            <h1>Selamat datang, {{ auth()->user()->name }}</h1>
+            <p>Pilih templat, lihat demo, dan mulai undangan Anda.</p>
+        </div><a class="primary-button" href="{{ route('templates.index') }}">Pilih Templat</a>
+    </section>
+    @if ($availablePayments->isNotEmpty())
+        <section class="panel dashboard-callout">
+            <div><span class="status-badge paid"><i></i>Pembayaran berhasil</span>
+                <h2>Templat Anda siap diisi</h2>
+                <p>Mulai membuat undangan dari templat yang sudah dibayar.</p>
+            </div>
+            <div class="actions">
+                @foreach ($availablePayments as $payment)
+                    <a class="button success"
+                        href="{{ route('invitations.create', ['template_id' => $payment->template_id]) }}">Mulai Isi
+                        {{ $payment->template->name }}</a>
+                @endforeach
+            </div>
+        </section>
+    @endif
+    @foreach ($payments->where('status', 'waiting_approval') as $payment)
+        <div class="alert success">Pembayaran {{ $payment->template->name }} sedang diverifikasi admin. <a
+                href="{{ route('payments.show', $payment) }}">Lihat detail</a></div>
+    @endforeach
+    @foreach ($payments->where('status', 'rejected') as $payment)
+        <div class="alert error">Pembayaran {{ $payment->template->name }} ditolak: {{ $payment->rejection_reason }} <a
+                 href="{{ route('payments.show', $payment) }}">Unggah ulang bukti</a></div>
+    @endforeach
+    @foreach ($payments->where('status', 'pending') as $payment)
+        <div class="alert">Pembayaran {{ $payment->template->name }} menunggu penyelesaian. <a
+                href="{{ route('payments.show', $payment) }}">Lanjutkan pembayaran</a></div>
+    @endforeach
+    <section class="panel">
+        <div class="panel-header">
+            <div>
+                <h2>Undangan Anda</h2>
+                <p>Kelola draf, tamu, RSVP, dan ucapan dari satu tempat.</p>
+            </div>
+        </div>
+        @if ($invitations->isEmpty())
+            <div class="premium-empty dashboard-empty"><span class="empty-symbol">✦</span>
+                <h3>Belum punya undangan</h3>
+                <p>Pilih templat favoritmu, lihat demonya, lalu mulai buat undangan.</p><a class="button gold"
+                    href="{{ route('templates.index') }}">Lihat Templat</a>
+        </div>@else<div class="table-scroll">
+                <table class="premium-table">
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>Undangan</th>
+                            <th>Templat</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($invitations as $invitation)
+                            <tr>
+                                <td>{{ $invitations->firstItem() + $loop->index }}</td>
+                                <td><strong>{{ $invitation->title }}</strong><br><span
+                                        class="muted">{{ $invitation->slug }}</span></td>
+                                <td>{{ $invitation->template->name }}</td>
+                                <td><span
+                                        class="status-badge {{ $invitation->status }}"><i></i>{{ $invitation->statusLabel() }}</span>
+                                </td>
+                                <td>
+                                    <div class="table-actions"><a class="button secondary small"
+                                            href="{{ route('invitations.edit', $invitation) }}">Ubah</a><a
+                                            class="button secondary small"
+                                            href="{{ route('invitations.guests.index', $invitation) }}">Tamu</a><a
+                                            class="button secondary small"
+                                            href="{{ route('invitations.rsvps', $invitation) }}">RSVP</a><a
+                                            class="button secondary small"
+                                            href="{{ route('invitations.wishes', $invitation) }}">Ucapan</a></div>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination">{{ $invitations->links() }}</div>
+        @endif
+    </section>
 @endsection
