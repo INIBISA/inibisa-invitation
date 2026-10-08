@@ -26,6 +26,7 @@ class HomeController extends Controller
         $descriptions = [
             'eternal-ivory' => 'Nuansa ivory yang tenang dengan serif anggun dan ornamen floral klasik.',
             'sweet-blossom' => 'Nuansa blush romantis dengan bunga sakura yang hangat dan manis.',
+            'midnight-nusantara' => 'Nuansa biru malam mewah dengan aksen emas dan geometri Nusantara.',
         ];
 
         return view('home', compact('templates', 'demos', 'descriptions'));

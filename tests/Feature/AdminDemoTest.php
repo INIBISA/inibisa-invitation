@@ -166,6 +166,28 @@ class AdminDemoTest extends TestCase
         $this->assertSame('Edited By Admin', $demo->refresh()->title);
     }
 
+    public function test_midnight_nusantara_demo_is_seeded_and_rendered(): void
+    {
+        $customer = User::factory()->active()->create();
+        $this->seed([TemplateSeeder::class, DemoInvitationSeeder::class]);
+        $template = Template::query()->where('key', 'midnight-nusantara')->firstOrFail();
+
+        $this->actingAs($customer)->get(route('templates.show', $template))
+            ->assertOk()
+            ->assertSee('Aruna &amp; Bima', false)
+            ->assertSee('data-midnight-shell', false)
+            ->assertSee('Agenda Perayaan')
+            ->assertSee('css/templates/midnight-nusantara.css', false)
+            ->assertSee('js/templates/midnight-nusantara.js', false)
+            ->assertSee('images/templates/midnight-nusantara/couple-placeholder.svg', false)
+            ->assertDontSee('templates/eternal-ivory', false)
+            ->assertDontSee('images/templates/eternal-ivory', false);
+
+        $this->assertSame('Luxury', $template->category);
+        $this->assertSame('templates.midnight-nusantara.index', $template->view_path);
+        $this->assertSame('aruna-bima', $template->demo->slug);
+    }
+
     private function validPayload(Template $template): array
     {
         return [

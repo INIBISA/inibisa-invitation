@@ -95,6 +95,49 @@ class DemoInvitationSeeder extends Seeder
                 ['guest_name' => 'Nadia Putri', 'message' => 'Bahagia selalu, tidak sabar hadir di hari bahagianya!'],
             ],
         );
+
+        $this->seedDemo(
+            'midnight-nusantara',
+            'aruna-bima',
+            'Aruna & Bima',
+            [
+                'groom' => [
+                    'nickname' => 'Bima',
+                    'full_name' => 'Bima Adinata',
+                    'father' => 'Bapak Surya Adinata',
+                    'mother' => 'Ibu Larasati',
+                    'instagram' => '@bimaadinata',
+                ],
+                'bride' => [
+                    'nickname' => 'Aruna',
+                    'full_name' => 'Aruna Sekar',
+                    'father' => 'Bapak Bagus Pranata',
+                    'mother' => 'Ibu Ratih Sekar',
+                    'instagram' => '@arunasekar',
+                ],
+                'wedding_date' => '2026-10-18',
+                'quote' => 'Di bawah langit yang sama, dua perjalanan menemukan satu tujuan.',
+                'events' => [
+                    ['name' => 'Akad Nikah', 'date' => '2026-10-18', 'time' => '08:00', 'location' => 'Pendopo Agung', 'address' => 'Jl. Pusaka No. 18, Yogyakarta', 'maps_url' => 'https://maps.google.com'],
+                    ['name' => 'Resepsi', 'date' => '2026-10-18', 'time' => '19:00', 'location' => 'Pendopo Agung', 'address' => 'Jl. Pusaka No. 18, Yogyakarta', 'maps_url' => 'https://maps.google.com'],
+                ],
+                'stories' => [
+                    ['title' => 'Awal Cerita', 'date' => '2022-08-14', 'story' => 'Percakapan singkat menjelma perjalanan yang ingin kami jaga selamanya.'],
+                    ['title' => 'Satu Tujuan', 'date' => '2026-02-08', 'story' => 'Di hadapan keluarga, kami memilih melangkah menuju masa depan bersama.'],
+                ],
+                'banks' => [
+                    ['bank_name' => 'Mandiri', 'account_number' => '1357902468', 'account_name' => 'Bima Adinata'],
+                ],
+            ],
+            [
+                ['guest_name' => 'Raka Pratama', 'attendance' => 'attending', 'guest_count' => 2],
+                ['guest_name' => 'Sekar Ayuningtyas', 'attendance' => 'attending', 'guest_count' => 1],
+            ],
+            [
+                ['guest_name' => 'Raka Pratama', 'message' => 'Semoga perjalanan baru kalian selalu hangat dan penuh berkah.'],
+                ['guest_name' => 'Sekar Ayuningtyas', 'message' => 'Selamat Aruna dan Bima, bahagia hingga selamanya!'],
+            ],
+        );
     }
 
     /**

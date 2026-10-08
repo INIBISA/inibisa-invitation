@@ -32,5 +32,17 @@ class TemplateSeeder extends Seeder
                 'is_active' => true,
             ],
         );
+
+        Template::query()->firstOrCreate(
+            ['key' => 'midnight-nusantara'],
+            [
+                'name' => 'Midnight Nusantara',
+                'view_path' => 'templates.midnight-nusantara.index',
+                'thumbnail' => 'images/templates/midnight-nusantara/thumbnail.svg',
+                'price' => 150000,
+                'category' => 'Luxury',
+                'is_active' => true,
+            ],
+        );
     }
 }
