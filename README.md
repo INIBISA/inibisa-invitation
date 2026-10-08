@@ -13,7 +13,7 @@ Aplikasi undangan pernikahan digital berbasis Laravel 12. Customer membuat, meng
 
 ## Kebutuhan
 
-- PHP 8.3 atau lebih baru dengan ekstensi Imagick.
+- PHP 8.3 atau lebih baru dengan ekstensi GD. Imagick akan dipakai otomatis jika tersedia.
 - Composer.
 - MySQL 8 atau kompatibel.
 

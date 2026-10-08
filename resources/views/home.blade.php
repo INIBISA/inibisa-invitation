@@ -11,6 +11,7 @@
     <script src="{{ asset('js/landing.js') }}" defer></script>
 </head>
 <body class="landing-body">
+<!-- HEADER / NAVBAR -->
 <header class="landing-header" data-landing-header>
     <div class="landing-container header-inner">
         <a class="landing-brand" href="/" aria-label="{{ config('app.name', 'Undangan Digital') }}">
@@ -19,7 +20,7 @@
         </a>
         <nav class="landing-nav" aria-label="Navigasi utama">
             <a href="#fitur">Fitur</a>
-            <a href="#cara-kerja">Cara Kerja</a>
+            <a href="#cara-kerja">Alur Pembuatan</a>
             <a href="#template">Template</a>
             <a href="#faq">FAQ</a>
         </nav>
@@ -33,7 +34,7 @@
     </div>
     <div class="landing-mobile" id="landing-mobile-menu" data-landing-mobile hidden>
         <a href="#fitur">Fitur</a>
-        <a href="#cara-kerja">Cara Kerja</a>
+        <a href="#cara-kerja">Alur Pembuatan</a>
         <a href="#template">Template</a>
         <a href="#faq">FAQ</a>
         <div class="landing-mobile-actions">
@@ -44,16 +45,17 @@
 </header>
 
 <main>
+    <!-- HERO -->
     <section class="landing-hero">
         <img class="landing-hero-floral landing-hero-floral--left" src="{{ asset('images/templates/eternal-ivory/floral-corner-left.webp') }}" alt="" width="720" height="720" decoding="async" data-parallax="0.12">
         <img class="landing-hero-floral landing-hero-floral--right" src="{{ asset('images/templates/eternal-ivory/floral-corner-right.webp') }}" alt="" width="720" height="720" decoding="async" data-parallax="0.08">
         <div class="landing-container hero-grid">
             <div class="hero-copy" data-reveal>
-                <p class="hero-kicker">Website undangan pernikahan premium</p>
-                <h1>Undangan digital yang elegan dan mudah dibagikan.</h1>
-                <p class="hero-lead">Satu tautan untuk tamu, satu dashboard untuk RSVP, ucapan, dan detail acara.</p>
+                <p class="hero-kicker">Website undangan pernikahan ~</p>
+                <h1>Bikin Undangan Mewah Tanpa Ribet, Cukup Dalam Hitungan Menit.</h1>
+                <p class="hero-lead">Persiapan pernikahan jadi lebih tenang. Cukup sebar satu tautan cantik, lalu biarkan sistem mengelola konfirmasi hadir, lokasi, hingga pesan dari para tamu.</p>
                 <div class="hero-cta">
-                    <a class="primary-button hero-primary" href="{{ route('register') }}">Buat Undangan Sekarang <svg viewBox="0 0 24 24"><path d="M5 12h14M14 7l5 5-5 5"/></svg></a>
+                    <a class="primary-button hero-primary" href="{{ route('register') }}">Buat Undangan Gratis <svg viewBox="0 0 24 24"><path d="M5 12h14M14 7l5 5-5 5"/></svg></a>
                     <a class="secondary-button" href="#template">Lihat Template</a>
                 </div>
             </div>
@@ -77,34 +79,82 @@
         </div>
     </section>
 
-    <section class="landing-section" id="fitur">
-        <div class="landing-container">
-            <div class="section-head" data-reveal>
-                <p class="overline">Fitur</p>
-                <h2>Semua kebutuhan undangan dalam satu tempat.</h2>
-            </div>
-            <div class="feature-grid">
-                <article class="feature-card" data-reveal><span class="feature-icon gold"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4zM8 8h8M8 12h5M8 16h7"/></svg></span><h3>Editor yang mudah</h3><p>Isi detail pasangan, acara, dan galeri lewat form terstruktur.</p></article>
-                <article class="feature-card" data-reveal><span class="feature-icon green"><svg viewBox="0 0 24 24"><path d="M5 3v3M19 3v3M4 8h16M5 5h14a2 2 0 0 1 2 2v13H3V7a2 2 0 0 1 2-2Z"/><path d="m8 14 2 2 5-5"/></svg></span><h3>RSVP &amp; ucapan otomatis</h3><p>Kehadiran dan pesan tamu tercatat langsung di dashboard.</p></article>
-                <article class="feature-card" data-reveal><span class="feature-icon rose"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.7-7.5a5.5 5.5 0 0 0 1.1-8.9Z"/></svg></span><h3>Premium di semua perangkat</h3><p>Ringan dan nyaman dibaca di ponsel maupun desktop.</p></article>
-            </div>
-        </div>
-    </section>
-
+    <!-- CARA KERJA -->
     <section class="landing-section" id="cara-kerja">
         <div class="landing-container">
             <div class="section-head" data-reveal>
-                <p class="overline">Cara kerja</p>
+                <p class="overline">Alur Pembuatan</p>
                 <h2>Tiga langkah menuju undangan siap dibagikan.</h2>
             </div>
+
             <div class="steps-grid">
-                <article class="step-card" data-reveal><span class="step-number">01</span><h3>Daftar akun</h3><p>Buat akun, admin akan mengaktifkannya untukmu.</p></article>
-                <article class="step-card" data-reveal><span class="step-number">02</span><h3>Isi detail undangan</h3><p>Lengkapi nama, jadwal, lokasi, foto, dan pesan.</p></article>
-                <article class="step-card" data-reveal><span class="step-number">03</span><h3>Publikasikan &amp; bagikan</h3><p>Terbitkan tautan, lalu pantau RSVP dari dashboard.</p></article>
+
+                <article class="step-card" data-reveal>
+                    <span class="step-number">01</span>
+
+                    <div class="step-icon" aria-hidden="true">
+                        <!-- Seal / Verified -->
+                        <svg viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <path d="M12 3l2.1 2.1 3-.4.4 3L20 10l-2.5 2.3-.4 3-3-.4L12 17l-2.1-2.1-3 .4-.4-3L4 10l2.5-2.3.4-3 3 .4L12 3Z"/>
+                            <path d="m9.5 10 1.6 1.6 3.4-3.4"/>
+                        </svg>
+                    </div>
+
+                    <h3>Daftar akun</h3>
+                    <p>Buat akun, admin akan mengaktifkannya untukmu.</p>
+                </article>
+
+                <article class="step-card" data-reveal>
+                    <span class="step-number">02</span>
+
+                    <div class="step-icon" aria-hidden="true">
+                        <!-- Formal Invitation -->
+                        <svg viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <rect x="4" y="5" width="16" height="14" rx="1.5"/>
+                            <path d="M4 7.5 12 13l8-5.5"/>
+                            <path d="M8 9.5h8"/>
+                        </svg>
+                    </div>
+
+                    <h3>Isi detail undangan</h3>
+                    <p>Lengkapi nama, jadwal, lokasi, foto, dan pesan.</p>
+                </article>
+
+                <article class="step-card" data-reveal>
+                    <span class="step-number">03</span>
+
+                    <div class="step-icon" aria-hidden="true">
+                        <!-- Publish / Link -->
+                        <svg viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <path d="M10 13a5 5 0 0 0 7.1.1l1.8-1.8a5 5 0 0 0-7.1-7.1L10.8 5"/>
+                            <path d="M14 11a5 5 0 0 0-7.1-.1l-1.8 1.8a5 5 0 0 0 7.1 7.1l1-1"/>
+                        </svg>
+                    </div>
+
+                    <h3>Publikasikan &amp; bagikan</h3>
+                    <p>Terbitkan tautan, lalu pantau RSVP dari dashboard.</p>
+                </article>
+
             </div>
         </div>
     </section>
 
+    <!-- TEMPLATE -->
     <section class="landing-section soft" id="template">
         <div class="landing-container">
             <div class="section-head" data-reveal>
@@ -133,6 +183,22 @@
         </div>
     </section>
 
+    <!-- FITUR -->
+    <section class="landing-section" id="fitur">
+        <div class="landing-container">
+            <div class="section-head" data-reveal>
+                <p class="overline">Fitur</p>
+                <h2>Detail kecil hingga momen besar, semua ada di sini!</h2>
+            </div>
+            <div class="feature-grid">
+                <article class="feature-card" data-reveal><span class="feature-icon gold"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4zM8 8h8M8 12h5M8 16h7"/></svg></span><h3>Mudah disiapkan </h3><p>Isi detail pasangan, acara, dan galeri lewat form terstruktur.</p></article>
+                <article class="feature-card" data-reveal><span class="feature-icon green"><svg viewBox="0 0 24 24"><path d="M5 3v3M19 3v3M4 8h16M5 5h14a2 2 0 0 1 2 2v13H3V7a2 2 0 0 1 2-2Z"/><path d="m8 14 2 2 5-5"/></svg></span><h3>Mudah memantau kehadiran</h3><p>Pantau kehadiran dan ucapan hangat dari orang terdekat.</p></article>
+                <article class="feature-card" data-reveal><span class="feature-icon rose"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.7-7.5a5.5 5.5 0 0 0 1.1-8.9Z"/></svg></span><h3>Elegan dari layar mana pun</h3><p>Dari ponsel hingga desktop, undangan tetap tampil elegan.</p></article>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
     <section class="landing-section" id="faq">
         <div class="landing-container">
             <div class="section-head" data-reveal>
@@ -147,6 +213,7 @@
         </div>
     </section>
 
+    <!-- CTA PENUTUP -->
     <section class="landing-cta-section">
         <div class="landing-container">
             <div class="cta-panel" data-reveal>
@@ -162,6 +229,21 @@
     </section>
 </main>
 
+<!-- THEME DEMO MODAL -->
+<div class="theme-modal" data-theme-modal hidden>
+    <div class="theme-modal-backdrop" data-theme-modal-close></div>
+    <div class="theme-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="theme-modal-title">
+        <button class="theme-modal-close" type="button" data-theme-modal-close aria-label="Tutup preview">×</button>
+        <img src="" alt="" data-theme-modal-image>
+        <div class="theme-modal-body">
+            <p class="overline">Live Demo</p>
+            <h2 id="theme-modal-title" data-theme-modal-title>Theme Preview</h2>
+            <a class="landing-cta" href="{{ route('register') }}">Gunakan Tema Ini</a>
+        </div>
+    </div>
+</div>
+
+<!-- FOOTER -->
 <footer class="landing-footer">
     <div class="landing-container footer-grid">
         <div>
@@ -173,7 +255,7 @@
         <div>
             <strong>Menu</strong>
             <a href="#fitur">Fitur</a>
-            <a href="#cara-kerja">Cara Kerja</a>
+            <a href="#cara-kerja">Alur Pembuatan</a>
             <a href="#template">Template</a>
             <a href="#faq">FAQ</a>
         </div>

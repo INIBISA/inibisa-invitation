@@ -51,22 +51,9 @@ class InvitationMediaManager
         $created = [];
 
         foreach (array_values($files) as $sortOrder => $file) {
-            $image = new Imagick($file->getRealPath());
-            $image->autoOrient();
-            $image->setImagePage(0, 0, 0, 0);
-
-            if ($image->getImageWidth() > 1200) {
-                $image->thumbnailImage(1200, 0);
-            }
-
-            $image->setImageFormat('webp');
-            $image->setImageCompressionQuality(78);
-            $image->stripImage();
-            $width = $image->getImageWidth();
-            $height = $image->getImageHeight();
+            [$contents, $width, $height] = $this->encodeImageAsWebp($file);
             $filePath = 'invitations/'.$invitation->id.'/'.Str::uuid().'.webp';
-            $stored = Storage::disk('public')->put($filePath, $image->getImagesBlob(), 'public');
-            $image->clear();
+            $stored = Storage::disk('public')->put($filePath, $contents, 'public');
 
             abort_unless($stored, 500, 'Media gagal disimpan.');
 
@@ -81,6 +68,65 @@ class InvitationMediaManager
 
         $this->removeCollection($invitation, $collection);
         $invitation->media()->createMany($created);
+    }
+
+    private function encodeImageAsWebp(UploadedFile $file): array
+    {
+        if (class_exists(Imagick::class)) {
+            $image = new Imagick($file->getRealPath());
+            $image->autoOrient();
+            $image->setImagePage(0, 0, 0, 0);
+
+            if ($image->getImageWidth() > 1200) {
+                $image->thumbnailImage(1200, 0);
+            }
+
+            $image->setImageFormat('webp');
+            $image->setImageCompressionQuality(78);
+            $image->stripImage();
+            $width = $image->getImageWidth();
+            $height = $image->getImageHeight();
+            $contents = $image->getImagesBlob();
+            $image->clear();
+
+            return [$contents, $width, $height];
+        }
+
+        return $this->encodeImageWithGd($file);
+    }
+
+    private function encodeImageWithGd(UploadedFile $file): array
+    {
+        $source = match ($file->getMimeType()) {
+            'image/jpeg' => imagecreatefromjpeg($file->getRealPath()),
+            'image/png' => imagecreatefrompng($file->getRealPath()),
+            'image/webp' => imagecreatefromwebp($file->getRealPath()),
+            default => false,
+        };
+
+        abort_unless($source, 422, 'Format gambar tidak didukung.');
+
+        $sourceWidth = imagesx($source);
+        $sourceHeight = imagesy($source);
+        $width = min($sourceWidth, 1200);
+        $height = (int) round($sourceHeight * ($width / $sourceWidth));
+
+        $canvas = imagecreatetruecolor($width, $height);
+        imagepalettetotruecolor($source);
+        imagealphablending($canvas, false);
+        imagesavealpha($canvas, true);
+        imagecopyresampled($canvas, $source, 0, 0, 0, 0, $width, $height, $sourceWidth, $sourceHeight);
+
+        ob_start();
+        imagewebp($canvas, null, 78);
+        $contents = ob_get_clean();
+
+        imagedestroy($source);
+        imagedestroy($canvas);
+
+        abort_unless(is_string($contents) && $contents !== '', 500, 'Media gagal diproses.');
+
+        return [$contents, $width, $height];
     }
 
     private function replaceMusic(Invitation $invitation, UploadedFile $file): void
