@@ -132,14 +132,18 @@ class GuestManagementTest extends TestCase
 
     public function test_whatsapp_template_is_safely_encoded_in_page_json(): void
     {
+        $messageTemplate = 'Halo "Ayu & Bima" </script><script>alert(1)</script> {nama_tamu}';
         $customer = User::factory()->active()->create([
-            'whatsapp_message_template' => '</script><script>alert(1)</script> {nama_tamu}',
+            'whatsapp_message_template' => $messageTemplate,
         ]);
         $invitation = Invitation::factory()->for($customer)->create();
 
-        $this->actingAs($customer)->get(route('invitations.guests.index', $invitation))
+        $response = $this->actingAs($customer)->get(route('invitations.guests.index', $invitation))
             ->assertOk()
             ->assertDontSee('</script><script>alert(1)</script>', false)
             ->assertSee('\\u003C\\/script\\u003E', false);
+
+        $this->assertSame(1, preg_match('/<script type="application\/json" data-whatsapp-message-template>(.*?)<\/script>/s', $response->getContent(), $matches));
+        $this->assertSame($messageTemplate, json_decode($matches[1], true, 512, JSON_THROW_ON_ERROR));
     }
 }
