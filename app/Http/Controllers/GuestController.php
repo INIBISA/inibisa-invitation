@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Yajra\DataTables\Facades\DataTables;
 
 class GuestController extends Controller
 {
@@ -27,16 +28,30 @@ class GuestController extends Controller
             ->selectRaw('COUNT(*) as total')
             ->selectRaw('SUM(CASE WHEN sent_at IS NOT NULL THEN 1 ELSE 0 END) as sent')
             ->first();
+        $whatsAppMessageTemplate = $request->user()->whatsapp_message_template ?: WhatsAppInvitationMessage::defaultTemplate();
+
+        return view('guests.index', compact('invitation', 'guestStats', 'whatsAppMessageTemplate'));
+    }
+
+    public function data(Request $request, Invitation $invitation): JsonResponse
+    {
+        Gate::authorize('view', $invitation);
         $guests = $invitation->guests()
-            ->when($request->filled('search'), fn ($query) => $query->where('name', 'like', '%'.$request->string('search')->toString().'%'))
             ->when($request->query('contact') === 'with_whatsapp', fn ($query) => $query->whereNotNull('whatsapp'))
             ->when($request->query('contact') === 'without_whatsapp', fn ($query) => $query->whereNull('whatsapp'))
             ->when($request->query('delivery') === 'sent', fn ($query) => $query->whereNotNull('sent_at'))
-            ->when($request->query('delivery') === 'unsent', fn ($query) => $query->whereNull('sent_at'))
-            ->orderBy('name')->paginate(30)->withQueryString();
+            ->when($request->query('delivery') === 'unsent', fn ($query) => $query->whereNull('sent_at'));
         $whatsAppMessageTemplate = $request->user()->whatsapp_message_template ?: WhatsAppInvitationMessage::defaultTemplate();
 
-        return view('guests.index', compact('invitation', 'guests', 'guestStats', 'whatsAppMessageTemplate'));
+        return DataTables::eloquent($guests)
+            ->addIndexColumn()
+            ->addColumn('guest', fn (Guest $guest): string => '<div class="guest-person"><span>'.e(mb_strtoupper(mb_substr($guest->name, 0, 1))).'</span><div><strong>'.e($guest->name).'</strong><small>'.e($guest->whatsapp ?: 'Tanpa WhatsApp').'</small></div></div>')
+            ->addColumn('delivery', fn (Guest $guest): string => '<span class="status-badge '.($guest->sent_at ? 'published' : 'draft').'"><i></i>'.($guest->sent_at ? 'Terkirim' : 'Belum dikirim').'</span>'.($guest->sent_at ? '<small class="guest-sent-time">'.$guest->sent_at->translatedFormat('d M Y, H:i').'</small>' : ''))
+            ->addColumn('share', fn (Guest $guest): string => view('guests.partials.share-actions', ['guest' => $guest, 'invitation' => $invitation, 'whatsAppMessageTemplate' => $whatsAppMessageTemplate])->render())
+            ->addColumn('action', fn (Guest $guest): string => view('guests.partials.row-actions', ['guest' => $guest])->render())
+            ->filterColumn('guest', fn ($query, string $keyword) => $query->where(fn ($query) => $query->where('name', 'like', "%{$keyword}%")->orWhere('whatsapp', 'like', "%{$keyword}%")))
+            ->rawColumns(['guest', 'delivery', 'share', 'action'])
+            ->toJson();
     }
 
     public function store(StoreGuestRequest $request, Invitation $invitation): RedirectResponse

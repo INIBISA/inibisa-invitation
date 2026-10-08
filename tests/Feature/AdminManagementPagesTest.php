@@ -23,12 +23,22 @@ class AdminManagementPagesTest extends TestCase
         Rsvp::factory()->for($invitation)->create(['guest_name' => 'Rizky Special', 'attendance' => 'attending']);
         Rsvp::factory()->for($invitation)->create(['guest_name' => 'Other Guest', 'attendance' => 'not_attending']);
 
-        $response = $this->actingAs($admin)->get(route('admin.rsvps.index', [
-            'search' => 'Rizky',
+        $this->actingAs($admin)->get(route('admin.rsvps.index'))
+            ->assertOk()
+            ->assertSee(route('admin.rsvps.data'));
+
+        $response = $this->actingAs($admin)->getJson(route('admin.rsvps.data', [
+            'draw' => 1,
+            'start' => 0,
+            'length' => 25,
             'attendance' => 'attending',
         ]));
 
-        $response->assertOk()->assertSee('Rizky Special')->assertSee('Haikal &amp; Fitria', false)->assertDontSee('Other Guest');
+        $response
+            ->assertOk()
+            ->assertJsonPath('recordsTotal', 1)
+            ->assertJsonPath('data.0.guest_name', 'Rizky Special')
+            ->assertJsonPath('data.0.invitation_title', 'Haikal &amp; Fitria');
     }
 
     public function test_admin_can_search_all_wishes(): void

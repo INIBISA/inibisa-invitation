@@ -1,36 +1,12 @@
 @extends('layouts.app')
 @section('title', 'Ucapan ' . $invitation->title)
-@section('content')<div class="page-head">
-        <div>
-            <div class="eyebrow">{{ $invitation->title }}</div>
-            <h1>Ucapan</h1>
-        </div><a class="button secondary" href="{{ route('dashboard') }}">Kembali</a>
-    </div>
-    <form class="management-filters" method="GET"><input class="input" type="search" name="search"
-            value="{{ request('search') }}" placeholder="Cari tamu atau ucapan"><button class="button secondary"
-            type="submit">Cari</button></form>
-    <div class="card table-wrap">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>No.</th>
-                    <th>Tamu</th>
-                    <th>Ucapan</th>
-                    <th>Waktu</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($wishes as $wish)
-                    <tr>
-                        <td>{{ $wishes->firstItem() + $loop->index }}</td>
-                        <td>{{ $wish->guest_name }}</td>
-                        <td>{{ $wish->message }}</td>
-                        <td>{{ $wish->created_at->format('d M Y H:i') }}</td>
-                </tr>@empty<tr>
-                        <td colspan="4">Belum ada ucapan.</td>
-                    </tr>
-                @endforelse
-            </tbody>
+@section('content')
+    @include('partials.datatables-assets')
+    <div class="page-head"><div><div class="eyebrow">{{ $invitation->title }}</div><h1>Ucapan</h1></div><a class="button secondary" href="{{ route('dashboard') }}">Kembali</a></div>
+    <section class="card table-wrap datatable-panel"><div class="table-scroll">
+        <table class="table" data-datatable data-source="{{ route('invitations.wishes.data', $invitation) }}">
+            <thead><tr><th>No.</th><th>Tamu</th><th>Ucapan</th><th>Waktu</th></tr></thead><tbody></tbody>
         </table>
-    </div>
-<div class="pagination">{{ $wishes->links() }}</div>@endsection
+        <script type="application/json" data-datatable-config>{!! Illuminate\Support\Js::encode(['columns' => [['data' => 'DT_RowIndex', 'name' => 'id', 'searchable' => false], ['data' => 'guest_name', 'name' => 'guest_name'], ['data' => 'message', 'name' => 'message'], ['data' => 'created_at', 'name' => 'created_at', 'searchable' => false]], 'order' => [[0, 'desc']]]) !!}</script>
+    </div></section>
+@endsection

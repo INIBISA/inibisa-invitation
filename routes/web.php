@@ -68,8 +68,11 @@ Route::middleware('auth')->group(function (): void {
     Route::post('/invitations/{invitation}/publication', [InvitationPublicationController::class, 'store'])->name('invitations.publication.store');
     Route::delete('/invitations/{invitation}/publication', [InvitationPublicationController::class, 'destroy'])->name('invitations.publication.destroy');
     Route::get('/invitations/{invitation}/rsvps', [InvitationResponseController::class, 'rsvps'])->name('invitations.rsvps');
+    Route::get('/invitations/{invitation}/rsvps/data', [InvitationResponseController::class, 'rsvpData'])->name('invitations.rsvps.data');
     Route::get('/invitations/{invitation}/wishes', [InvitationResponseController::class, 'wishes'])->name('invitations.wishes');
+    Route::get('/invitations/{invitation}/wishes/data', [InvitationResponseController::class, 'wishData'])->name('invitations.wishes.data');
     Route::get('/invitations/{invitation}/guests', [GuestController::class, 'index'])->name('invitations.guests.index');
+    Route::get('/invitations/{invitation}/guests/data', [GuestController::class, 'data'])->name('invitations.guests.data');
     Route::post('/invitations/{invitation}/guests', [GuestController::class, 'store'])->name('invitations.guests.store');
     Route::post('/invitations/{invitation}/guests/import', [GuestController::class, 'import'])->name('invitations.guests.import');
     Route::get('/invitations/{invitation}/guests/template', [GuestController::class, 'template'])->name('invitations.guests.template');
@@ -81,18 +84,23 @@ Route::middleware('auth')->group(function (): void {
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function (): void {
     Route::get('/', AdminDashboardController::class)->name('dashboard');
     Route::get('/customers', [AdminCustomerController::class, 'index'])->name('customers.index');
+    Route::get('/customers/data', [AdminCustomerController::class, 'data'])->name('customers.data');
     Route::get('/invitations', AdminInvitationController::class)->name('invitations.index');
+    Route::get('/invitations/data', [AdminInvitationController::class, 'data'])->name('invitations.data');
     Route::get('/templates', AdminTemplateController::class)->name('templates.index');
     Route::patch('/templates/{template}', [AdminTemplateController::class, 'update'])->name('templates.update');
     Route::get('/demos/{demo}/edit', [AdminDemoInvitationController::class, 'edit'])->name('demos.edit');
     Route::put('/demos/{demo}', [AdminDemoInvitationController::class, 'update'])->name('demos.update');
     Route::resource('music', AdminWeddingMusicController::class)->except(['show', 'create', 'edit']);
     Route::get('/rsvps', AdminRsvpController::class)->name('rsvps.index');
+    Route::get('/rsvps/data', [AdminRsvpController::class, 'data'])->name('rsvps.data');
     Route::get('/wishes', AdminWishController::class)->name('wishes.index');
     Route::get('/guests', App\Http\Controllers\Admin\GuestController::class)->name('guests.index');
+    Route::get('/guests/data', [App\Http\Controllers\Admin\GuestController::class, 'data'])->name('guests.data');
     Route::get('/settings', [AdminSettingController::class, 'edit'])->name('settings.edit');
     Route::patch('/settings', [AdminSettingController::class, 'update'])->name('settings.update');
     Route::get('/payments', [App\Http\Controllers\Admin\PaymentController::class, 'index'])->name('payments.index');
+    Route::get('/payments/data', [App\Http\Controllers\Admin\PaymentController::class, 'data'])->name('payments.data');
     Route::patch('/payments/{payment}', [App\Http\Controllers\Admin\PaymentController::class, 'update'])->name('payments.update');
 });
 
