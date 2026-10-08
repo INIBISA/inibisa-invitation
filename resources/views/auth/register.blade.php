@@ -3,9 +3,8 @@
 @section('auth-page', 'auth-register')
 @section('content')
     <div class="auth-heading">
-        <span class="auth-kicker">Mulai perjalanan indahmu</span>
         <h2>Buat Akun</h2>
-        <p>Siapkan ruang kerjamu dan wujudkan undangan pernikahan impianmu.</p>
+        <p>Mulai buat undangan Anda.</p>
     </div>
     @if ($errors->any())
         <div class="auth-error-summary"><svg viewBox="0 0 24 24">
@@ -13,7 +12,7 @@
                 <path d="M12 8v5M12 17h.01" />
             </svg><span>{{ $errors->first() }}</span></div>
     @endif
-    @include('auth.partials.google-button', ['label' => 'Daftar dengan Google', 'divider' => 'atau daftar dengan email'])
+    @include('auth.partials.google-button', ['label' => 'Daftar dengan Google', 'divider' => 'atau'])
     <form class="premium-form" method="POST" action="{{ route('register') }}">@csrf
         <div class="form-field"><label for="name">Nama Lengkap</label>
             <div class="input-shell @error('name') invalid @enderror"><svg viewBox="0 0 24 24">
