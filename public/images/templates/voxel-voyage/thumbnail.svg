@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900" role="img" aria-labelledby="title description">
+  <title id="title">Voxel Voyage</title><desc id="description">Undangan bergaya dunia voxel penuh warna.</desc>
+  <rect width="1200" height="900" fill="#8fd7ff"/><rect y="560" width="1200" height="340" fill="#7a4d32"/><rect y="530" width="1200" height="70" fill="#58a84b"/>
+  <g fill="#fff"><rect x="80" y="110" width="220" height="55"/><rect x="135" y="55" width="95" height="55"/><rect x="835" y="155" width="250" height="55"/><rect x="900" y="100" width="120" height="55"/></g>
+  <g stroke="#17253b" stroke-width="8"><rect x="85" y="620" width="170" height="170" fill="#f2d58a"/><rect x="945" y="600" width="160" height="160" fill="#ffd447"/><rect x="920" y="445" width="110" height="85" fill="#58a84b"/></g>
+  <rect x="260" y="195" width="680" height="450" fill="#fff8df" stroke="#17253b" stroke-width="10"/><rect x="285" y="220" width="630" height="400" fill="none" stroke="#58a84b" stroke-width="5" stroke-dasharray="20 14"/>
+  <text x="600" y="285" text-anchor="middle" fill="#17253b" font-family="Courier New, monospace" font-size="24" font-weight="700" letter-spacing="5">NEW JOURNEY UNLOCKED</text>
+  <text x="600" y="425" text-anchor="middle" fill="#17253b" font-family="Courier New, monospace" font-size="88" font-weight="900">NARA + RAKA</text>
+  <rect x="435" y="468" width="330" height="62" fill="#ffd447" stroke="#17253b" stroke-width="6"/><text x="600" y="508" text-anchor="middle" fill="#17253b" font-family="Courier New, monospace" font-size="25" font-weight="900">18 · 11 · 2026</text>
+  <text x="600" y="585" text-anchor="middle" fill="#397737" font-family="Courier New, monospace" font-size="20" font-weight="700" letter-spacing="6">VOXEL VOYAGE</text>
+</svg>

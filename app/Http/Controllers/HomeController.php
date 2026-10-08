@@ -29,6 +29,7 @@ class HomeController extends Controller
             'rustic-forest' => 'Nuansa kayu dan dedaunan hangat untuk pernikahan outdoor yang intim.',
             'sweet-blossom' => 'Nuansa blush romantis dengan bunga sakura yang hangat dan manis.',
             'midnight-nusantara' => 'Nuansa biru malam mewah dengan aksen emas dan geometri Nusantara.',
+            'voxel-voyage' => 'Dunia voxel penuh warna dengan panel permainan, peta perjalanan, dan nuansa petualangan ceria.',
         ];
 
         return view('home', compact('templates', 'demos', 'descriptions'));

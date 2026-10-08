@@ -32,6 +32,7 @@ use App\Http\Controllers\YouTubeMusicSearchController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomeController::class);
+Route::get('/templates/{template}', [TemplateBrowserController::class, 'show'])->name('templates.show');
 
 Route::middleware('guest')->group(function (): void {
     Route::get('/register', [RegisterController::class, 'create'])->name('register');
@@ -56,7 +57,6 @@ Route::middleware('auth')->group(function (): void {
     });
     Route::get('/templates', [TemplateBrowserController::class, 'index'])->name('templates.index');
     Route::get('/youtube/music/search', YouTubeMusicSearchController::class)->middleware('throttle:youtube-search')->name('youtube.music.search');
-    Route::get('/templates/{template}', [TemplateBrowserController::class, 'show'])->name('templates.show');
     Route::get('/checkout/{template}', [PaymentController::class, 'create'])->name('payments.create');
     Route::resource('payments', PaymentController::class)->only(['index', 'store', 'show']);
     Route::post('/payments/{payment}/proof', [PaymentController::class, 'uploadProof'])->name('payments.proof.store');

@@ -18,11 +18,14 @@ class AdminTemplateThumbnailTest extends TestCase
     {
         $sweetBlossom = new \Imagick(public_path('images/templates/sweet-blossom/thumbnail.webp'));
         $midnightNusantara = simplexml_load_file(public_path('images/templates/midnight-nusantara/thumbnail.svg'));
+        $voxelVoyage = simplexml_load_file(public_path('images/templates/voxel-voyage/thumbnail.svg'));
 
         $this->assertSame(1200, $sweetBlossom->getImageWidth());
         $this->assertSame(900, $sweetBlossom->getImageHeight());
         $this->assertSame('1200', (string) $midnightNusantara['width']);
         $this->assertSame('900', (string) $midnightNusantara['height']);
+        $this->assertSame('1200', (string) $voxelVoyage['width']);
+        $this->assertSame('900', (string) $voxelVoyage['height']);
     }
 
     public function test_admin_template_settings_offer_thumbnail_upload(): void

@@ -166,6 +166,44 @@ class AdminDemoTest extends TestCase
         $this->assertSame('Edited By Admin', $demo->refresh()->title);
     }
 
+    public function test_guest_can_open_an_active_template_demo(): void
+    {
+        $this->seed([TemplateSeeder::class, DemoInvitationSeeder::class]);
+        $template = Template::query()->where('key', 'voxel-voyage')->firstOrFail();
+
+        $this->get(route('templates.show', $template))
+            ->assertOk()
+            ->assertSee('Nara &amp; Raka', false)
+            ->assertDontSee('data-async-form="rsvp"', false)
+            ->assertDontSee('data-async-form="wish"', false);
+    }
+
+    public function test_guest_cannot_open_a_missing_or_inactive_template_demo(): void
+    {
+        $templateWithoutDemo = Template::factory()->create(['is_active' => true]);
+        $inactiveTemplate = Template::factory()->create(['is_active' => false]);
+        TemplateDemo::query()->create([
+            'template_id' => $inactiveTemplate->id,
+            'slug' => 'inactive-demo',
+            'title' => 'Inactive Demo',
+            'data' => [],
+        ]);
+
+        $this->get(route('templates.show', $templateWithoutDemo))->assertNotFound();
+        $this->get(route('templates.show', $inactiveTemplate))->assertNotFound();
+    }
+
+    public function test_landing_demo_link_uses_the_public_template_preview_route(): void
+    {
+        $this->seed([TemplateSeeder::class, DemoInvitationSeeder::class]);
+        $template = Template::query()->where('key', 'voxel-voyage')->firstOrFail();
+
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('href="'.route('templates.show', $template).'"', false)
+            ->assertDontSee('href="'.route('public.invitation', 'nara-raka').'"', false);
+    }
+
     public function test_midnight_nusantara_demo_is_seeded_and_rendered(): void
     {
         $customer = User::factory()->active()->create();
@@ -186,6 +224,27 @@ class AdminDemoTest extends TestCase
         $this->assertSame('Luxury', $template->category);
         $this->assertSame('templates.midnight-nusantara.index', $template->view_path);
         $this->assertSame('aruna-bima', $template->demo->slug);
+    }
+
+    public function test_voxel_voyage_demo_is_seeded_and_rendered(): void
+    {
+        $customer = User::factory()->active()->create();
+        $this->seed([TemplateSeeder::class, DemoInvitationSeeder::class]);
+        $template = Template::query()->where('key', 'voxel-voyage')->firstOrFail();
+
+        $this->actingAs($customer)->get(route('templates.show', $template))
+            ->assertOk()
+            ->assertSee('Nara &amp; Raka', false)
+            ->assertSee('data-voxel-voyage', false)
+            ->assertSee('Mission Board')
+            ->assertSee('css/templates/voxel-voyage.css', false)
+            ->assertSee('js/templates/voxel-voyage.js', false)
+            ->assertDontSee('templates/eternal-ivory', false)
+            ->assertDontSee('templates/midnight-nusantara', false);
+
+        $this->assertSame('Playful', $template->category);
+        $this->assertSame('templates.voxel-voyage.index', $template->view_path);
+        $this->assertSame('nara-raka', $template->demo->slug);
     }
 
     private function validPayload(Template $template): array
