@@ -82,7 +82,7 @@
                         <div class="field"><label for="{{ $person }}_mother">Nama ibu</label><input class="input" id="{{ $person }}_mother" name="{{ $person }}[mother]" value="{{ old($person . '.mother', data_get($data, $person . '.mother')) }}" maxlength="150"></div>
                     </div>
                     <div class="field"><label for="{{ $person }}_instagram">Instagram <em>Opsional</em></label><input class="input" id="{{ $person }}_instagram" name="{{ $person }}[instagram]" value="{{ old($person . '.instagram', data_get($data, $person . '.instagram')) }}" placeholder="@username" maxlength="100"></div>
-                    <div class="field"><label for="{{ $person }}_photo">Foto mempelai <em>Opsional</em></label><input class="input" id="{{ $person }}_photo" type="file" name="{{ $person }}_photo" accept="image/jpeg,image/png,image/webp" data-max-mb="5"><small>JPG, PNG, atau WebP. Maksimal 5 MB.</small></div>
+                    <div class="field"><label for="{{ $person }}_photo">Foto mempelai <em>Opsional</em></label><input class="input" id="{{ $person }}_photo" type="file" name="{{ $person }}_photo" accept="image/jpeg,image/png,image/webp" data-instant-upload="{{ $person }}" data-max-mb="20"><small>Langsung diunggah setelah dipilih. Foto hingga 20 MB diperkecil otomatis.</small></div>
                 </div>
             @endforeach
         </div>
@@ -150,7 +150,7 @@
                 @endforeach
             </div>
             <template><div class="repeater-item"><div class="repeater-item-head"><strong data-repeater-title>Cerita</strong><button class="button small danger" type="button" data-remove-repeater>Hapus</button></div><div class="form-grid"><div class="field"><label>Judul <em>Wajib</em></label><input class="input" name="stories[__INDEX__][title]" placeholder="Pertama Bertemu" required></div><div class="field"><label>Tanggal <em>Opsional</em></label><input class="input" type="date" name="stories[__INDEX__][date]"></div><div class="field full"><label>Cerita <em>Wajib</em></label><textarea class="input" name="stories[__INDEX__][story]" placeholder="Ceritakan momen ini secara singkat" required></textarea></div></div></div></template>
-            <div class="field repeater-media-field"><label>Foto Love Story <em>Opsional</em></label><input class="input" type="file" name="story_photos[]" accept="image/jpeg,image/png,image/webp" data-max-mb="5" data-max-files="10" multiple><small>Urutan foto mengikuti urutan cerita. Maksimal 10 foto.</small></div>
+            <div class="field repeater-media-field"><label>Foto Love Story <em>Opsional</em></label><input class="input" type="file" name="story_photos[]" accept="image/jpeg,image/png,image/webp" data-instant-upload="story" data-max-mb="20" data-max-files="10" multiple><small>Langsung diunggah satu per satu sesuai urutan cerita. Maksimal 10 foto.</small></div>
         </div>
         <div class="invitation-subsection" data-repeater data-next-index="{{ count($banks) }}" data-repeater-name="Rekening">
             <div class="invitation-subsection-head"><div><h3>Wedding Gift</h3><p>Tambahkan rekening jika ingin menerima hadiah digital.</p></div><button class="button small secondary" type="button" data-add-repeater>+ Tambah Rekening</button></div>
@@ -171,9 +171,9 @@
         <div class="invitation-subsection">
             <div class="invitation-subsection-head"><div><h3>Media Undangan</h3><p>Semua media opsional dan dapat ditambahkan kembali nanti.</p></div></div>
             @if ($isDemoEditor && $invitation->media->isNotEmpty())
-                <div class="demo-media-library">
+                <div class="demo-media-library" data-demo-media-library>
                     @foreach ($invitation->media->groupBy('collection') as $collection => $items)
-                        <article>
+                        <article data-media-collection="{{ $collection }}">
                             <div><strong>{{ match ($collection) { 'cover' => 'Cover', 'groom' => 'Foto Pria', 'bride' => 'Foto Wanita', 'qris' => 'QRIS', 'gallery' => 'Galeri', 'story' => 'Foto Cerita', default => ucfirst($collection) } }}</strong><small>{{ $items->count() }} file tersimpan</small></div>
                             <div class="demo-media-previews">
                                 @foreach ($items as $media)
@@ -185,7 +185,7 @@
                     @endforeach
                 </div>
             @elseif ($isDemoEditor)
-                <div class="repeater-empty"><strong>Belum ada media demo</strong><span>Unggah foto untuk membuat tampilan demo lebih hidup.</span></div>
+                <div class="repeater-empty" data-demo-media-empty><strong>Belum ada media demo</strong><span>Unggah foto untuk membuat tampilan demo lebih hidup.</span></div>
             @endif
             @if ($invitation && ! $isDemoEditor)
                 <div class="editor-note">Unggah file baru hanya akan mengganti media pada kategori yang dipilih.</div>
@@ -193,9 +193,9 @@
                 <div class="editor-note">Unggahan baru mengganti seluruh file pada kategori terkait. Centang hapus untuk mengosongkan kategori.</div>
             @endif
             <div class="form-grid media-upload-grid">
-                <div class="field"><label>Foto cover</label><input class="input" type="file" name="cover" accept="image/jpeg,image/png,image/webp" data-max-mb="5"><small>Foto utama pada halaman pembuka.</small></div>
-                <div class="field"><label>QRIS</label><input class="input" type="file" name="qris" accept="image/jpeg,image/png,image/webp" data-max-mb="3"><small>Maksimal 3 MB.</small></div>
-                <div class="field full"><label>Galeri foto</label><input class="input" type="file" name="gallery[]" accept="image/jpeg,image/png,image/webp" data-max-mb="5" data-max-files="12" multiple><small>Pilih maksimal 12 foto sekaligus.</small></div>
+                <div class="field"><label>Foto cover</label><input class="input" type="file" name="cover" accept="image/jpeg,image/png,image/webp" data-instant-upload="cover" data-max-mb="20"><small>Langsung diunggah setelah dipilih.</small></div>
+                <div class="field"><label>QRIS</label><input class="input" type="file" name="qris" accept="image/jpeg,image/png,image/webp" data-instant-upload="qris" data-max-mb="20"><small>Langsung diunggah setelah dipilih.</small></div>
+                <div class="field full"><label>Galeri foto</label><input class="input" type="file" name="gallery[]" accept="image/jpeg,image/png,image/webp" data-instant-upload="gallery" data-max-mb="20" data-max-files="12" multiple><small>Pilih maksimal 12 foto. Setiap foto langsung diunggah satu per satu.</small></div>
             </div>
         </div>
         <div class="invitation-subsection">

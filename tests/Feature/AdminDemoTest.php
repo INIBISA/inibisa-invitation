@@ -145,6 +145,57 @@ class AdminDemoTest extends TestCase
         Storage::disk('public')->assertMissing($cover['file_path']);
     }
 
+    public function test_admin_uploads_demo_photos_individually_and_form_save_preserves_them(): void
+    {
+        Storage::fake('public');
+        $admin = User::factory()->admin()->create();
+        $this->seed([TemplateSeeder::class, DemoInvitationSeeder::class]);
+        $demo = TemplateDemo::query()->firstOrFail();
+        $url = route('admin.demos.media.store', $demo);
+
+        $this->actingAs($admin)->post($url, [
+            'collection' => 'gallery',
+            'replace' => '1',
+            'file' => UploadedFile::fake()->image('first.jpg', 900, 1200),
+        ], ['Accept' => 'application/json'])->assertOk();
+        $this->actingAs($admin)->post($url, [
+            'collection' => 'gallery',
+            'replace' => '0',
+            'file' => UploadedFile::fake()->image('second.jpg', 900, 1200),
+        ], ['Accept' => 'application/json'])->assertOk();
+
+        $photos = collect($demo->refresh()->data['media'])->where('collection', 'gallery')->values();
+        $this->assertCount(2, $photos);
+        $this->assertSame([0, 1], $photos->pluck('sort_order')->all());
+        Storage::disk('public')->assertExists($photos->pluck('file_path')->all());
+
+        $this->actingAs($admin)->put(route('admin.demos.update', $demo), $this->validPayload($demo->template))->assertRedirect();
+
+        $this->assertCount(2, collect($demo->refresh()->data['media'])->where('collection', 'gallery'));
+
+        $this->actingAs($admin)->post($url, [
+            'collection' => 'gallery',
+            'replace' => '1',
+            'file' => UploadedFile::fake()->image('replacement.jpg', 900, 1200),
+        ], ['Accept' => 'application/json'])->assertOk();
+
+        $this->assertCount(1, collect($demo->refresh()->data['media'])->where('collection', 'gallery'));
+        Storage::disk('public')->assertMissing($photos->pluck('file_path')->all());
+    }
+
+    public function test_customer_cannot_upload_demo_media(): void
+    {
+        $customer = User::factory()->active()->create();
+        $this->seed([TemplateSeeder::class, DemoInvitationSeeder::class]);
+        $demo = TemplateDemo::query()->firstOrFail();
+
+        $this->actingAs($customer)->post(route('admin.demos.media.store', $demo), [
+            'collection' => 'cover',
+            'replace' => '1',
+            'file' => UploadedFile::fake()->image('cover.jpg'),
+        ], ['Accept' => 'application/json'])->assertForbidden();
+    }
+
     public function test_customer_is_forbidden_from_admin_demo_routes(): void
     {
         $customer = User::factory()->active()->create();

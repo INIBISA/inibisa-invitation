@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Invitation;
+use App\Models\InvitationMedia;
 use App\Models\Payment;
 use App\Models\Template;
 use App\Models\User;
@@ -49,6 +50,7 @@ class InvitationManagementTest extends TestCase
         $invitation = Invitation::query()->where('slug', 'haikal-dan-fitria')->firstOrFail();
         $response->assertOk()
             ->assertJsonPath('invitation_id', $invitation->id)
+            ->assertJsonPath('media_upload_url', route('invitations.media.store', $invitation))
             ->assertJsonPath('next_step', 2);
         $this->assertSame($invitation->id, $payment->refresh()->invitation_id);
         $this->assertSame(2, $invitation->editing_step);
@@ -205,6 +207,95 @@ class InvitationManagementTest extends TestCase
         $this->assertSame('cover', $media->collection);
         $this->assertStringEndsWith('.webp', $media->file_path);
         Storage::disk('public')->assertExists($media->file_path);
+    }
+
+    public function test_customer_uploads_gallery_photos_one_request_at_a_time(): void
+    {
+        Storage::fake('public');
+        $customer = User::factory()->active()->create();
+        $invitation = Invitation::factory()->for($customer)->create();
+        $url = route('invitations.media.store', $invitation);
+
+        $this->actingAs($customer)->post($url, [
+            'collection' => 'gallery',
+            'replace' => '1',
+            'file' => UploadedFile::fake()->image('first.jpg', 900, 1200),
+        ], ['Accept' => 'application/json'])->assertOk()->assertJsonPath('collection', 'gallery');
+        $this->actingAs($customer)->post($url, [
+            'collection' => 'gallery',
+            'replace' => '0',
+            'file' => UploadedFile::fake()->image('second.jpg', 900, 1200),
+        ], ['Accept' => 'application/json'])->assertOk();
+
+        $photos = $invitation->media()->where('collection', 'gallery')->get();
+        $this->assertCount(2, $photos);
+        $this->assertSame([0, 1], $photos->pluck('sort_order')->all());
+        Storage::disk('public')->assertExists($photos->pluck('file_path')->all());
+
+        $this->actingAs($customer)->patchJson(route('invitations.steps.update', [$invitation, 5]), [
+            'step' => 5,
+            'music_start_seconds' => 0,
+        ])->assertOk();
+
+        $this->assertCount(2, $invitation->media()->where('collection', 'gallery')->get());
+    }
+
+    public function test_customer_replacing_one_photo_removes_the_previous_file(): void
+    {
+        Storage::fake('public');
+        $customer = User::factory()->active()->create();
+        $invitation = Invitation::factory()->for($customer)->create();
+        $url = route('invitations.media.store', $invitation);
+
+        $this->actingAs($customer)->post($url, [
+            'collection' => 'cover',
+            'replace' => '1',
+            'file' => UploadedFile::fake()->image('old.jpg', 900, 1200),
+        ], ['Accept' => 'application/json'])->assertOk();
+        $previous = $invitation->media()->firstOrFail();
+        $this->actingAs($customer)->post($url, [
+            'collection' => 'cover',
+            'replace' => '1',
+            'file' => UploadedFile::fake()->image('new.jpg', 900, 1200),
+        ], ['Accept' => 'application/json'])->assertOk();
+
+        $this->assertSame(1, $invitation->media()->where('collection', 'cover')->count());
+        Storage::disk('public')->assertMissing($previous->file_path);
+        Storage::disk('public')->assertExists($invitation->media()->firstOrFail()->file_path);
+    }
+
+    public function test_image_upload_checks_owner_file_type_and_collection_limit(): void
+    {
+        Storage::fake('public');
+        $owner = User::factory()->active()->create();
+        $otherCustomer = User::factory()->active()->create();
+        $invitation = Invitation::factory()->for($owner)->create();
+        $url = route('invitations.media.store', $invitation);
+
+        $this->actingAs($otherCustomer)->post($url, [
+            'collection' => 'gallery',
+            'replace' => '1',
+            'file' => UploadedFile::fake()->image('photo.jpg'),
+        ], ['Accept' => 'application/json'])->assertForbidden();
+        $this->actingAs($owner)->post($url, [
+            'collection' => 'gallery',
+            'replace' => '1',
+            'file' => UploadedFile::fake()->create('document.txt', 1, 'text/plain'),
+        ], ['Accept' => 'application/json'])->assertUnprocessable()->assertJsonValidationErrors('file');
+        $this->actingAs($owner)->post($url, [
+            'collection' => 'unsupported',
+            'replace' => '1',
+            'file' => UploadedFile::fake()->image('photo.jpg'),
+        ], ['Accept' => 'application/json'])->assertUnprocessable()->assertJsonValidationErrors('collection');
+
+        InvitationMedia::factory()->for($invitation)->count(12)->create();
+        $this->actingAs($owner)->post($url, [
+            'collection' => 'gallery',
+            'replace' => '0',
+            'file' => UploadedFile::fake()->image('extra.jpg'),
+        ], ['Accept' => 'application/json'])->assertUnprocessable()->assertJsonValidationErrors('file');
+
+        $this->assertSame(12, $invitation->media()->where('collection', 'gallery')->count());
     }
 
     public function test_customer_pages_render_and_invitation_can_be_published_then_disabled(): void

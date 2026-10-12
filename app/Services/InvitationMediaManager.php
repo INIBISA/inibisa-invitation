@@ -12,6 +12,18 @@ use Imagick;
 
 class InvitationMediaManager
 {
+    public function uploadImage(Invitation $invitation, string $collection, UploadedFile $file, bool $replace): InvitationMedia
+    {
+        $sortOrder = $replace ? 0 : (int) $invitation->media()->where('collection', $collection)->max('sort_order') + 1;
+        $created = $this->imageData($invitation, $collection, $file, $sortOrder);
+
+        if ($replace) {
+            $this->removeCollection($invitation, $collection);
+        }
+
+        return $invitation->media()->create($created);
+    }
+
     public function syncFromRequest(Invitation $invitation, Request $request): void
     {
         $singleImages = [
@@ -51,23 +63,29 @@ class InvitationMediaManager
         $created = [];
 
         foreach (array_values($files) as $sortOrder => $file) {
-            [$contents, $width, $height] = $this->encodeImageAsWebp($file);
-            $filePath = 'invitations/'.$invitation->id.'/'.Str::uuid().'.webp';
-            $stored = Storage::disk('public')->put($filePath, $contents, 'public');
-
-            abort_unless($stored, 500, 'Media gagal disimpan.');
-
-            $created[] = [
-                'collection' => $collection,
-                'file_path' => $filePath,
-                'width' => $width,
-                'height' => $height,
-                'sort_order' => $sortOrder,
-            ];
+            $created[] = $this->imageData($invitation, $collection, $file, $sortOrder);
         }
 
         $this->removeCollection($invitation, $collection);
         $invitation->media()->createMany($created);
+    }
+
+    /** @return array{collection: string, file_path: string, width: int, height: int, sort_order: int} */
+    private function imageData(Invitation $invitation, string $collection, UploadedFile $file, int $sortOrder): array
+    {
+        [$contents, $width, $height] = $this->encodeImageAsWebp($file);
+        $filePath = 'invitations/'.$invitation->id.'/'.Str::uuid().'.webp';
+        $stored = Storage::disk('public')->put($filePath, $contents, 'public');
+
+        abort_unless($stored, 500, 'Media gagal disimpan.');
+
+        return [
+            'collection' => $collection,
+            'file_path' => $filePath,
+            'width' => $width,
+            'height' => $height,
+            'sort_order' => $sortOrder,
+        ];
     }
 
     private function encodeImageAsWebp(UploadedFile $file): array

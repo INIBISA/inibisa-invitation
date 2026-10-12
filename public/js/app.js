@@ -355,9 +355,46 @@
         });
     });
 
+    var instantUploadQueue = Promise.resolve();
+    var instantUploadsPending = 0;
+
+    async function prepareInstantImage(file) {
+        var bitmap = await createImageBitmap(file);
+        var canvas = document.createElement("canvas");
+        var image;
+
+        try {
+            for (var maxDimension of [1200, 960, 720, 540]) {
+                var scale = Math.min(1, maxDimension / Math.max(bitmap.width, bitmap.height));
+                canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+                canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+                canvas.getContext("2d").drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+
+                for (var quality of [0.82, 0.68, 0.54]) {
+                    image = await new Promise(function (resolve) { canvas.toBlob(resolve, "image/webp", quality); });
+                    if (image && image.size <= 1.5 * 1024 * 1024) { break; }
+                }
+                if (image && image.size <= 1.5 * 1024 * 1024) { break; }
+            }
+        } finally {
+            bitmap.close();
+        }
+
+        if (!image || image.size > 1.5 * 1024 * 1024) {
+            throw new Error("Foto masih terlalu besar setelah diperkecil. Pilih foto lain.");
+        }
+
+        return new File([image], file.name.replace(/\.[^.]+$/, "") + ".webp", { type: "image/webp" });
+    }
+
     function enhanceUploads() {
         document.querySelectorAll('input[type="file"]:not([data-upload-ready])').forEach(function (input) {
             input.dataset.uploadReady = "true";
+            var instantCollection = input.dataset.instantUpload;
+            var form = instantCollection ? input.closest("form[data-invitation-form]") : null;
+            if (form) {
+                input.removeAttribute("name");
+            }
             var zone = input.closest("[data-upload-zone]");
             if (!zone) {
                 zone = document.createElement("div");
@@ -414,10 +451,103 @@
                     if (image !== preview) { previews.appendChild(image); }
                 });
                 info.textContent = files.map(function (file) { return file.name + " (" + (file.size / 1024 / 1024).toFixed(1) + " MB)"; }).join(", ");
-                removeButton.hidden = files.length === 0;
+                removeButton.hidden = Boolean(instantCollection) || files.length === 0;
+                return files;
             }
-            input.addEventListener("change", renderFiles);
-            removeButton.addEventListener("click", function () { input.value = ""; renderFiles(); });
+            function uploadFiles(files) {
+                if (!form) { return; }
+                if (!form.dataset.mediaUploadUrl) {
+                    error.textContent = "Simpan langkah pertama dahulu, lalu pilih foto kembali.";
+                    info.textContent = "";
+                    input.value = "";
+                    return;
+                }
+
+                delete input.dataset.uploadFailed;
+                removeButton.hidden = true;
+                input.disabled = true;
+                instantUploadsPending += 1;
+                instantUploadQueue = instantUploadQueue.then(async function () {
+                    for (var index = 0; index < files.length; index += 1) {
+                        info.textContent = "Mengunggah foto " + (index + 1) + " dari " + files.length + "...";
+                        var data = new FormData();
+                        data.append("_token", form.querySelector('[name="_token"]').value);
+                        data.append("collection", instantCollection);
+                        data.append("replace", index === 0 ? "1" : "0");
+                        data.append("file", await prepareInstantImage(files[index]));
+
+                        var response = await fetch(form.dataset.mediaUploadUrl, {
+                            method: "POST",
+                            headers: { "Accept": "application/json", "X-Requested-With": "XMLHttpRequest" },
+                            body: data
+                        });
+                        var payload = await response.json().catch(function () { return {}; });
+                        if (!response.ok) {
+                            throw new Error(Object.values(payload.errors || {}).flat()[0] || payload.message || "Foto gagal diunggah.");
+                        }
+                        updateDemoMediaPreview(payload.url, index === 0);
+                    }
+
+                    form.querySelectorAll('[name="remove_media[]"]').forEach(function (checkbox) {
+                        if (checkbox.value === instantCollection) { checkbox.checked = false; }
+                    });
+                    info.textContent = files.length + " foto tersimpan otomatis.";
+                    input.value = "";
+                    delete input.dataset.uploadFailed;
+                }).catch(function (uploadError) {
+                    error.textContent = uploadError.message || "Koneksi bermasalah. Pilih foto kembali.";
+                    info.textContent = "Unggahan belum selesai.";
+                    input.dataset.uploadFailed = "true";
+                    removeButton.textContent = "Batalkan foto";
+                    removeButton.hidden = false;
+                    input.value = "";
+                }).finally(function () {
+                    instantUploadsPending -= 1;
+                    input.disabled = false;
+                });
+            }
+
+            function updateDemoMediaPreview(url, replace) {
+                var library = form.querySelector("[data-demo-media-library]");
+                var empty = form.querySelector("[data-demo-media-empty]");
+                if (!library && !empty) { return; }
+                if (!library) {
+                    library = document.createElement("div");
+                    library.className = "demo-media-library";
+                    library.dataset.demoMediaLibrary = "";
+                    empty.replaceWith(library);
+                }
+
+                var article = library.querySelector('[data-media-collection="' + instantCollection + '"]');
+                if (!article) {
+                    article = document.createElement("article");
+                    article.dataset.mediaCollection = instantCollection;
+                    article.innerHTML = '<div><strong></strong><small></small></div><div class="demo-media-previews"></div><label class="demo-remove-media"><input type="checkbox" name="remove_media[]"> Hapus media ini</label>';
+                    article.querySelector("strong").textContent = ({ cover: "Cover", groom: "Foto Pria", bride: "Foto Wanita", qris: "QRIS", gallery: "Galeri", story: "Foto Cerita" })[instantCollection];
+                    article.querySelector('[name="remove_media[]"]').value = instantCollection;
+                    library.appendChild(article);
+                }
+
+                var previewList = article.querySelector(".demo-media-previews");
+                if (replace) { previewList.replaceChildren(); }
+                var image = document.createElement("img");
+                image.src = url;
+                image.alt = "Media " + instantCollection;
+                image.loading = "lazy";
+                previewList.appendChild(image);
+                article.querySelector("small").textContent = previewList.children.length + " file tersimpan";
+                article.querySelector('[name="remove_media[]"]').checked = false;
+            }
+
+            input.addEventListener("change", function () {
+                var files = renderFiles();
+                if (instantCollection && files.length) { uploadFiles(files); }
+            });
+            removeButton.addEventListener("click", function () {
+                input.value = "";
+                delete input.dataset.uploadFailed;
+                renderFiles();
+            });
             zone.addEventListener("dragover", function (event) { event.preventDefault(); zone.classList.add("is-dragging"); });
             zone.addEventListener("dragleave", function () { zone.classList.remove("is-dragging"); });
             zone.addEventListener("drop", function (event) {
@@ -425,7 +555,8 @@
                 zone.classList.remove("is-dragging");
                 if (event.dataTransfer && event.dataTransfer.files) {
                     input.files = event.dataTransfer.files;
-                    renderFiles();
+                    var files = renderFiles();
+                    if (instantCollection && files.length) { uploadFiles(files); }
                 }
             });
         });
@@ -455,6 +586,18 @@
     var currentInvitationStep = 1;
     var invitationStepDirty = false;
     var invitationStepUpdateUrl = invitationForm?.dataset.stepUpdateUrl || "";
+
+    function uploadsReady(status) {
+        if (instantUploadsPending > 0) {
+            status.textContent = "Tunggu sampai semua foto selesai diunggah.";
+            return false;
+        }
+        if (invitationForm?.querySelector('[data-upload-failed="true"]')) {
+            status.textContent = "Ada foto yang gagal diunggah. Pilih kembali foto tersebut.";
+            return false;
+        }
+        return true;
+    }
 
     function invitationSteps() {
         return invitationWizard ? Array.from(invitationWizard.querySelectorAll("[data-wizard-step]")) : [];
@@ -550,6 +693,7 @@
 
         invitationWizard.querySelectorAll("[data-save-step]").forEach(function (button) {
             button.addEventListener("click", async function () {
+                if (!uploadsReady(invitationWizard.querySelector("[data-wizard-status]"))) { return; }
                 if (!validateInvitationStep(currentInvitationStep)) { return; }
                 if (!invitationStepUpdateUrl && currentInvitationStep !== 1) {
                     invitationWizard.querySelector("[data-wizard-status]").textContent = "Simpan langkah 1 terlebih dahulu untuk membuat draft.";
@@ -590,6 +734,7 @@
 
                     invitationStepUpdateUrl = payload.step_url;
                     invitationForm.dataset.stepUpdateUrl = payload.step_url;
+                    invitationForm.dataset.mediaUploadUrl = payload.media_upload_url;
                     window.history.replaceState({}, "", payload.edit_url);
                     invitationStepDirty = false;
                     status.textContent = payload.message;
@@ -606,6 +751,11 @@
             });
         });
         invitationForm.addEventListener("submit", function (event) {
+            if (!uploadsReady(invitationWizard.querySelector("[data-wizard-status]"))) {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                return;
+            }
             for (var step = 1; step <= invitationSteps().length; step += 1) {
                 if (firstInvalidInStep(step)) {
                     event.preventDefault();

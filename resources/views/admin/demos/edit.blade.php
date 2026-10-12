@@ -20,7 +20,7 @@
     </div>
 
     <form class="invitation-editor-form" method="POST" action="{{ route('admin.demos.update', $demo) }}"
-        enctype="multipart/form-data" data-invitation-form novalidate>
+        enctype="multipart/form-data" data-invitation-form data-media-upload-url="{{ route('admin.demos.media.store', $demo) }}" novalidate>
         @csrf
         @method('PUT')
         @include('invitations._form', [

@@ -11,6 +11,25 @@ use Imagick;
 
 class TemplateDemoMediaManager
 {
+    /** @return array{collection: string, file_path: string, width: int, height: int, sort_order: int} */
+    public function uploadImage(TemplateDemo $demo, string $collection, UploadedFile $file, bool $replace): array
+    {
+        $data = $demo->data;
+        $media = collect($data['media'] ?? []);
+        $previous = $media->where('collection', $collection);
+        $created = $this->storeImages($demo, [$file], $collection)[0];
+        $created['sort_order'] = $replace ? 0 : (int) $previous->max('sort_order') + 1;
+
+        $data['media'] = ($replace ? $media->where('collection', '!=', $collection) : $media)->push($created)->values()->all();
+        $demo->update(['data' => $data]);
+
+        if ($replace) {
+            $this->deleteFiles($previous->all());
+        }
+
+        return $created;
+    }
+
     /** @param array<string, mixed> $data
      * @return array<string, mixed>
      */

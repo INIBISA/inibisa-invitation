@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\CustomerController as AdminCustomerController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\DemoInvitationController as AdminDemoInvitationController;
+use App\Http\Controllers\Admin\DemoMediaUploadController as AdminDemoMediaUploadController;
 use App\Http\Controllers\Admin\InvitationController as AdminInvitationController;
 use App\Http\Controllers\Admin\RsvpController as AdminRsvpController;
 use App\Http\Controllers\Admin\SettingController as AdminSettingController;
@@ -18,6 +19,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GuestController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InvitationController;
+use App\Http\Controllers\InvitationMediaUploadController;
 use App\Http\Controllers\InvitationPreviewController;
 use App\Http\Controllers\InvitationPublicationController;
 use App\Http\Controllers\InvitationResponseController;
@@ -64,6 +66,7 @@ Route::middleware('auth')->group(function (): void {
     Route::resource('invitations', InvitationController::class)->except(['index', 'show']);
     Route::post('/invitation-steps', [InvitationStepController::class, 'store'])->name('invitations.steps.store');
     Route::patch('/invitations/{invitation}/steps/{step}', [InvitationStepController::class, 'update'])->whereNumber('step')->name('invitations.steps.update');
+    Route::post('/invitations/{invitation}/media', InvitationMediaUploadController::class)->name('invitations.media.store');
     Route::get('/invitations/{invitation}/preview', InvitationPreviewController::class)->name('invitations.preview');
     Route::post('/invitations/{invitation}/publication', [InvitationPublicationController::class, 'store'])->name('invitations.publication.store');
     Route::delete('/invitations/{invitation}/publication', [InvitationPublicationController::class, 'destroy'])->name('invitations.publication.destroy');
@@ -91,6 +94,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::patch('/templates/{template}', [AdminTemplateController::class, 'update'])->name('templates.update');
     Route::get('/demos/{demo}/edit', [AdminDemoInvitationController::class, 'edit'])->name('demos.edit');
     Route::put('/demos/{demo}', [AdminDemoInvitationController::class, 'update'])->name('demos.update');
+    Route::post('/demos/{demo}/media', AdminDemoMediaUploadController::class)->name('demos.media.store');
     Route::resource('music', AdminWeddingMusicController::class)->except(['show', 'create', 'edit']);
     Route::get('/rsvps', AdminRsvpController::class)->name('rsvps.index');
     Route::get('/rsvps/data', [AdminRsvpController::class, 'data'])->name('rsvps.data');

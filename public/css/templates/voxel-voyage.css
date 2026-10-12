@@ -2,3 +2,138 @@
 @media(max-width:820px){.vv-app{display:block}.vv-hud{position:sticky;top:0;height:auto;padding:7px;flex-direction:row;border-right:0;border-bottom:3px solid var(--line);overflow-x:auto}.vv-hud::before{display:none}.vv-hud a{min-width:90px;text-align:center}.vv-section{padding:54px 20px}.vv-spawn{min-height:auto}.vv-spawn-grid{grid-template-columns:1fr 1fr}.vv-date,.vv-quote,.vv-countdown,.vv-title-tile{grid-column:auto}.vv-countdown{grid-column:1/-1}.vv-player-grid,.vv-mission-grid,.vv-station-grid,.vv-message-grid{grid-template-columns:1fr}.vv-player{grid-template-columns:130px 1fr}.vv-avatar{min-height:210px}.vv-route-stop,.vv-route-stop:nth-child(even){margin:0;grid-template-columns:44px 145px 1fr}.vv-gallery{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:560px){.vv-gate{overflow-y:auto}.vv-gate-card{width:calc(100% - 28px);margin:30px 0;padding:28px 18px}.vv-gate h1{font-size:2.7rem}.vv-section-title{margin-bottom:27px}.vv-section-title h2{font-size:2.3rem}.vv-spawn-grid{grid-template-columns:1fr}.vv-date,.vv-quote,.vv-countdown,.vv-title-tile{grid-column:1}.vv-date strong{font-size:4.5rem}.vv-countdown strong{font-size:1.25rem}.vv-player{grid-template-columns:1fr}.vv-avatar{min-height:260px}.vv-route-stop,.vv-route-stop:nth-child(even){grid-template-columns:38px 1fr}.vv-route-stop img{grid-column:2}.vv-route-stop>div{grid-column:2}.vv-gallery{grid-template-columns:repeat(2,1fr)}.vv-console{padding:19px}.vv-finish{min-height:75vh}.vv-portal{width:100px;height:135px;border-width:13px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.vv-enhanced .vv-reveal{opacity:1;transform:none;transition:none}}
+
+.vv-gate,
+.vv-app {
+    width: min(100%, 480px);
+}
+
+.vv-gate {
+    overflow-y: auto;
+}
+
+.vv-gate-card {
+    width: calc(100% - 28px);
+    margin: 30px 0;
+    padding: 28px 18px;
+}
+
+.vv-gate h1 {
+    font-size: 2.7rem;
+}
+
+.vv-app {
+    display: block;
+}
+
+.vv-hud {
+    position: sticky;
+    top: 0;
+    height: auto;
+    padding: 7px;
+    flex-direction: row;
+    gap: 4px;
+    border-right: 0;
+    border-bottom: 3px solid var(--line);
+    overflow-x: auto;
+}
+
+.vv-hud::before {
+    display: none;
+}
+
+.vv-hud a {
+    flex: 1;
+    min-width: 0;
+    padding: 8px 2px;
+    font-size: .62rem;
+    text-align: center;
+}
+
+.vv-section {
+    padding: 54px 20px;
+}
+
+.vv-section-title {
+    margin-bottom: 27px;
+}
+
+.vv-section-title h2 {
+    font-size: 2.3rem;
+}
+
+.vv-spawn {
+    min-height: auto;
+}
+
+.vv-spawn-grid,
+.vv-player-grid,
+.vv-mission-grid,
+.vv-station-grid,
+.vv-message-grid {
+    grid-template-columns: 1fr;
+}
+
+.vv-date,
+.vv-quote,
+.vv-countdown,
+.vv-title-tile {
+    grid-column: 1;
+}
+
+.vv-date strong {
+    font-size: 4.5rem;
+}
+
+.vv-countdown strong {
+    font-size: 1.25rem;
+}
+
+.vv-player {
+    grid-template-columns: 1fr;
+}
+
+.vv-avatar {
+    min-height: 260px;
+}
+
+.vv-route-stop,
+.vv-route-stop:nth-child(even) {
+    margin: 0;
+    grid-template-columns: 38px minmax(0, 1fr);
+}
+
+.vv-route-stop img,
+.vv-route-stop > div {
+    grid-column: 2;
+}
+
+.vv-gallery {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.vv-gallery figure {
+    aspect-ratio: 1;
+}
+
+.vv-gallery img {
+    height: 100%;
+}
+
+.vv-console {
+    padding: 19px;
+}
+
+.vv-finish {
+    min-height: 75vh;
+}
+
+.vv-portal {
+    width: 100px;
+    height: 135px;
+    border-width: 13px;
+}
+
+.music-toggle {
+    right: max(16px, calc((100vw - 480px) / 2 + 16px));
+}

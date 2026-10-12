@@ -43,7 +43,7 @@
     </section>
 
     <form class="invitation-editor-form" method="POST" action="{{ route('invitations.update', $invitation) }}"
-        enctype="multipart/form-data" data-invitation-form data-step-update-url="{{ route('invitations.steps.update', ['invitation' => $invitation, 'step' => '__STEP__']) }}" novalidate>
+        enctype="multipart/form-data" data-invitation-form data-step-update-url="{{ route('invitations.steps.update', ['invitation' => $invitation, 'step' => '__STEP__']) }}" data-media-upload-url="{{ route('invitations.media.store', $invitation) }}" novalidate>
         @csrf
         @method('PUT')
         @include('invitations._form')

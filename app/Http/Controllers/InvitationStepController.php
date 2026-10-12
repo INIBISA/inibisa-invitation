@@ -107,6 +107,7 @@ class InvitationStepController extends Controller
             'invitation_id' => $invitation->id,
             'edit_url' => route('invitations.edit', $invitation),
             'step_url' => route('invitations.steps.update', ['invitation' => $invitation, 'step' => '__STEP__']),
+            'media_upload_url' => route('invitations.media.store', $invitation),
             'next_step' => min(6, $savedStep + 1),
         ]);
     }
