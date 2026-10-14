@@ -112,8 +112,8 @@
                         </div>
                     </div>
 
-                    <h3>Daftar akun</h3>
-                    <p>Buat akun, admin akan mengaktifkannya untukmu.</p>
+                    <h3>Buat Akun dan Pilih Desain.</h3>
+                    <p>Setelah membuat akun, dapat memilih tema udangan digital yang disukai.</p>
                 </article>
 
                 <!-- STEP 02 -->
@@ -138,8 +138,8 @@
                         </div>
                     </div>
 
-                    <h3>Isi detail undangan</h3>
-                    <p>Lengkapi nama, jadwal, lokasi, foto, dan pesan.</p>
+                    <h3>Lengkapi detail undangan</h3>
+                    <p>Pengisian nama pasangan, tanggal, lokasi acara, galeri foto untuk amplop digital.</p>
                 </article>
 
                 <!-- STEP 03 -->
@@ -163,8 +163,8 @@
                         </div>
                     </div>
 
-                    <h3>Publikasikan &amp; bagikan</h3>
-                    <p>Terbitkan tautan, lalu pantau RSVP dari dashboard.</p>
+                    <h3>Undangan Siap Dibagikan</h3>
+                    <p>Link Undangan digital dapat disebarkan ke relasi & keluarga.</p>
                 </article>
 
             </div>
