@@ -49,22 +49,26 @@ class TemplateSeeder extends Seeder
             ],
         );
 
-        Template::query()->updateOrCreate(
+        Template::query()->firstOrCreate(
             ['key' => 'rustic-forest'],
             [
                 'name' => 'Rustic Forest',
                 'view_path' => 'templates.rustic-forest.index',
                 'thumbnail' => 'images/templates/rustic-forest/thumbnail.svg',
+                'price' => 150000,
+                'category' => 'Rustic',
                 'is_active' => true,
             ],
         );
 
-        Template::query()->updateOrCreate(
+        Template::query()->firstOrCreate(
             ['key' => 'modern-minimalist'],
             [
                 'name' => 'Modern Minimalist',
                 'view_path' => 'templates.modern-minimalist.index',
                 'thumbnail' => 'images/templates/modern-minimalist/thumbnail.svg',
+                'price' => 150000,
+                'category' => 'Minimalist',
                 'is_active' => true,
             ],
         );
