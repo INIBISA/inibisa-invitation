@@ -11,7 +11,7 @@ class TemplateSeederTest extends TestCase
 {
     use LazilyRefreshDatabase;
 
-    public function test_rustic_and_minimalist_templates_have_purchase_details(): void
+    public function test_restored_templates_are_seeded_active_with_purchase_details(): void
     {
         $this->seed(TemplateSeeder::class);
 
@@ -27,6 +27,25 @@ class TemplateSeederTest extends TestCase
             'category' => 'Minimalist',
             'is_active' => true,
         ]);
+    }
+
+    public function test_every_active_seeded_template_has_a_view(): void
+    {
+        $this->seed(TemplateSeeder::class);
+
+        Template::query()->where('is_active', true)->each(function (Template $template): void {
+            $this->assertTrue(view()->exists($template->view_path), $template->key.' has no view.');
+        });
+    }
+
+    public function test_restored_template_thumbnails_exist_and_use_four_by_three_dimensions(): void
+    {
+        foreach (['rustic-forest', 'modern-minimalist'] as $template) {
+            $thumbnail = simplexml_load_file(public_path("images/templates/{$template}/thumbnail.svg"));
+
+            $this->assertSame('1200', (string) $thumbnail['width']);
+            $this->assertSame('900', (string) $thumbnail['height']);
+        }
     }
 
     public function test_reseeding_does_not_overwrite_custom_template_price(): void

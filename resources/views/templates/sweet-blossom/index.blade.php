@@ -13,6 +13,10 @@
         $invitation instanceof \App\Models\TemplateDemo
             ? route('templates.show', $invitation->template)
             : route('public.invitation', $invitation->slug);
+    $templateDesign = $invitation->template->designSettings();
+    $templateSections = $templateDesign['sections'];
+    $sectionOrder = $templateDesign['section_order'];
+    $sectionPartials = ['quote' => 'quote', 'couple' => 'couple', 'countdown' => 'date', 'events' => 'events', 'story' => 'story', 'gallery' => 'gallery', 'rsvp' => 'rsvp', 'gift' => 'gift', 'wishes' => 'wishes'];
 @endphp
 <!doctype html>
 <html lang="id" class="invitation-locked">
@@ -23,7 +27,7 @@
     <title>{{ $invitation->title }} · {{ $weddingDate->translatedFormat('d F Y') }}</title>
     <meta name="description"
         content="Undangan pernikahan {{ data_get($groom, 'nickname') }} dan {{ data_get($bride, 'nickname') }} pada {{ $weddingDate->translatedFormat('d F Y') }}.">
-    <meta name="theme-color" content="#F8F4ED">
+    <meta name="theme-color" content="{{ $templateDesign['background_color'] }}">
     <link rel="icon" type="image/webp" href="{{ asset('favicon.webp') }}">
     <link rel="canonical" href="{{ $canonical }}">
     <meta property="og:type" content="website">
@@ -37,6 +41,7 @@
     <link rel="stylesheet" href="{{ asset('css/templates/sweet-blossom.css') }}">
     <link rel="stylesheet" href="{{ asset('css/templates/sweet-blossom-animations.css') }}">
     <link rel="stylesheet" href="{{ asset('css/templates/sweet-blossom-overrides.css') }}">
+    @include('templates.partials.design-settings')
     @if ($musicVideoId)
         <link rel="stylesheet" href="{{ asset('css/youtube-player.css') }}">
         <script src="{{ asset('js/youtube-player.js') }}" defer></script>
@@ -50,15 +55,11 @@
         @include('templates.sweet-blossom.partials.cover')
         <main id="invitation-content">
             @include('templates.sweet-blossom.partials.hero')
-            @include('templates.sweet-blossom.partials.quote')
-            @include('templates.sweet-blossom.partials.couple')
-            @include('templates.sweet-blossom.partials.date')
-            @include('templates.sweet-blossom.partials.events')
-            @include('templates.sweet-blossom.partials.story')
-            @include('templates.sweet-blossom.partials.gallery')
-            @include('templates.sweet-blossom.partials.rsvp')
-            @include('templates.sweet-blossom.partials.gift')
-            @include('templates.sweet-blossom.partials.wishes')
+            @foreach ($sectionOrder as $section)
+                @if ($section === 'couple' || $templateSections[$section])
+                    @include('templates.sweet-blossom.partials.'.$sectionPartials[$section])
+                @endif
+            @endforeach
             @include('templates.sweet-blossom.partials.closing')
         </main>
         @include('templates.sweet-blossom.partials.bottom-navigation')

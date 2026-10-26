@@ -298,6 +298,57 @@ class AdminDemoTest extends TestCase
         $this->assertSame('nara-raka', $template->demo->slug);
     }
 
+    public function test_restored_classic_skin_demos_are_seeded_and_rendered(): void
+    {
+        $this->seed([TemplateSeeder::class, DemoInvitationSeeder::class]);
+
+        foreach ([
+            'rustic-forest' => ['Raka &amp; Nadira', 'raka-nadira', 'css/templates/rustic-forest.css', '#efe7d8'],
+            'modern-minimalist' => ['Kevin &amp; Laras', 'kevin-laras', 'css/templates/modern-minimalist.css', '#f7f5f1'],
+        ] as $key => [$title, $slug, $stylesheet, $background]) {
+            $template = Template::query()->where('key', $key)->firstOrFail();
+
+            $this->get(route('templates.show', $template))
+                ->assertOk()
+                ->assertSee($title, false)
+                ->assertSee($stylesheet, false)
+                ->assertSee("--template-background: {$background}", false)
+                ->assertSee('<link rel="canonical" href="'.route('templates.show', $template).'">', false)
+                ->assertSee('js/templates/editorial-invitation.js', false)
+                ->assertSee('js/invitation-forms.js', false)
+                ->assertDontSee('js/templates/eternal-ivory.js', false)
+                ->assertDontSee('css/templates/eternal-ivory.css', false)
+                ->assertDontSee('data-async-form="rsvp"', false)
+                ->assertDontSee('data-async-form="wish"', false);
+
+            $this->assertTrue($template->is_active);
+            $this->assertSame($slug, $template->demo->slug);
+        }
+    }
+
+    public function test_restored_templates_have_distinct_layout_signatures(): void
+    {
+        $this->seed([TemplateSeeder::class, DemoInvitationSeeder::class]);
+        $rustic = Template::query()->where('key', 'rustic-forest')->firstOrFail();
+        $modern = Template::query()->where('key', 'modern-minimalist')->firstOrFail();
+
+        $this->get(route('templates.show', $rustic))
+            ->assertOk()
+            ->assertSee('class="rf-page"', false)
+            ->assertSee('class="rf-story-list"', false)
+            ->assertSee('class="rf-event-list"', false)
+            ->assertDontSee('class="mm-shell"', false)
+            ->assertDontSee('class="invitation-wrapper"', false);
+
+        $this->get(route('templates.show', $modern))
+            ->assertOk()
+            ->assertSee('class="mm-shell"', false)
+            ->assertSee('class="mm-people"', false)
+            ->assertSee('class="mm-wish-grid"', false)
+            ->assertDontSee('class="rf-page"', false)
+            ->assertDontSee('class="invitation-wrapper"', false);
+    }
+
     private function validPayload(Template $template): array
     {
         return [

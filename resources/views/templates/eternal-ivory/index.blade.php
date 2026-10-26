@@ -13,6 +13,15 @@
         $invitation instanceof \App\Models\TemplateDemo
             ? route('templates.show', $invitation->template)
             : route('public.invitation', $invitation->slug);
+    $templateDesign = $invitation->template->designSettings();
+    $templateSections = $templateDesign['sections'];
+    $sectionOrder = $templateDesign['section_order'];
+    $sectionPartials = ['quote' => 'quote', 'couple' => 'couple', 'countdown' => 'date', 'events' => 'events', 'story' => 'story', 'gallery' => 'gallery', 'rsvp' => 'rsvp', 'gift' => 'gift', 'wishes' => 'wishes'];
+    $templateStylesheet = match ($invitation->template->key) {
+        'rustic-forest' => 'css/templates/rustic-forest.css',
+        'modern-minimalist' => 'css/templates/modern-minimalist.css',
+        default => 'css/templates/eternal-ivory.css',
+    };
 @endphp
 <!doctype html>
 <html lang="id" class="invitation-locked">
@@ -23,7 +32,7 @@
     <title>{{ $invitation->title }} · {{ $weddingDate->translatedFormat('d F Y') }}</title>
     <meta name="description"
         content="Undangan pernikahan {{ data_get($groom, 'nickname') }} dan {{ data_get($bride, 'nickname') }} pada {{ $weddingDate->translatedFormat('d F Y') }}.">
-    <meta name="theme-color" content="#F8F4ED">
+    <meta name="theme-color" content="{{ $templateDesign['background_color'] }}">
     <link rel="icon" type="image/webp" href="{{ asset('favicon.webp') }}">
     <link rel="canonical" href="{{ $canonical }}">
     <meta property="og:type" content="website">
@@ -34,8 +43,9 @@
     @if ($coverMedia)
         <meta property="og:image" content="{{ asset('storage/' . $coverMedia->file_path) }}">
     @endif
-    <link rel="stylesheet" href="{{ asset('css/templates/eternal-ivory.css') }}">
+    <link rel="stylesheet" href="{{ asset($templateStylesheet) }}">
     <link rel="stylesheet" href="{{ asset('css/templates/eternal-ivory-animations.css') }}">
+    @include('templates.partials.design-settings')
     @if ($musicVideoId)
         <link rel="stylesheet" href="{{ asset('css/youtube-player.css') }}">
         <script src="{{ asset('js/youtube-player.js') }}" defer></script>
@@ -49,15 +59,11 @@
         @include('templates.eternal-ivory.partials.cover')
         <main id="invitation-content">
             @include('templates.eternal-ivory.partials.hero')
-            @include('templates.eternal-ivory.partials.quote')
-            @include('templates.eternal-ivory.partials.couple')
-            @include('templates.eternal-ivory.partials.date')
-            @include('templates.eternal-ivory.partials.events')
-            @include('templates.eternal-ivory.partials.story')
-            @include('templates.eternal-ivory.partials.gallery')
-            @include('templates.eternal-ivory.partials.rsvp')
-            @include('templates.eternal-ivory.partials.gift')
-            @include('templates.eternal-ivory.partials.wishes')
+            @foreach ($sectionOrder as $section)
+                @if ($section === 'couple' || $templateSections[$section])
+                    @include('templates.eternal-ivory.partials.'.$sectionPartials[$section])
+                @endif
+            @endforeach
             @include('templates.eternal-ivory.partials.closing')
         </main>
         @include('templates.eternal-ivory.partials.bottom-navigation')

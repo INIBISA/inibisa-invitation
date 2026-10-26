@@ -20,20 +20,24 @@
     $canonical = $invitation instanceof \App\Models\TemplateDemo
         ? route('templates.show', $invitation->template)
         : route('public.invitation', $invitation->slug);
-    $showAgenda = data_get($settings, 'countdown', true) || count($events);
-    $showGift = data_get($settings, 'gift', true) && (count($banks) || $qris);
-    $showRsvp = ! $isPreview && data_get($settings, 'rsvp', true);
-    $showStory = data_get($settings, 'story', true) && count($stories);
-    $showGallery = data_get($settings, 'gallery', true) && $gallery->isNotEmpty();
-    $showWishes = data_get($settings, 'wishes', true);
-    $chapter = 0;
-    $prologueChapter = str_pad((string) ++$chapter, 2, '0', STR_PAD_LEFT);
-    $coupleChapter = str_pad((string) ++$chapter, 2, '0', STR_PAD_LEFT);
-    $agendaChapter = $showAgenda ? str_pad((string) ++$chapter, 2, '0', STR_PAD_LEFT) : null;
-    $storyChapter = $showStory ? str_pad((string) ++$chapter, 2, '0', STR_PAD_LEFT) : null;
-    $galleryChapter = $showGallery ? str_pad((string) ++$chapter, 2, '0', STR_PAD_LEFT) : null;
-    $guestChapter = ($showRsvp || $showGift) ? str_pad((string) ++$chapter, 2, '0', STR_PAD_LEFT) : null;
-    $wishesChapter = $showWishes ? str_pad((string) ++$chapter, 2, '0', STR_PAD_LEFT) : null;
+    $templateDesign = $invitation->template->designSettings();
+    $templateSections = $templateDesign['sections'];
+    $sectionOrder = $templateDesign['section_order'];
+    $showCountdown = $templateSections['countdown'] && data_get($settings, 'countdown', true);
+    $showEvents = $templateSections['events'] && count($events);
+    $showAgenda = $showCountdown || $showEvents;
+    $showGift = $templateSections['gift'] && data_get($settings, 'gift', true) && (count($banks) || $qris);
+    $showRsvp = $templateSections['rsvp'] && ! $isPreview && data_get($settings, 'rsvp', true);
+    $showStory = $templateSections['story'] && data_get($settings, 'story', true) && count($stories);
+    $showGallery = $templateSections['gallery'] && data_get($settings, 'gallery', true) && $gallery->isNotEmpty();
+    $showWishes = $templateSections['wishes'] && data_get($settings, 'wishes', true);
+    $sectionVisibility = ['couple' => true, 'agenda' => $showAgenda, 'story' => $showStory, 'gallery' => $showGallery, 'guest' => $showRsvp || $showGift, 'wishes' => $showWishes];
+    $visibleSectionOrder = array_values(array_filter($sectionOrder, fn (string $section): bool => $sectionVisibility[$section]));
+    $chapterNumbers = [];
+    foreach ($visibleSectionOrder as $index => $section) {
+        $chapterNumbers[$section] = str_pad((string) ($index + 2), 2, '0', STR_PAD_LEFT);
+    }
+    $prologueChapter = '01';
 @endphp
 <!doctype html>
 <html lang="id">
@@ -42,7 +46,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
     <title>{{ $invitation->title }} · {{ $weddingDate->translatedFormat('d F Y') }}</title>
     <meta name="description" content="Undangan pernikahan {{ data_get($groom, 'nickname') }} dan {{ data_get($bride, 'nickname') }} pada {{ $weddingDate->translatedFormat('d F Y') }}.">
-    <meta name="theme-color" content="#07111f">
+    <meta name="theme-color" content="{{ $templateDesign['background_color'] }}">
     <link rel="icon" type="image/webp" href="{{ asset('favicon.webp') }}">
     <link rel="canonical" href="{{ $canonical }}">
     <meta property="og:type" content="website">
@@ -51,6 +55,7 @@
     <meta property="og:url" content="{{ $canonical }}">
     @if($coverMedia)<meta property="og:image" content="{{ asset('storage/'.$coverMedia->file_path) }}">@endif
     <link rel="stylesheet" href="{{ asset('css/templates/midnight-nusantara.css') }}">
+    @include('templates.partials.design-settings')
     @if($musicVideoId)
         <link rel="stylesheet" href="{{ asset('css/youtube-player.css') }}">
         <script src="{{ asset('js/youtube-player.js') }}" defer></script>
@@ -86,7 +91,7 @@
                 <div class="mn-prologue-copy">
                     <p class="mn-eyebrow">Sebuah Perayaan</p>
                     <h2>{{ data_get($bride, 'nickname') }} <i>&</i> {{ data_get($groom, 'nickname') }}</h2>
-                    @if(data_get($data, 'quote'))<blockquote>“{{ data_get($data, 'quote') }}”</blockquote>@endif
+                    @if($templateSections['quote'] && data_get($data, 'quote'))<blockquote>“{{ data_get($data, 'quote') }}”</blockquote>@endif
                 </div>
                 <div class="mn-date-lockup" aria-label="{{ $weddingDate->translatedFormat('d F Y') }}">
                     <strong>{{ $weddingDate->format('d') }}</strong>
@@ -95,9 +100,11 @@
                 </div>
             </section>
 
+            @foreach($visibleSectionOrder as $section)
+            @if($section === 'couple')
             <section class="mn-section mn-couple" id="pasangan" data-mn-section="pasangan">
                 <header class="mn-section-head mn-reveal">
-                    <div class="mn-chapter"><span>Bab</span><strong>{{ $coupleChapter }}</strong></div>
+                    <div class="mn-chapter"><span>Bab</span><strong>{{ $chapterNumbers['couple'] }}</strong></div>
                     <div><p class="mn-eyebrow">Dua Nama · Satu Tujuan</p><h2>Kami yang berbahagia</h2></div>
                 </header>
                 <div class="mn-diptych">
@@ -120,21 +127,22 @@
                     <div class="mn-union" aria-hidden="true"><span>&</span></div>
                 </div>
             </section>
+            @endif
 
-            @if($showAgenda)
+            @if($section === 'agenda')
                 <section class="mn-section mn-agenda" id="agenda" data-mn-section="agenda">
                     <header class="mn-section-head mn-reveal">
-                        <div class="mn-chapter"><span>Bab</span><strong>{{ $agendaChapter }}</strong></div>
+                        <div class="mn-chapter"><span>Bab</span><strong>{{ $chapterNumbers['agenda'] }}</strong></div>
                         <div><p class="mn-eyebrow">Wedding Programme</p><h2>Agenda Perayaan</h2></div>
                     </header>
-                    @if(data_get($settings, 'countdown', true))
+                    @if($showCountdown)
                         <div class="mn-countdown mn-reveal" data-countdown="{{ $weddingDate->copy()->startOfDay()->toIso8601String() }}">
                             @foreach([['days', 'Hari'], ['hours', 'Jam'], ['minutes', 'Menit'], ['seconds', 'Detik']] as [$unit, $label])
                                 <div><strong data-{{ $unit }}>00</strong><span>{{ $label }}</span></div>
                             @endforeach
                         </div>
                     @endif
-                    @if(count($events))
+                    @if($showEvents)
                         <div class="mn-programme">
                             @foreach($events as $event)
                                 <article class="mn-event mn-reveal">
@@ -149,10 +157,10 @@
                 </section>
             @endif
 
-            @if($showStory)
+            @if($section === 'story')
                 <section class="mn-section mn-chronicle" id="kisah" data-mn-section="kisah">
                     <header class="mn-section-head mn-reveal">
-                        <div class="mn-chapter"><span>Bab</span><strong>{{ $storyChapter }}</strong></div>
+                        <div class="mn-chapter"><span>Bab</span><strong>{{ $chapterNumbers['story'] }}</strong></div>
                         <div><p class="mn-eyebrow">Catatan Perjalanan</p><h2>Kronik Kami</h2></div>
                     </header>
                     <div class="mn-stories">
@@ -169,10 +177,10 @@
                 </section>
             @endif
 
-            @if($showGallery)
+            @if($section === 'gallery')
                 <section class="mn-section mn-gallery" id="galeri" data-mn-section="galeri">
                     <header class="mn-section-head mn-reveal">
-                        <div class="mn-chapter"><span>Bab</span><strong>{{ $galleryChapter }}</strong></div>
+                        <div class="mn-chapter"><span>Bab</span><strong>{{ $chapterNumbers['gallery'] }}</strong></div>
                         <div><p class="mn-eyebrow">Night Archive</p><h2>Potongan Waktu</h2></div>
                     </header>
                     <div class="mn-gallery-grid mn-gallery-cols-{{ min($gallery->count(), 3) }}">
@@ -186,10 +194,10 @@
                 </section>
             @endif
 
-            @if($showRsvp || $showGift)
+            @if($section === 'guest')
                 <section class="mn-section mn-guest-desk" id="tamu" data-mn-section="tamu">
                     <header class="mn-section-head mn-reveal">
-                        <div class="mn-chapter"><span>Bab</span><strong>{{ $guestChapter }}</strong></div>
+                        <div class="mn-chapter"><span>Bab</span><strong>{{ $chapterNumbers['guest'] }}</strong></div>
                         <div><p class="mn-eyebrow">For Our Guests</p><h2>Meja Tamu</h2></div>
                     </header>
                     <div class="mn-guest-grid {{ !($showRsvp && $showGift) ? 'mn-single-panel' : '' }}">
@@ -219,10 +227,10 @@
                 </section>
             @endif
 
-            @if($showWishes)
+            @if($section === 'wishes')
                 <section class="mn-section mn-guestbook" id="ucapan" data-mn-section="ucapan">
                     <header class="mn-section-head mn-reveal">
-                        <div class="mn-chapter"><span>Bab</span><strong>{{ $wishesChapter }}</strong></div>
+                        <div class="mn-chapter"><span>Bab</span><strong>{{ $chapterNumbers['wishes'] }}</strong></div>
                         <div><p class="mn-eyebrow">Guest Ledger</p><h2>Buku Ucapan</h2></div>
                     </header>
                     <div class="mn-ledger">
@@ -247,6 +255,7 @@
                     </div>
                 </section>
             @endif
+            @endforeach
 
             <footer class="mn-closing mn-reveal">
                 <div class="mn-closing-seal" aria-hidden="true"><span>{{ mb_substr(data_get($bride, 'nickname', ''), 0, 1) }}{{ mb_substr(data_get($groom, 'nickname', ''), 0, 1) }}</span></div>
@@ -261,9 +270,11 @@
 
         <nav class="mn-nav" aria-label="Navigasi undangan">
             <a href="#awal" data-nav-link="awal" class="active">Awal</a>
-            <a href="#pasangan" data-nav-link="pasangan">Pasangan</a>
-            @if($showAgenda)<a href="#agenda" data-nav-link="agenda">Agenda</a>@endif
-            @if($showRsvp || $showGift)<a href="#tamu" data-nav-link="tamu">Tamu</a>@endif
+            @foreach($visibleSectionOrder as $section)
+                @if($section === 'couple')<a href="#pasangan" data-nav-link="pasangan">Pasangan</a>@endif
+                @if($section === 'agenda')<a href="#agenda" data-nav-link="agenda">Agenda</a>@endif
+                @if($section === 'guest')<a href="#tamu" data-nav-link="tamu">Tamu</a>@endif
+            @endforeach
         </nav>
     </div>
 

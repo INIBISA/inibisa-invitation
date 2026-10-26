@@ -8,6 +8,11 @@ use App\Http\Controllers\Admin\InvitationController as AdminInvitationController
 use App\Http\Controllers\Admin\RsvpController as AdminRsvpController;
 use App\Http\Controllers\Admin\SettingController as AdminSettingController;
 use App\Http\Controllers\Admin\TemplateController as AdminTemplateController;
+use App\Http\Controllers\Admin\TemplateDesignDraftController;
+use App\Http\Controllers\Admin\TemplateDesignPreviewController;
+use App\Http\Controllers\Admin\TemplateDesignPublicationController;
+use App\Http\Controllers\Admin\TemplateDesignResetController;
+use App\Http\Controllers\Admin\TemplateDesignRollbackController;
 use App\Http\Controllers\Admin\WeddingMusicController as AdminWeddingMusicController;
 use App\Http\Controllers\Admin\WishController as AdminWishController;
 use App\Http\Controllers\Auth\GoogleAuthController;
@@ -84,7 +89,7 @@ Route::middleware('auth')->group(function (): void {
     Route::delete('/guests/{guest}', [GuestController::class, 'destroy'])->name('guests.destroy');
 });
 
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function (): void {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin', 'admin.headers'])->group(function (): void {
     Route::get('/', AdminDashboardController::class)->name('dashboard');
     Route::get('/customers', [AdminCustomerController::class, 'index'])->name('customers.index');
     Route::get('/customers/data', [AdminCustomerController::class, 'data'])->name('customers.data');
@@ -92,6 +97,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('/invitations/data', [AdminInvitationController::class, 'data'])->name('invitations.data');
     Route::get('/templates', AdminTemplateController::class)->name('templates.index');
     Route::patch('/templates/{template}', [AdminTemplateController::class, 'update'])->name('templates.update');
+    Route::get('/templates/{template}/design-preview', TemplateDesignPreviewController::class)->name('templates.design-preview');
+    Route::delete('/templates/{template}/design-draft', [TemplateDesignDraftController::class, 'destroy'])->name('templates.design-draft.destroy');
+    Route::post('/templates/{template}/design-reset', TemplateDesignResetController::class)->name('templates.design-reset.store');
+    Route::post('/templates/{template}/design-publication', [TemplateDesignPublicationController::class, 'store'])->name('templates.design-publication.store');
+    Route::post('/templates/{template}/design-revisions/{revision}/rollback', TemplateDesignRollbackController::class)->name('templates.design-revisions.rollback');
     Route::get('/demos/{demo}/edit', [AdminDemoInvitationController::class, 'edit'])->name('demos.edit');
     Route::put('/demos/{demo}', [AdminDemoInvitationController::class, 'update'])->name('demos.update');
     Route::post('/demos/{demo}/media', AdminDemoMediaUploadController::class)->name('demos.media.store');

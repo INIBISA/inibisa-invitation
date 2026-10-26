@@ -24,8 +24,18 @@
         $invitation instanceof \App\Models\TemplateDemo
             ? route('templates.show', $invitation->template)
             : route('public.invitation', $invitation->slug);
-    $showRsvp = !$isPreview && data_get($settings, 'rsvp', true);
-    $showGift = data_get($settings, 'gift', true) && (count($banks) || $qris);
+    $templateDesign = $invitation->template->designSettings();
+    $templateSections = $templateDesign['sections'];
+    $sectionOrder = $templateDesign['section_order'];
+    $showCountdown = $templateSections['countdown'] && data_get($settings, 'countdown', true);
+    $showEvents = $templateSections['events'] && count($events);
+    $showStory = $templateSections['story'] && data_get($settings, 'story', true) && count($stories);
+    $showGallery = $templateSections['gallery'] && data_get($settings, 'gallery', true) && $gallery->isNotEmpty();
+    $showRsvp = $templateSections['rsvp'] && !$isPreview && data_get($settings, 'rsvp', true);
+    $showGift = $templateSections['gift'] && data_get($settings, 'gift', true) && (count($banks) || $qris);
+    $showWishes = $templateSections['wishes'] && data_get($settings, 'wishes', true);
+    $sectionVisibility = ['partners' => true, 'missions' => $showEvents, 'map' => $showStory, 'inventory' => $showGallery, 'station' => $showRsvp || $showGift, 'messages' => $showWishes];
+    $visibleSectionOrder = array_values(array_filter($sectionOrder, fn (string $section): bool => $sectionVisibility[$section]));
 @endphp
 <!doctype html>
 <html lang="id">
@@ -36,7 +46,7 @@
     <title>{{ $invitation->title }} · {{ $weddingDate->translatedFormat('d F Y') }}</title>
     <meta name="description"
         content="Undangan pernikahan {{ data_get($bride, 'nickname') }} dan {{ data_get($groom, 'nickname') }} pada {{ $weddingDate->translatedFormat('d F Y') }}.">
-    <meta name="theme-color" content="#8fd7ff">
+    <meta name="theme-color" content="{{ $templateDesign['background_color'] }}">
     <link rel="icon" type="image/webp" href="{{ asset('favicon.webp') }}">
     <link rel="canonical" href="{{ $canonical }}">
     <meta property="og:type" content="website">
@@ -48,6 +58,7 @@
         <meta property="og:image" content="{{ asset('storage/' . $coverMedia->file_path) }}">
     @endif
     <link rel="stylesheet" href="{{ asset('css/templates/voxel-voyage.css') }}">
+    @include('templates.partials.design-settings')
     @if ($musicVideoId)
         <link rel="stylesheet" href="{{ asset('css/youtube-player.css') }}">
         <script src="{{ asset('js/youtube-player.js') }}" defer></script>
@@ -78,13 +89,12 @@
     <div class="vv-app" data-voxel-voyage>
         <nav class="vv-hud" aria-label="Navigasi undangan">
             <a href="#spawn" data-vv-nav="spawn" class="active"><span>01</span>Spawn</a>
-            <a href="#partners" data-vv-nav="partners"><span>02</span>Partners</a>
-            @if (count($events))
-                <a href="#missions" data-vv-nav="missions"><span>03</span>Missions</a>
-            @endif
-            @if ($showRsvp || $showGift)
-                <a href="#station" data-vv-nav="station"><span>04</span>Station</a>
-            @endif
+            @php($navNumber = 1)
+            @foreach ($visibleSectionOrder as $section)
+                @if (in_array($section, ['partners', 'missions', 'station'], true))
+                    <a href="#{{ $section }}" data-vv-nav="{{ $section }}"><span>{{ str_pad((string) ++$navNumber, 2, '0', STR_PAD_LEFT) }}</span>{{ ucfirst($section) }}</a>
+                @endif
+            @endforeach
         </nav>
 
         <main tabindex="-1">
@@ -96,12 +106,12 @@
                     <article class="vv-tile vv-date vv-reveal"><small>Wedding
                             Day</small><strong>{{ $weddingDate->format('d') }}</strong><span>{{ strtoupper($weddingDate->translatedFormat('F Y')) }}</span>
                     </article>
-                    <article class="vv-tile vv-quote vv-reveal"><span aria-hidden="true">“</span>
-                        <blockquote>
-                            {{ data_get($data, 'quote', 'Dua pemain, satu dunia, satu perjalanan selamanya.') }}
-                        </blockquote>
-                    </article>
-                    @if (data_get($settings, 'countdown', true))
+                    @if ($templateSections['quote'] && filled(data_get($data, 'quote')))
+                        <article class="vv-tile vv-quote vv-reveal"><span aria-hidden="true">“</span>
+                            <blockquote>{{ data_get($data, 'quote') }}</blockquote>
+                        </article>
+                    @endif
+                    @if ($showCountdown)
                         <article class="vv-tile vv-countdown vv-reveal"
                             data-countdown="{{ $weddingDate->copy()->startOfDay()->toIso8601String() }}">
                             @foreach ([['days', 'Hari'], ['hours', 'Jam'], ['minutes', 'Menit'], ['seconds', 'Detik']] as [$unit, $label])
@@ -116,6 +126,8 @@
                 </div>
             </section>
 
+            @foreach ($visibleSectionOrder as $section)
+            @if ($section === 'partners')
             <section class="vv-section vv-partners" id="partners" data-vv-section="partners">
                 <div class="vv-section-title vv-reveal"><span>Co-op Partners</span>
                     <h2>Player utama</h2>
@@ -144,8 +156,9 @@
                     @endforeach
                 </div>
             </section>
+            @endif
 
-            @if (count($events))
+            @if ($section === 'missions')
                 <section class="vv-section vv-missions" id="missions" data-vv-section="missions">
                     <div class="vv-section-title vv-reveal"><span>Mission Board</span>
                         <h2>Misi hari bahagia</h2>
@@ -168,7 +181,7 @@
                 </section>
             @endif
 
-            @if (data_get($settings, 'story', true) && count($stories))
+            @if ($section === 'map')
                 <section class="vv-section vv-map" id="map">
                     <div class="vv-section-title vv-reveal"><span>World Map</span>
                         <h2>Jejak perjalanan kami</h2>
@@ -194,7 +207,7 @@
                 </section>
             @endif
 
-            @if (data_get($settings, 'gallery', true) && $gallery->isNotEmpty())
+            @if ($section === 'inventory')
                 <section class="vv-section vv-inventory" id="inventory">
                     <div class="vv-section-title vv-reveal"><span>Inventory</span>
                         <h2>Momen tersimpan</h2>
@@ -212,7 +225,7 @@
                 </section>
             @endif
 
-            @if ($showRsvp || $showGift)
+            @if ($section === 'station')
                 <section class="vv-section vv-station" id="station" data-vv-section="station">
                     <div class="vv-section-title vv-reveal"><span>Guest Station</span>
                         <h2>Siapkan perjalananmu</h2>
@@ -260,7 +273,7 @@
                 </section>
             @endif
 
-            @if (data_get($settings, 'wishes', true))
+            @if ($section === 'messages')
                 <section class="vv-section vv-messages" id="messages">
                     <div class="vv-section-title vv-reveal"><span>Message Server</span>
                         <h2>Pesan dari para pemain</h2>
@@ -289,6 +302,7 @@
                     </div>
                 </section>
             @endif
+            @endforeach
 
             <footer class="vv-finish vv-reveal">
                 <div class="vv-portal" aria-hidden="true"></div><span>Journey Complete</span>
