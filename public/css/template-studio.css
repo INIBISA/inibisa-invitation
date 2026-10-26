@@ -171,3 +171,4 @@
 .studio-fullscreen-toggle{width:38px;height:38px;display:grid;place-items:center;border:1px solid #e5dfd5;border-radius:9px;background:#fff;color:#63594c;font-size:1.22rem;cursor:pointer}
 .studio-fullscreen-toggle:hover{background:#f8f3e9;border-color:#c5b18e}
 @media(max-width:680px){.studio-fullscreen-toggle{display:none}}
+.studio-canvas{max-width:480px}

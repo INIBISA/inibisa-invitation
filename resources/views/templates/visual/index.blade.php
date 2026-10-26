@@ -17,22 +17,24 @@
     <title>{{ $invitation->title }} · {{ $invitation->template->name }}</title>
     <meta name="description" content="Undangan pernikahan {{ data_get($data, 'groom.nickname') }} dan {{ data_get($data, 'bride.nickname') }}.">
     <link rel="canonical" href="{{ $canonical }}">
-    <link rel="stylesheet" href="{{ asset('css/templates/visual.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/templates/visual.css') }}?v={{ filemtime(public_path('css/templates/visual.css')) }}">
     @include('templates.partials.design-settings')
     @if ($musicVideoId)<link rel="stylesheet" href="{{ asset('css/youtube-player.css') }}"><script src="{{ asset('js/youtube-player.js') }}" defer></script>@endif
     <script src="{{ asset('js/invitation-forms.js') }}" defer></script>
     @if ($musicMedia && !$musicVideoId)<script src="{{ asset('js/templates/visual.js') }}" defer></script>@endif
 </head>
 <body class="visual-invitation">
-    @include('templates.visual.partials.section', ['section' => 'cover'])
-    <main>
-        @foreach ($design['section_order'] as $section)
-            @if (($section === 'couple' || ($design['sections'][$section] ?? true)) && (!in_array($section, ['countdown', 'story', 'gallery', 'rsvp', 'gift', 'wishes'], true) || data_get($settings, $section, true)))
-                @include('templates.visual.partials.section', ['section' => $section])
-            @endif
-        @endforeach
-    </main>
-    @include('templates.visual.partials.section', ['section' => 'closing'])
+    <div class="visual-shell">
+        @include('templates.visual.partials.section', ['section' => 'cover'])
+        <main>
+            @foreach ($design['section_order'] as $section)
+                @if (($section === 'couple' || ($design['sections'][$section] ?? true)) && (!in_array($section, ['countdown', 'story', 'gallery', 'rsvp', 'gift', 'wishes'], true) || data_get($settings, $section, true)))
+                    @include('templates.visual.partials.section', ['section' => $section])
+                @endif
+            @endforeach
+        </main>
+        @include('templates.visual.partials.section', ['section' => 'closing'])
+    </div>
     @include('templates.partials.youtube-music')
     @if ($musicMedia && !$musicVideoId && data_get($settings, 'music', true))<audio id="wedding-music" loop preload="none" data-start-seconds="{{ (int) data_get($data, 'music.start_seconds', 0) }}"><source src="{{ asset('storage/'.$musicMedia->file_path) }}"></audio><button class="visual-music-toggle" type="button" aria-label="Putar musik">♪</button>@endif
 </body>
