@@ -22,6 +22,7 @@ class TemplateDesignPublicationController extends Controller
             $lockedTemplate->update([
                 'design_settings' => $lockedTemplate->design_draft_settings,
                 'design_draft_settings' => null,
+                'is_active' => $lockedTemplate->isVisual() && $lockedTemplate->design_settings === null ? true : $lockedTemplate->is_active,
             ]);
         });
 

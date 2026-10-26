@@ -7,12 +7,15 @@ use App\Http\Controllers\Admin\DemoMediaUploadController as AdminDemoMediaUpload
 use App\Http\Controllers\Admin\InvitationController as AdminInvitationController;
 use App\Http\Controllers\Admin\RsvpController as AdminRsvpController;
 use App\Http\Controllers\Admin\SettingController as AdminSettingController;
+use App\Http\Controllers\Admin\TemplateCanvasController;
+use App\Http\Controllers\Admin\TemplateCanvasImageController;
 use App\Http\Controllers\Admin\TemplateController as AdminTemplateController;
 use App\Http\Controllers\Admin\TemplateDesignDraftController;
 use App\Http\Controllers\Admin\TemplateDesignPreviewController;
 use App\Http\Controllers\Admin\TemplateDesignPublicationController;
 use App\Http\Controllers\Admin\TemplateDesignResetController;
 use App\Http\Controllers\Admin\TemplateDesignRollbackController;
+use App\Http\Controllers\Admin\VisualTemplateController;
 use App\Http\Controllers\Admin\WeddingMusicController as AdminWeddingMusicController;
 use App\Http\Controllers\Admin\WishController as AdminWishController;
 use App\Http\Controllers\Auth\GoogleAuthController;
@@ -96,6 +99,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin', 'admin.head
     Route::get('/invitations', AdminInvitationController::class)->name('invitations.index');
     Route::get('/invitations/data', [AdminInvitationController::class, 'data'])->name('invitations.data');
     Route::get('/templates', AdminTemplateController::class)->name('templates.index');
+    Route::get('/templates/create', [VisualTemplateController::class, 'create'])->name('templates.create');
+    Route::post('/templates', [VisualTemplateController::class, 'store'])->name('templates.store');
+    Route::get('/templates/{template}/canvas', [TemplateCanvasController::class, 'edit'])->name('templates.canvas.edit');
+    Route::put('/templates/{template}/canvas', [TemplateCanvasController::class, 'update'])->name('templates.canvas.update');
+    Route::post('/templates/{template}/canvas/images', TemplateCanvasImageController::class)->name('templates.canvas.images.store');
     Route::patch('/templates/{template}', [AdminTemplateController::class, 'update'])->name('templates.update');
     Route::get('/templates/{template}/design-preview', TemplateDesignPreviewController::class)->name('templates.design-preview');
     Route::delete('/templates/{template}/design-draft', [TemplateDesignDraftController::class, 'destroy'])->name('templates.design-draft.destroy');

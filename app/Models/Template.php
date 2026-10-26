@@ -16,7 +16,7 @@ class Template extends Model
     protected $fillable = ['name', 'key', 'view_path', 'thumbnail', 'price', 'category', 'design_settings', 'design_draft_settings', 'is_active'];
 
     /**
-     * @return array{primary_color: string, text_color: string, background_color: string, heading_font: string, body_font: string, card_radius: int, hero_overlay: int, sections: array<string, bool>, section_order: list<string>}
+     * @return array{primary_color: string, text_color: string, background_color: string, heading_font: string, body_font: string, card_radius: int, hero_overlay: int, sections: array<string, bool>, section_order: list<string>, canvas?: array<string, mixed>}
      */
     public function designSettings(): array
     {
@@ -24,7 +24,7 @@ class Template extends Model
     }
 
     /**
-     * @return array{primary_color: string, text_color: string, background_color: string, heading_font: string, body_font: string, card_radius: int, hero_overlay: int, sections: array<string, bool>, section_order: list<string>}
+     * @return array{primary_color: string, text_color: string, background_color: string, heading_font: string, body_font: string, card_radius: int, hero_overlay: int, sections: array<string, bool>, section_order: list<string>, canvas?: array<string, mixed>}
      */
     public function draftDesignSettings(): array
     {
@@ -32,7 +32,7 @@ class Template extends Model
     }
 
     /**
-     * @return array{primary_color: string, text_color: string, background_color: string, heading_font: string, body_font: string, card_radius: int, hero_overlay: int, sections: array<string, bool>, section_order: list<string>}
+     * @return array{primary_color: string, text_color: string, background_color: string, heading_font: string, body_font: string, card_radius: int, hero_overlay: int, sections: array<string, bool>, section_order: list<string>, canvas?: array<string, mixed>}
      */
     public function defaultDesignSettings(): array
     {
@@ -41,7 +41,7 @@ class Template extends Model
 
     /**
      * @param  array<string, mixed>  $settings
-     * @return array{primary_color: string, text_color: string, background_color: string, heading_font: string, body_font: string, card_radius: int, hero_overlay: int, sections: array<string, bool>, section_order: list<string>}
+     * @return array{primary_color: string, text_color: string, background_color: string, heading_font: string, body_font: string, card_radius: int, hero_overlay: int, sections: array<string, bool>, section_order: list<string>, canvas?: array<string, mixed>}
      */
     public function normalizedDesignSettings(array $settings): array
     {
@@ -63,9 +63,14 @@ class Template extends Model
         };
     }
 
+    public function isVisual(): bool
+    {
+        return $this->view_path === 'templates.visual.index';
+    }
+
     /**
      * @param  array<string, mixed>|null  $settings
-     * @return array{primary_color: string, text_color: string, background_color: string, heading_font: string, body_font: string, card_radius: int, hero_overlay: int, sections: array<string, bool>, section_order: list<string>}
+     * @return array{primary_color: string, text_color: string, background_color: string, heading_font: string, body_font: string, card_radius: int, hero_overlay: int, sections: array<string, bool>, section_order: list<string>, canvas?: array<string, mixed>}
      */
     private function resolveDesignSettings(?array $settings): array
     {
@@ -79,6 +84,12 @@ class Template extends Model
         };
 
         $defaults['sections'] = array_fill_keys(['quote', 'countdown', 'events', 'story', 'gallery', 'rsvp', 'gift', 'wishes'], true);
+        if ($this->isVisual()) {
+            $defaults['canvas'] = array_fill_keys(
+                ['cover', ...array_keys($this->orderableSections()), 'closing'],
+                ['background' => $defaults['background_color'], 'height' => 620, 'content_x' => 10, 'content_top' => 0, 'content_width' => 80, 'content_align' => 'center', 'elements' => []],
+            );
+        }
         $defaultOrder = array_keys($this->orderableSections());
         $requestedOrder = array_values(array_unique(array_filter(
             $settings['section_order'] ?? [],

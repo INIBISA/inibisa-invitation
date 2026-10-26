@@ -5,8 +5,9 @@
         <div>
             <p class="overline">Katalog Produk</p>
             <h1>Templat</h1>
-            <p>Atur harga, status, thumbnail, tampilan, dan demo templat.</p>
+            <p>Kelola templat kode dan buat desain baru lewat studio visual.</p>
         </div>
+        <a class="button gold" href="{{ route('admin.templates.create') }}">＋ Buat Templat Visual</a>
     </section>
     <div class="template-grid">
         @forelse($templates as $template)
@@ -21,6 +22,7 @@
                     <p>{{ $template->invitations_count }} undangan · Rp {{ number_format($template->price, 0, ',', '.') }}
                     </p>
                     <div class="actions">
+                        @if ($template->isVisual())<a class="button gold small" href="{{ route('admin.templates.canvas.edit', $template) }}">Buka Studio</a>@endif
                         @if ($template->demo)
                             <a class="button secondary small" href="{{ route('templates.show', $template) }}"
                                 target="_blank" rel="noopener">Lihat Demo</a><a class="button secondary small"
@@ -40,6 +42,7 @@
                             <div class="field"><label>Harga (Rp)</label><input class="input" type="number" min="1000"
                                     name="price" value="{{ $hasOldInput ? old('price') : $template->price }}" required></div>
                             <div class="field"><label for="thumbnail-{{ $template->id }}">Thumbnail Paket</label><input class="input" id="thumbnail-{{ $template->id }}" type="file" name="thumbnail" accept="image/jpeg,image/png,image/webp" data-max-mb="5"><small>JPG, PNG, atau WebP. Maksimal 5 MB. Rasio 4:3 disarankan agar sama dengan thumbnail lainnya.</small></div>
+                            @unless ($template->isVisual())
                             <fieldset class="design-settings">
                                 <legend>Tampilan Undangan</legend>
                                 <div class="design-color-grid">
@@ -74,6 +77,7 @@
                                     </div>
                                 @endif
                             </fieldset>
+                            @endunless
                             <label
                                  class="check"><input type="checkbox" name="is_active" value="1"
                                     @checked($hasOldInput ? old('is_active') : $template->is_active)> Aktif</label><button class="button gold small"
@@ -130,6 +134,14 @@
         .design-swatches { display: flex; }
         .design-swatches i { width: 17px; height: 17px; border: 1px solid rgba(0,0,0,.16); border-radius: 50%; }
         .design-swatches i + i { margin-left: -4px; }
+        .template-card-body { min-width: 0; }
+        .template-card-body .actions { flex-wrap: wrap; }
+        .template-card .design-color-grid, .template-card .design-section-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .template-card .design-settings .form-grid { grid-template-columns: 1fr; }
+        .template-card .design-order > div, .template-card .design-history-item { flex-wrap: wrap; }
+        .template-card .design-order > div > div { margin-left: auto; }
+        .template-card .design-preview-toolbar { flex-wrap: wrap; }
+        .template-card .design-draft-status { align-items: flex-start; flex-direction: column; }
         @media (max-width: 640px) { .design-color-grid, .design-section-grid { grid-template-columns: 1fr 1fr; } .design-preview { height: 520px; } }
     </style>
 @endpush
