@@ -41,7 +41,7 @@
     <meta name="theme-color" content="{{ $templateDesign['background_color'] }}"><link rel="icon" type="image/webp" href="{{ asset('favicon.webp') }}"><link rel="canonical" href="{{ $canonical }}">
     <meta property="og:type" content="website"><meta property="og:title" content="The Wedding of {{ data_get($bride, 'nickname') }} & {{ data_get($groom, 'nickname') }}"><meta property="og:url" content="{{ $canonical }}">
     @if($coverMedia)<meta property="og:image" content="{{ asset('storage/'.$coverMedia->file_path) }}">@endif
-    <link rel="stylesheet" href="{{ asset('css/templates/rustic-forest.css') }}">@include('templates.partials.design-settings')
+    <link rel="stylesheet" href="{{ asset('css/templates/rustic-forest.css') }}?v={{ filemtime(public_path('css/templates/rustic-forest.css')) }}">@include('templates.partials.design-settings')
     @if($musicVideoId)<link rel="stylesheet" href="{{ asset('css/youtube-player.css') }}"><script src="{{ asset('js/youtube-player.js') }}" defer></script>@endif
     <script src="{{ asset('js/templates/editorial-invitation.js') }}" defer></script><script src="{{ asset('js/invitation-forms.js') }}" defer></script>
 </head>

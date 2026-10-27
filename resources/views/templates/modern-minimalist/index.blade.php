@@ -16,7 +16,7 @@
     <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>{{ $invitation->title }} · {{ $weddingDate->translatedFormat('d F Y') }}</title>
     <meta name="description" content="Undangan pernikahan {{ data_get($groom,'nickname') }} dan {{ data_get($bride,'nickname') }}."><meta name="theme-color" content="{{ $templateDesign['background_color'] }}"><link rel="icon" type="image/webp" href="{{ asset('favicon.webp') }}"><link rel="canonical" href="{{ $canonical }}">
     <meta property="og:type" content="website"><meta property="og:title" content="{{ $invitation->title }}"><meta property="og:url" content="{{ $canonical }}">@if($coverMedia)<meta property="og:image" content="{{ asset('storage/'.$coverMedia->file_path) }}">@endif
-    <link rel="stylesheet" href="{{ asset('css/templates/modern-minimalist.css') }}">@include('templates.partials.design-settings')
+    <link rel="stylesheet" href="{{ asset('css/templates/modern-minimalist.css') }}?v={{ filemtime(public_path('css/templates/modern-minimalist.css')) }}">@include('templates.partials.design-settings')
     @if($musicVideoId)<link rel="stylesheet" href="{{ asset('css/youtube-player.css') }}"><script src="{{ asset('js/youtube-player.js') }}" defer></script>@endif
     <script src="{{ asset('js/templates/editorial-invitation.js') }}" defer></script><script src="{{ asset('js/invitation-forms.js') }}" defer></script>
 </head>
