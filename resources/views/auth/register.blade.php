@@ -3,8 +3,20 @@
 @section('auth-page', 'auth-register')
 @section('content')
     <div class="auth-heading">
-        <h2>Buat Akun</h2>
-        <p>Mulai buat undangan Anda.</p>
+        <span class="auth-kicker">Mulai dari sini</span>
+        <h2>Buat Akun Undangan</h2>
+        <p>Daftar gratis untuk memilih desain dan mengelola undangan pernikahan Anda. Harga template ditampilkan sebelum pembayaran.</p>
+    </div>
+    @if ($selectedTemplate)
+        <p class="auth-selected-template">Desain pilihan: <strong>{{ $selectedTemplate->name }}</strong> · Rp {{ number_format($selectedTemplate->price, 0, ',', '.') }}. Setelah daftar, Anda akan menuju checkout untuk meninjau pembayaran.</p>
+    @endif
+    <div class="auth-journey" aria-label="Langkah membuat undangan">
+        <strong>Setelah mendaftar:</strong>
+        <ol>
+            <li><span>1</span>Pilih desain, lihat demo dan harganya.</li>
+            <li><span>2</span>Bayar template pilihan; setelah berhasil, isi detail acara.</li>
+            <li><span>3</span>Pratinjau, publikasikan, lalu bagikan tautan ke tamu.</li>
+        </ol>
     </div>
     @if ($errors->any())
         <div class="auth-error-summary"><svg viewBox="0 0 24 24">
@@ -14,12 +26,14 @@
     @endif
     @include('auth.partials.google-button', ['label' => 'Daftar dengan Google', 'divider' => 'atau'])
     <form class="premium-form" method="POST" action="{{ route('register') }}">@csrf
+        <div class="auth-register-fields">
         <div class="form-field"><label for="name">Nama Lengkap</label>
             <div class="input-shell @error('name') invalid @enderror"><svg viewBox="0 0 24 24">
                     <circle cx="12" cy="8" r="4" />
                     <path d="M4 21a8 8 0 0 1 16 0" />
                 </svg><input id="name" name="name" value="{{ old('name') }}" placeholder="Nama lengkapmu"
                     autocomplete="name" required autofocus></div>
+            <small class="auth-field-hint">Nama pemilik akun; nama mempelai diisi saat membuat undangan.</small>
             @error('name')
                 <span class="field-error">{{ $message }}</span>
             @enderror
@@ -29,9 +43,11 @@
                     <path d="M4 5h16v14H4zM4 7l8 6 8-6" />
                 </svg><input id="email" type="email" name="email" value="{{ old('email') }}"
                     placeholder="nama@email.com" autocomplete="email" required></div>
+            <small class="auth-field-hint">Gunakan email yang dapat Anda akses untuk masuk kembali.</small>
             @error('email')
                 <span class="field-error">{{ $message }}</span>
             @enderror
+        </div>
         </div>
         <div class="auth-password-grid">
             <div class="form-field"><label for="password">Kata Sandi</label>
@@ -68,11 +84,12 @@
         @error('password')
             <span class="field-error password-error">{{ $message }}</span>
         @enderror
+        <small class="auth-field-hint">Minimal 6 karakter. Ulangi kata sandi yang sama pada kolom konfirmasi.</small>
         <label class="terms-consent"><input type="checkbox" name="terms" value="1" @checked(old('terms')) required><span>Saya menyetujui <a href="{{ route('terms') }}" target="_blank" rel="noopener">Syarat dan Ketentuan</a> serta <a href="{{ route('privacy') }}" target="_blank" rel="noopener">Kebijakan Privasi</a>.</span></label>
         @error('terms')
             <span class="field-error">{{ $message }}</span>
         @enderror
-        <button class="primary-button full-button" type="submit">Buat Akun <svg viewBox="0 0 24 24">
+        <button class="primary-button full-button" type="submit">Daftar Gratis &amp; Pilih Template <svg viewBox="0 0 24 24">
                 <path d="M5 12h14M14 7l5 5-5 5" />
             </svg></button>
     </form>

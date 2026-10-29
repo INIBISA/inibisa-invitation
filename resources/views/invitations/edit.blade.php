@@ -5,7 +5,7 @@
         <div>
             <p class="overline">Ubah Undangan</p>
             <h1>{{ $invitation->title }}</h1>
-            <p>Perbarui informasi, media, dan pengaturan undangan Anda.</p>
+            <p>Perbarui detail, simpan, dan buka pratinjau untuk memeriksa tampilan tamu sebelum membagikan tautan.</p>
         </div>
         <div class="actions">
             <a class="button secondary" href="{{ route('invitations.preview', $invitation) }}" target="_blank"
@@ -22,7 +22,7 @@
             <p class="overline">Publikasi</p>
             <h2>Bagikan undangan</h2>
             <p>Status saat ini: <span class="status-badge {{ $invitation->status }}"><i></i>{{ $invitation->statusLabel() }}</span></p>
-            <small>Pastikan nama mempelai, tanggal pernikahan, dan minimal satu acara sudah lengkap sebelum publikasi.</small>
+            <small>Lengkapi nama mempelai, tanggal pernikahan, dan minimal satu acara. Simpan perubahan lalu cek Pratinjau sebelum publikasi. Tautan baru dapat dibuka tamu setelah diterbitkan; menonaktifkannya membuat tautan tidak bisa diakses sementara.</small>
         </div>
         <div class="actions">
             @if ($invitation->status === 'published')

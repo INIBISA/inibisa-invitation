@@ -13,7 +13,7 @@ class Template extends Model
     /** @use HasFactory<TemplateFactory> */
     use HasFactory;
 
-    protected $fillable = ['name', 'key', 'view_path', 'thumbnail', 'price', 'category', 'design_settings', 'design_draft_settings', 'is_active'];
+    protected $fillable = ['name', 'key', 'view_path', 'thumbnail', 'price', 'category', 'description', 'design_settings', 'design_draft_settings', 'is_active'];
 
     /**
      * @return array{primary_color: string, text_color: string, background_color: string, heading_font: string, body_font: string, card_radius: int, hero_overlay: int, sections: array<string, bool>, section_order: list<string>, canvas?: array<string, mixed>}

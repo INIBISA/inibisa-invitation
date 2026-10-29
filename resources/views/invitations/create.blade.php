@@ -5,7 +5,7 @@
         <div>
             <p class="overline">Undangan Baru</p>
             <h1>Isi cerita pernikahan Anda</h1>
-            <p>Ikuti langkah berikut. Data dapat dilengkapi kembali setelah undangan dibuat.</p>
+            <p>Isi 6 langkah sesuai kebutuhan. Anda dapat menyimpan draf dan melengkapi data nanti sebelum publikasi.</p>
         </div>
         <a class="button secondary" href="{{ route('dashboard') }}">Batal</a>
     </section>

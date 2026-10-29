@@ -19,8 +19,8 @@
                         <h2>{{ $template->name }}</h2><span
                             class="status-badge {{ $template->is_active ? 'active' : 'inactive' }}"><i></i>{{ $template->is_active ? 'Aktif' : 'Nonaktif' }}</span>
                     </div>
-                    <p>{{ $template->invitations_count }} undangan · Rp {{ number_format($template->price, 0, ',', '.') }}
-                    </p>
+                    <p>{{ $template->description ?: 'Belum ada deskripsi.' }}</p>
+                    <p>{{ $template->invitations_count }} undangan · Rp {{ number_format($template->price, 0, ',', '.') }}</p>
                     <div class="actions">
                         @if ($template->isVisual())<a class="button gold small" href="{{ route('admin.templates.canvas.edit', $template) }}">Buka Studio</a>@endif
                         @if ($template->demo)
@@ -31,12 +31,17 @@
                         @endif
                     </div>
                     @php($hasOldInput = (int) old('template_form_id') === $template->id)
-                    <details @if($hasOldInput && $errors->any()) open @endif>
-                        <summary>Pengaturan Templat</summary>
+                    <button class="button secondary small" type="button" data-template-settings-open="{{ $template->id }}" aria-haspopup="dialog" aria-controls="template-settings-{{ $template->id }}">Pengaturan Templat</button>
+                    <dialog class="app-dialog template-settings-dialog" id="template-settings-{{ $template->id }}" aria-labelledby="template-settings-title-{{ $template->id }}">
+                        <div class="template-settings-heading"><div><p class="overline">Pengaturan Templat</p><h2 id="template-settings-title-{{ $template->id }}">{{ $template->name }}</h2><p>Ubah informasi yang tampil pada beranda dan katalog, serta atur desain undangan.</p></div><button class="icon-button" type="button" data-dialog-close aria-label="Tutup pengaturan {{ $template->name }}">×</button></div>
+                        @if ($hasOldInput && $errors->any())
+                            <div class="alert error" role="alert"><strong>Periksa kembali pengaturan:</strong><ul>@foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>
+                        @endif
                         @php($design = $hasOldInput ? array_replace_recursive($template->draftDesignSettings(), old('design_settings', [])) : $template->draftDesignSettings())
                         <form method="POST" action="{{ route('admin.templates.update', $template) }}" enctype="multipart/form-data" data-design-form>@csrf
                             @method('PATCH')<input type="hidden" name="template_form_id" value="{{ $template->id }}"><div class="field"><label>Nama</label><input class="input" name="name"
                                     value="{{ $hasOldInput ? old('name') : $template->name }}" required></div>
+                            <div class="field"><label for="description-{{ $template->id }}">Deskripsi Templat</label><textarea class="input" id="description-{{ $template->id }}" name="description" rows="3" maxlength="500" placeholder="Ceritakan nuansa dan keunikan desain ini">{{ $hasOldInput ? old('description') : $template->description }}</textarea><small>Ditampilkan di beranda dan katalog pelanggan. Maksimal 500 karakter.</small></div>
                             <div class="field"><label>Kategori</label><input class="input" name="category"
                                     value="{{ $hasOldInput ? old('category') : $template->category }}" required></div>
                             <div class="field"><label>Harga (Rp)</label><input class="input" type="number" min="1000"
@@ -99,7 +104,7 @@
                                 @endforeach
                             </div>
                         @endif
-                    </details>
+                    </dialog>
                 </div>
         </article>@empty<div class="premium-empty">
                 <h3>Belum ada templat</h3>
@@ -136,18 +141,32 @@
         .design-swatches i + i { margin-left: -4px; }
         .template-card-body { min-width: 0; }
         .template-card-body .actions { flex-wrap: wrap; }
-        .template-card .design-color-grid, .template-card .design-section-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-        .template-card .design-settings .form-grid { grid-template-columns: 1fr; }
-        .template-card .design-order > div, .template-card .design-history-item { flex-wrap: wrap; }
-        .template-card .design-order > div > div { margin-left: auto; }
-        .template-card .design-preview-toolbar { flex-wrap: wrap; }
-        .template-card .design-draft-status { align-items: flex-start; flex-direction: column; }
-        @media (max-width: 640px) { .design-color-grid, .design-section-grid { grid-template-columns: 1fr 1fr; } .design-preview { height: 520px; } }
+        .template-settings-dialog { width: min(760px, calc(100vw - 32px)); max-width: none; max-height: min(90vh, 920px); overflow-y: auto; padding: clamp(20px, 4vw, 36px); }
+        .template-settings-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; margin-bottom: 20px; }
+        .template-settings-heading .overline { margin-bottom: 5px; }
+        .template-settings-heading p:last-child { margin: 0; }
+        .template-settings-heading .icon-button { flex: none; }
+        .template-settings-dialog [data-design-form] { display: grid; gap: 16px; }
+        .template-settings-dialog .design-settings { margin: 0; min-width: 0; }
+        .template-settings-dialog .design-history-item, .template-settings-dialog .design-order > div { flex-wrap: wrap; }
+        .template-settings-dialog .design-order > div > div { margin-left: auto; }
+        .template-settings-dialog .alert ul { margin-bottom: 0; padding-left: 20px; }
+        @media (max-width: 640px) { .template-settings-dialog { max-height: calc(100dvh - 24px); } .design-color-grid, .design-section-grid, .template-settings-dialog .form-grid { grid-template-columns: 1fr 1fr; } .design-preview { height: 520px; } }
+        @media (max-width: 480px) { .template-settings-dialog .design-color-grid, .template-settings-dialog .form-grid { grid-template-columns: 1fr; } }
     </style>
 @endpush
 
 @push('scripts')
     <script>
+        document.querySelectorAll('[data-template-settings-open]').forEach((button) => {
+            button.addEventListener('click', () => document.getElementById(`template-settings-${button.dataset.templateSettingsOpen}`).showModal());
+        });
+        document.querySelectorAll('.template-settings-dialog').forEach((dialog) => {
+            dialog.addEventListener('click', (event) => { if (event.target === dialog) dialog.close(); });
+        });
+        @if (old('template_form_id'))
+            document.getElementById('template-settings-{{ (int) old('template_form_id') }}')?.showModal();
+        @endif
         document.querySelectorAll('[data-design-form]').forEach((form) => {
             const preview = form.querySelector('.design-preview');
             const previewPanel = form.querySelector('[data-design-preview-panel]');

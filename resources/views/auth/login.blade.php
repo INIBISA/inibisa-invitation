@@ -2,7 +2,7 @@
 @section('title', 'Masuk')
 @section('auth-page', 'auth-login')
 @section('content')
-<div class="auth-heading"><h2>Selamat Datang Kembali</h2><p>Masuk ke akun Anda.</p></div>
+<div class="auth-heading"><h2>Selamat Datang Kembali</h2><p>Masuk untuk melanjutkan pembayaran, mengisi undangan, atau memantau tamu dan RSVP.</p></div>
 @if($errors->any())<div class="auth-error-summary"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 17h.01"/></svg><span>{{ $errors->first() }}</span></div>@endif
 @include('auth.partials.google-button', ['label' => 'Masuk dengan Google', 'divider' => 'atau'])
 <form class="premium-form" method="POST" action="{{ route('login') }}">@csrf

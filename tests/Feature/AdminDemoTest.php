@@ -248,10 +248,14 @@ class AdminDemoTest extends TestCase
     {
         $this->seed([TemplateSeeder::class, DemoInvitationSeeder::class]);
         $template = Template::query()->where('key', 'voxel-voyage')->firstOrFail();
+        $template->update(['price' => 175000]);
 
         $this->get('/')
             ->assertOk()
             ->assertSee('href="'.route('templates.show', $template).'"', false)
+            ->assertSee('href="'.route('register', ['template' => $template->id]).'"', false)
+            ->assertSee('Rp 175.000')
+            ->assertSee('Daftar &amp; Pilih', false)
             ->assertDontSee('href="'.route('public.invitation', 'nara-raka').'"', false);
     }
 

@@ -5,7 +5,7 @@
     <div class="auth-heading">
         <span class="auth-kicker">Satu langkah lagi</span>
         <h2>Konfirmasi Akun</h2>
-        <p>Periksa data Google Anda, lalu setujui dokumen legal untuk menyelesaikan pendaftaran.</p>
+        <p>Periksa data Google Anda, lalu setujui dokumen legal. Setelah akun dibuat, pilih desain dan lihat harga sebelum membayar template.</p>
     </div>
     @if ($errors->any())
         <div class="auth-error-summary"><svg viewBox="0 0 24 24">

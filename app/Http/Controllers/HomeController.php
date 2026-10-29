@@ -19,19 +19,12 @@ class HomeController extends Controller
             ->where('is_active', true)
             ->orderBy('name')
             ->with('demo:id,template_id,slug')
-            ->get(['id', 'key', 'name', 'thumbnail']);
+            ->get(['id', 'key', 'name', 'thumbnail', 'price', 'description']);
 
         $demos = $templates->mapWithKeys(fn (Template $template) => [$template->id => $template->demo]);
+        $featuredDemo = $templates->first(fn (Template $template): bool => $template->key === 'eternal-ivory' && $template->demo !== null)
+            ?? $templates->first(fn (Template $template): bool => $template->demo !== null);
 
-        $descriptions = [
-            'eternal-ivory' => 'Nuansa ivory yang tenang dengan serif anggun dan ornamen floral klasik.',
-            'modern-minimalist' => 'Desain bersih dengan ruang lapang, fokus pada tipografi dan informasi acara.',
-            'rustic-forest' => 'Nuansa kayu dan dedaunan hangat untuk pernikahan outdoor yang intim.',
-            'sweet-blossom' => 'Nuansa blush romantis dengan bunga sakura yang hangat dan manis.',
-            'midnight-nusantara' => 'Nuansa biru malam mewah dengan aksen emas dan geometri Nusantara.',
-            'voxel-voyage' => 'Dunia voxel penuh warna dengan panel permainan, peta perjalanan, dan nuansa petualangan ceria.',
-        ];
-
-        return view('home', compact('templates', 'demos', 'descriptions'));
+        return view('home', compact('templates', 'demos', 'featuredDemo'));
     }
 }

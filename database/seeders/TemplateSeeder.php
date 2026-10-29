@@ -17,6 +17,7 @@ class TemplateSeeder extends Seeder
                 'thumbnail' => 'images/templates/eternal-ivory/thumbnail.svg',
                 'price' => 150000,
                 'category' => 'Classic',
+                'description' => 'Nuansa ivory yang tenang dengan serif anggun dan ornamen floral klasik.',
                 'is_active' => true,
             ],
         );
@@ -29,6 +30,7 @@ class TemplateSeeder extends Seeder
                 'thumbnail' => 'images/templates/sweet-blossom/thumbnail.webp',
                 'price' => 150000,
                 'category' => 'Floral',
+                'description' => 'Nuansa blush romantis dengan bunga sakura yang hangat dan manis.',
                 'is_active' => true,
             ],
         );
@@ -45,6 +47,7 @@ class TemplateSeeder extends Seeder
                 'thumbnail' => 'images/templates/midnight-nusantara/thumbnail.svg',
                 'price' => 150000,
                 'category' => 'Luxury',
+                'description' => 'Nuansa biru malam mewah dengan aksen emas dan geometri Nusantara.',
                 'is_active' => true,
             ],
         );
@@ -57,6 +60,7 @@ class TemplateSeeder extends Seeder
                 'thumbnail' => 'images/templates/rustic-forest/thumbnail.svg',
                 'price' => 150000,
                 'category' => 'Rustic',
+                'description' => 'Nuansa kayu dan dedaunan hangat untuk pernikahan outdoor yang intim.',
                 'is_active' => true,
             ],
         );
@@ -69,6 +73,7 @@ class TemplateSeeder extends Seeder
                 'thumbnail' => 'images/templates/modern-minimalist/thumbnail.svg',
                 'price' => 150000,
                 'category' => 'Minimalist',
+                'description' => 'Desain bersih dengan ruang lapang, fokus pada tipografi dan informasi acara.',
                 'is_active' => true,
             ],
         );

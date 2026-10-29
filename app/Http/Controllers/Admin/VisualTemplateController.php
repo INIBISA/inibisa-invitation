@@ -23,6 +23,7 @@ class VisualTemplateController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:150'],
             'category' => ['required', 'string', 'max:80'],
+            'description' => ['nullable', 'string', 'max:500'],
             'price' => ['required', 'integer', 'min:1000', 'max:100000000'],
         ]);
 

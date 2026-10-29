@@ -21,10 +21,12 @@ class VisualTemplateBuilderTest extends TestCase
 
         $this->actingAs($admin)->post(route('admin.templates.store'), [
             'name' => 'Garden Romance', 'category' => 'Floral', 'price' => 175000,
+            'description' => 'Taman bunga bernuansa romantis.',
         ])->assertRedirect()->assertSessionHas('success');
 
         $template = Template::query()->where('name', 'Garden Romance')->firstOrFail();
         $this->assertTrue($template->isVisual());
+        $this->assertSame('Taman bunga bernuansa romantis.', $template->description);
         $this->assertFalse($template->is_active);
         $this->assertNotNull($template->demo);
 

@@ -5,7 +5,7 @@
         <div>
             <p class="overline">Detail Pembayaran</p>
             <h1>{{ $payment->template->name }}</h1>
-            <p>Pantau status transaksi dan selesaikan pembayaran Anda.</p>
+             <p>Periksa status di bawah. Tindakan berikutnya bergantung pada metode dan status pembayaran.</p>
         </div>
         <a class="button secondary" href="{{ route('payments.index') }}">Kembali ke Pembayaran</a>
     </section>
@@ -25,7 +25,7 @@
                     <span class="payment-state-icon">✓</span>
                     <div>
                         <h3>Pembayaran berhasil</h3>
-                        <p>Template siap digunakan untuk membuat undangan Anda.</p>
+                         <p>Template sudah bisa digunakan. Isi detail acara, pratinjau, lalu publikasikan undangan.</p>
                     </div>
                 </div>
                 <div class="payment-actions">
@@ -48,7 +48,7 @@
                 @endif
 
                 @if ($payment->rejection_reason)
-                    <div class="alert error"><strong>Pembayaran ditolak.</strong> {{ $payment->rejection_reason }}</div>
+                     <div class="alert error"><strong>Bukti pembayaran ditolak.</strong> {{ $payment->rejection_reason }} Periksa alasan di atas, lalu unggah bukti baru di bawah.</div>
                 @endif
 
                 <div class="payment-section">
@@ -72,7 +72,8 @@
                         action="{{ route('payments.proof.store', $payment) }}" enctype="multipart/form-data">
                         @csrf
                         <div class="field">
-                            <label for="payment-proof">{{ $payment->proof_path ? 'Ganti bukti transfer' : 'Unggah bukti transfer' }}</label>
+                             <label for="payment-proof">{{ $payment->proof_path ? 'Ganti bukti transfer' : 'Unggah bukti transfer' }}</label>
+                             <small>Pastikan transfer sesuai total pembayaran dan foto bukti jelas terbaca. Admin akan memeriksa setelah bukti dikirim.</small>
                             <div class="upload-zone" data-upload-zone>
                                 <input id="payment-proof" type="file" name="proof" accept="image/jpeg,image/png,image/webp"
                                     data-max-mb="5" required>
@@ -92,7 +93,7 @@
                     <span class="payment-state-icon">↗</span>
                     <div>
                         <h3>Selesaikan pembayaran</h3>
-                        <p>Status diperbarui otomatis setelah pembayaran Midtrans berhasil.</p>
+                         <p>Klik Bayar Sekarang untuk membuka pembayaran Midtrans. Setelah berhasil, status diperbarui otomatis dan template bisa digunakan.</p>
                     </div>
                 </div>
                 <div class="payment-actions">

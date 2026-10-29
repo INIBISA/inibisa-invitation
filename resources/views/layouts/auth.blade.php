@@ -16,12 +16,12 @@
         <img class="auth-story-image" src="{{ asset('images/templates/eternal-ivory/couple-placeholder.svg') }}" alt="" width="960" height="1280" decoding="async">
         <div class="auth-story-overlay"></div>
         <div class="auth-story-content">
-            <a class="auth-brand" href="{{ route('login') }}" aria-label="Undangan Digital Studio"><img class="brand-wordmark" src="{{ asset('logotext.webp') }}" alt="" width="260" height="115"></a>
-            <div class="auth-message"><span class="auth-kicker">Undangan Digital Studio</span><h1>Awal kisah yang indah.</h1></div>
+            <a class="auth-brand" href="{{ url('/') }}" aria-label="Beranda Undangan Digital Studio"><img class="brand-wordmark" src="{{ asset('logotext.webp') }}" alt="" width="260" height="115"></a>
+            <div class="auth-message"><span class="auth-kicker">Undangan Digital Studio</span><h1>Undangan impian, dalam satu tempat.</h1><p>Buat undangan pernikahan, bagikan tautannya, lalu pantau konfirmasi hadir dan ucapan tamu dari akun Anda.</p></div>
         </div>
     </section>
     <section class="auth-form-panel">
-        <a class="auth-brand mobile-auth-brand" href="{{ route('login') }}"><img class="brand-icon" src="{{ asset('logo.webp') }}" alt="" width="42" height="42"><span><strong>Undangan</strong><small>Digital Studio</small></span></a>
+        <a class="auth-brand mobile-auth-brand" href="{{ url('/') }}" aria-label="Beranda Undangan Digital Studio"><img class="brand-icon" src="{{ asset('logo.webp') }}" alt="" width="42" height="42"><span><strong>Undangan</strong><small>Digital Studio</small></span></a>
         <div class="auth-form-wrap">
             @if(session('success'))<div class="alert success">{{ session('success') }}</div>@endif
             @yield('content')

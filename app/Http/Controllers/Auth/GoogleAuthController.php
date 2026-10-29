@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ConfirmGoogleRegistrationRequest;
+use App\Models\Template;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -147,7 +148,11 @@ class GoogleAuthController extends Controller
             return redirect()->intended(route('admin.dashboard'));
         }
 
-        return redirect()->intended(route('dashboard'));
+        $selectedTemplate = Template::query()->where('is_active', true)->find($request->session()->pull('selected_template_id'));
+
+        return $selectedTemplate
+            ? redirect()->route('payments.create', $selectedTemplate)
+            : redirect()->intended(route('dashboard'));
     }
 
     private function isConfigured(): bool

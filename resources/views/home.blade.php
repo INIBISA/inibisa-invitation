@@ -26,7 +26,7 @@
         </nav>
         <div class="landing-actions">
             <a class="landing-link" href="{{ route('login') }}">Masuk</a>
-            <a class="landing-cta" href="{{ route('register') }}">Buat Undangan</a>
+            <a class="landing-cta" href="{{ route('register') }}">Daftar Gratis</a>
         </div>
         <button class="landing-burger" type="button" data-landing-menu-open aria-expanded="false" aria-controls="landing-mobile-menu" aria-label="Buka menu">
             <span></span><span></span><span></span>
@@ -39,7 +39,7 @@
         <a href="#faq">FAQ</a>
         <div class="landing-mobile-actions">
             <a href="{{ route('login') }}">Masuk</a>
-            <a class="landing-cta" href="{{ route('register') }}">Buat Undangan</a>
+            <a class="landing-cta" href="{{ route('register') }}">Daftar Gratis</a>
         </div>
     </div>
 </header>
@@ -52,16 +52,19 @@
         <div class="landing-container hero-grid">
             <div class="hero-copy" data-reveal>
                 <p class="hero-kicker">Website undangan pernikahan</p>
-                <h1>Bikin Undangan Mewah Tanpa Ribet, Cukup Dalam Hitungan Menit.</h1>
-                <p class="hero-lead">Persiapan pernikahan jadi lebih tenang. Cukup sebar satu tautan cantik, lalu biarkan sistem mengelola konfirmasi hadir, lokasi, hingga pesan dari para tamu.</p>
+                <h1>Undangan Pernikahan yang Mudah Dibuat, Indah Dibagikan.</h1>
+                <p class="hero-lead">Lihat demo dan harga desain sebelum mendaftar. Setelah memilih template dan menyelesaikan pembayaran, isi detail acara, bagikan tautan undangan, lalu pantau RSVP dan ucapan tamu.</p>
                 <div class="hero-cta">
-                    <a class="primary-button hero-primary" href="{{ route('register') }}">Buat Undangan Gratis <svg viewBox="0 0 24 24"><path d="M5 12h14M14 7l5 5-5 5"/></svg></a>
-                    <a class="secondary-button" href="#template">Lihat Template</a>
+                    <a class="primary-button hero-primary" href="{{ route('register') }}">Daftar Gratis <svg viewBox="0 0 24 24"><path d="M5 12h14M14 7l5 5-5 5"/></svg></a>
+                    <a class="secondary-button" href="#template">Lihat Demo &amp; Harga</a>
                 </div>
             </div>
             <div class="hero-preview" data-reveal>
+                @if ($featuredDemo)
+                    <a class="hero-device-link" href="{{ route('templates.show', $featuredDemo) }}" target="_blank" rel="noopener" aria-label="Buka demo {{ $featuredDemo->name }}">
+                @endif
                 <div class="device">
-                    <div class="device-top"><span></span><span></span><span></span><small>undangan.digital/alexander-cyntia</small></div>
+                    <div class="device-top"><span></span><span></span><span></span><small>Ilustrasi tampilan undangan</small></div>
                     <div class="device-screen">
                         <img class="preview-wreath" src="{{ asset('images/templates/eternal-ivory/floral-wreath.webp') }}" alt="" width="520" height="520" decoding="async">
                         <p class="preview-kicker">The Wedding Of</p>
@@ -75,6 +78,14 @@
                         <div class="preview-actions"><span>Konfirmasi Kehadiran</span><span class="ghost">Kirim Ucapan</span></div>
                     </div>
                 </div>
+                @if ($featuredDemo)
+                    </a>
+                @endif
+                @if ($featuredDemo)
+                    <a class="secondary-button hero-demo-link" href="{{ route('templates.show', $featuredDemo) }}" target="_blank" rel="noopener">Buka demo {{ $featuredDemo->name }} <span aria-hidden="true">↗</span></a>
+                @else
+                    <a class="secondary-button hero-demo-link" href="#template">Lihat pilihan template dan demo</a>
+                @endif
             </div>
         </div>
     </section>
@@ -113,7 +124,7 @@
                     </div>
 
                     <h3>Buat Akun dan Pilih Desain.</h3>
-                    <p>Setelah membuat akun, dapat memilih tema udangan digital yang disukai.</p>
+                    <p>Daftar gratis untuk membuka dashboard. Lihat demo serta harga tiap template sebelum memilih desain.</p>
                 </article>
 
                 <!-- STEP 02 -->
@@ -138,8 +149,8 @@
                         </div>
                     </div>
 
-                    <h3>Lengkapi detail undangan</h3>
-                    <p>Pengisian nama pasangan, tanggal, lokasi acara, galeri foto untuk amplop digital.</p>
+                    <h3>Bayar, lalu isi detail undangan</h3>
+                    <p>Setelah pembayaran template berhasil, isi nama pasangan, jadwal, lokasi acara, dan foto. Pratinjau sebelum dipublikasikan.</p>
                 </article>
 
                 <!-- STEP 03 -->
@@ -164,7 +175,7 @@
                     </div>
 
                     <h3>Undangan Siap Dibagikan</h3>
-                    <p>Link Undangan digital dapat disebarkan ke relasi & keluarga.</p>
+                    <p>Publikasikan undangan untuk mengaktifkan tautan. Bagikan ke keluarga dan relasi; pantau RSVP serta ucapan dari dashboard.</p>
                 </article>
 
             </div>
@@ -178,7 +189,7 @@
             <div class="section-head" data-reveal>
                 <p class="overline">Template</p>
                 <h2>Pilih desain favoritmu.</h2>
-                <p>Buka demonya dulu sebelum memutuskan.</p>
+                <p>Bandingkan tampilan dan harga di sini, tanpa perlu membuat akun. Harga berlaku untuk template pilihan; pembayaran dilakukan setelah mendaftar.</p>
             </div>
             <div class="template-grid">
                 @foreach($templates as $template)
@@ -187,17 +198,35 @@
                     <img src="{{ asset($template->thumbnail) }}" alt="Preview template {{ $template->name }}" loading="lazy" decoding="async">
                     <div class="template-card-body">
                         <h3>{{ $template->name }}</h3>
-                        <p>{{ $descriptions[$template->key] ?? 'Desain premium yang siap pakai untuk hari bahagiamu.' }}</p>
+                        <p>{{ $template->description ?: 'Desain undangan yang dapat disesuaikan dengan cerita Anda.' }}</p>
+                        <p class="template-price">{{ $template->price > 0 ? 'Rp '.number_format($template->price, 0, ',', '.') : 'Gratis' }} <small>per template</small></p>
                         <div class="template-card-actions">
                             @if($demo)
                             <a class="secondary-button" href="{{ route('templates.show', $template) }}" target="_blank" rel="noopener">Lihat Demo</a>
                             @endif
-                            <a class="landing-cta" href="{{ route('register') }}">Buat Undangan</a>
+                            <a class="landing-cta" href="{{ route('register', ['template' => $template->id]) }}">Daftar &amp; Pilih</a>
                         </div>
                     </div>
                 </article>
                 @endforeach
             </div>
+        </div>
+    </section>
+
+    <section class="landing-section landing-includes" aria-labelledby="includes-heading">
+        <div class="landing-container">
+            <div class="section-head" data-reveal>
+                <p class="overline">Yang Anda dapatkan</p>
+                <h2 id="includes-heading">Dari desain hingga respons tamu.</h2>
+                <p>Pembayaran template membuka akses untuk mengisi dan mempublikasikan undangan dengan desain pilihan.</p>
+            </div>
+            <ul class="includes-list" data-reveal>
+                <li>Isi data mempelai, jadwal, lokasi, dan galeri foto.</li>
+                <li>Pratinjau undangan sebelum dibagikan; perbarui isi setelah terbit.</li>
+                <li>Bagikan tautan umum atau tautan personal untuk tamu.</li>
+                <li>Pantau konfirmasi hadir (RSVP) dan ucapan di dashboard.</li>
+            </ul>
+            <p class="includes-note">Untuk pertanyaan masa aktif, batas penggunaan, atau pembayaran, <a href="https://wa.me/{{ config('legal.whatsapp') }}" target="_blank" rel="noopener">tanya layanan WhatsApp</a> sebelum membeli. <a href="{{ route('terms') }}#pembayaran">Baca syarat pembayaran</a>.</p>
         </div>
     </section>
 
@@ -209,9 +238,9 @@
                 <h2>Detail kecil hingga momen besar, semua ada di sini!</h2>
             </div>
             <div class="feature-grid">
-                <article class="feature-card" data-reveal><span class="feature-icon gold"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4zM8 8h8M8 12h5M8 16h7"/></svg></span><h3>Mudah disiapkan</h3><p>Isi detail pasangan, acara, dan galeri lewat form terstruktur.</p></article>
-                <article class="feature-card" data-reveal><span class="feature-icon green"><svg viewBox="0 0 24 24"><path d="M5 3v3M19 3v3M4 8h16M5 5h14a2 2 0 0 1 2 2v13H3V7a2 2 0 0 1 2-2Z"/><path d="m8 14 2 2 5-5"/></svg></span><h3>Mudah memantau kehadiran</h3><p>Pantau kehadiran dan ucapan hangat dari orang terdekat.</p></article>
-                <article class="feature-card" data-reveal><span class="feature-icon rose"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.7-7.5a5.5 5.5 0 0 0 1.1-8.9Z"/></svg></span><h3>Elegan dari layar mana pun</h3><p>Dari ponsel hingga desktop, undangan tetap tampil elegan.</p></article>
+                <article class="feature-card" data-reveal><span class="feature-icon gold"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4zM8 8h8M8 12h5M8 16h7"/></svg></span><h3>Isi sesuai cerita Anda</h3><p>Atur nama mempelai, acara, galeri foto, dan bagian yang ingin ditampilkan lewat form terstruktur.</p></article>
+                <article class="feature-card" data-reveal><span class="feature-icon green"><svg viewBox="0 0 24 24"><path d="M5 3v3M19 3v3M4 8h16M5 5h14a2 2 0 0 1 2 2v13H3V7a2 2 0 0 1 2-2Z"/><path d="m8 14 2 2 5-5"/></svg></span><h3>Bagikan ke tamu</h3><p>Siapkan daftar tamu, buat tautan personal, dan bagikan undangan melalui WhatsApp.</p></article>
+                <article class="feature-card" data-reveal><span class="feature-icon rose"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.7-7.5a5.5 5.5 0 0 0 1.1-8.9Z"/></svg></span><h3>Pantau respons tamu</h3><p>Lihat konfirmasi kehadiran dan ucapan tamu dari dashboard setelah undangan dibagikan.</p></article>
             </div>
         </div>
     </section>
@@ -224,9 +253,12 @@
                 <h2>Pertanyaan yang sering ditanyakan.</h2>
             </div>
             <div class="faq-list" data-reveal>
-                <details open><summary>Apakah undangan bisa langsung dibagikan? <svg viewBox="0 0 24 24"><path d="m8 10 4 4 4-4"/></svg></summary><p>Ya. Setelah dipublikasikan, tautan langsung aktif dan bisa dibagikan.</p></details>
+                <details open><summary>Apakah pendaftaran gratis? <svg viewBox="0 0 24 24"><path d="m8 10 4 4 4-4"/></svg></summary><p>Ya, pembuatan akun gratis. Untuk mulai mengisi undangan, pilih dan bayar template; harga sudah terlihat di atas sebelum mendaftar.</p></details>
+                <details><summary>Kapan saya bisa membuat dan membagikan undangan? <svg viewBox="0 0 24 24"><path d="m8 10 4 4 4-4"/></svg></summary><p>Setelah pembayaran template berhasil, Anda bisa mengisi undangan. Tautan bisa dibagikan setelah undangan dipublikasikan.</p></details>
                 <details><summary>Apakah tamu harus login untuk RSVP? <svg viewBox="0 0 24 24"><path d="m8 10 4 4 4-4"/></svg></summary><p>Tidak. Tamu cukup membuka tautan undangan.</p></details>
                 <details><summary>Bisakah undangan diubah setelah dibagikan? <svg viewBox="0 0 24 24"><path d="m8 10 4 4 4-4"/></svg></summary><p>Bisa. Perubahan langsung terlihat di tautan yang sama.</p></details>
+                <details><summary>Bagaimana jika saya membayar lewat transfer manual? <svg viewBox="0 0 24 24"><path d="m8 10 4 4 4-4"/></svg></summary><p>Unggah bukti transfer pada halaman detail pembayaran. Admin memeriksanya sebelum akses template terbuka.</p></details>
+                <details><summary>Di mana saya bisa bertanya tentang masa aktif atau batas tamu? <svg viewBox="0 0 24 24"><path d="m8 10 4 4 4-4"/></svg></summary><p>Silakan <a href="https://wa.me/{{ config('legal.whatsapp') }}" target="_blank" rel="noopener">hubungi layanan WhatsApp</a> sebelum pembayaran untuk memastikan kebutuhan undangan Anda.</p></details>
             </div>
         </div>
     </section>
@@ -239,7 +271,7 @@
                 <p class="overline light">Mulai sekarang</p>
                 <h2>Ceritakan momen bahagiamu lewat undangan digital.</h2>
                 <div class="cta-actions">
-                    <a class="primary-button" href="{{ route('register') }}">Buat Undangan <svg viewBox="0 0 24 24"><path d="M5 12h14M14 7l5 5-5 5"/></svg></a>
+                    <a class="primary-button" href="{{ route('register') }}">Daftar Gratis <svg viewBox="0 0 24 24"><path d="M5 12h14M14 7l5 5-5 5"/></svg></a>
                     <a class="ghost-button" href="{{ route('login') }}">Masuk ke Akun</a>
                 </div>
             </div>
@@ -267,6 +299,7 @@
             <strong>Akses</strong>
             <a href="{{ route('login') }}">Masuk</a>
             <a href="{{ route('register') }}">Daftar</a>
+            <a href="https://wa.me/{{ config('legal.whatsapp') }}" target="_blank" rel="noopener">Bantuan WhatsApp</a>
         </div>
     </div>
     <div class="landing-container footer-bottom">

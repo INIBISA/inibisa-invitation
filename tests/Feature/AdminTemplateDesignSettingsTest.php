@@ -13,6 +13,54 @@ class AdminTemplateDesignSettingsTest extends TestCase
 {
     use LazilyRefreshDatabase;
 
+    public function test_admin_can_edit_template_description_shown_to_guests_and_customers(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $template = Template::factory()->create(['description' => 'Deskripsi awal', 'price' => 150000]);
+
+        $this->actingAs($admin)->get(route('admin.templates.index'))
+            ->assertSee('data-template-settings-open="'.$template->id.'"', false)
+            ->assertSee('id="template-settings-'.$template->id.'"', false)
+            ->assertSee('Deskripsi awal');
+
+        $this->actingAs($admin)->patch(route('admin.templates.update', $template), [
+            'name' => $template->name,
+            'category' => 'Wedding',
+            'price' => 150000,
+            'description' => 'Floral <em>hangat</em> untuk hari istimewa.',
+            'is_active' => 1,
+        ])->assertRedirect()->assertSessionHas('success');
+
+        $this->assertSame('Floral <em>hangat</em> untuk hari istimewa.', $template->refresh()->description);
+
+        auth()->logout();
+        $this->get('/')
+            ->assertSee('Floral &lt;em&gt;hangat&lt;/em&gt; untuk hari istimewa.', false)
+            ->assertDontSee('Floral <em>hangat</em>', false);
+
+        $this->actingAs($admin)->get(route('templates.index'))
+            ->assertSee('Floral &lt;em&gt;hangat&lt;/em&gt; untuk hari istimewa.', false);
+    }
+
+    public function test_invalid_description_reopens_the_correct_template_modal_with_old_input(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $template = Template::factory()->create(['description' => 'Deskripsi lama']);
+
+        $this->actingAs($admin)->from(route('admin.templates.index'))->patch(route('admin.templates.update', $template), [
+            'template_form_id' => $template->id,
+            'name' => $template->name,
+            'category' => 'Wedding',
+            'price' => 150000,
+            'description' => str_repeat('A', 501),
+        ])->assertRedirect(route('admin.templates.index'))->assertSessionHasErrors('description');
+
+        $this->assertSame('Deskripsi lama', $template->refresh()->description);
+        $this->actingAs($admin)->get(route('admin.templates.index'))
+            ->assertSee("document.getElementById('template-settings-{$template->id}')?.showModal();", false)
+            ->assertSee(str_repeat('A', 501));
+    }
+
     public function test_admin_can_save_and_publish_template_design_draft(): void
     {
         $admin = User::factory()->admin()->create();

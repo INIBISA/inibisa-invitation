@@ -5,9 +5,10 @@
         <div>
             <p class="overline">Transaksi</p>
             <h1>Pembayaran</h1>
-            <p>Status seluruh pembayaran Anda.</p>
+            <p>Lihat status transaksi, lanjutkan pembayaran tertunda, atau unggah ulang bukti yang ditolak.</p>
         </div><a class="primary-button" href="{{ route('templates.index') }}">Pilih Templat</a>
     </section>
+    <section class="customer-guide" aria-label="Arti status pembayaran"><h2>Memahami status pembayaran</h2><p><strong>Menunggu pembayaran:</strong> buka Detail untuk menyelesaikan transaksi. <strong>Menunggu verifikasi:</strong> admin sedang memeriksa bukti transfer. <strong>Ditolak:</strong> lihat alasan dan unggah bukti baru. <strong>Berhasil:</strong> template siap digunakan untuk membuat undangan.</p></section>
     <section class="panel">
         <div class="table-scroll">
             <table class="premium-table">
@@ -36,7 +37,7 @@
                             <td><a class="button secondary small" href="{{ route('payments.show', $payment) }}">Detail</a>
                             </td>
                     </tr>@empty<tr>
-                            <td colspan="7">Belum ada pembayaran.</td>
+                             <td colspan="7">Belum ada pembayaran. <a href="{{ route('templates.index') }}">Lihat demo dan harga template</a> untuk memulai.</td>
                         </tr>
                     @endforelse
                 </tbody>

@@ -40,18 +40,6 @@
                         'M9 18V5l12-2v13M9 9l12-2M9 18a3 3 0 1 1-3-3c1.7 0 3 1.3 3 3ZM21 16a3 3 0 1 1-3-3c1.7 0 3 1.3 3 3Z',
                 ],
                 [
-                    'route' => 'admin.guests.index',
-                    'label' => 'Tamu',
-                    'icon' => 'M4 20v-2a5 5 0 0 1 5-5h6a5 5 0 0 1 5 5v2M12 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8',
-                ],
-                ['route' => 'admin.rsvps.index', 'label' => 'RSVP', 'icon' => 'M4 5h16v15H4zM8 10l2 2 5-5M8 16h8'],
-                [
-                    'route' => 'admin.wishes.index',
-                    'label' => 'Ucapan',
-                    'icon' =>
-                        'M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l7.7-7.5a5.5 5.5 0 0 0 1.1-8.9Z',
-                ],
-                [
                     'route' => 'admin.settings.edit',
                     'label' => 'Pengaturan',
                     'icon' =>

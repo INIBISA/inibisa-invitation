@@ -35,7 +35,7 @@
 
     <section class="panel invitation-step" data-wizard-step="1">
         <header class="invitation-step-header">
-            <span>1</span><div><p class="overline">Langkah 1 dari 6</p><h2>Informasi Undangan</h2><p>Tentukan template, judul, dan alamat link undangan.</p></div>
+            <span>1</span><div><p class="overline">Langkah 1 dari 6</p><h2>Informasi Undangan</h2><p>Tentukan judul dan alamat tautan yang mudah dikenali tamu. Tautan aktif setelah dipublikasikan.</p></div>
         </header>
         <div class="form-grid">
             <div class="field">
@@ -69,7 +69,7 @@
 
     <section class="panel invitation-step" data-wizard-step="2">
         <header class="invitation-step-header">
-            <span>2</span><div><p class="overline">Langkah 2 dari 6</p><h2>Data Kedua Mempelai</h2><p>Nama panggilan paling penting. Informasi keluarga dapat dilengkapi nanti.</p></div>
+            <span>2</span><div><p class="overline">Langkah 2 dari 6</p><h2>Data Kedua Mempelai</h2><p>Masukkan nama yang akan dilihat tamu pada undangan. Nama panggilan paling penting; data keluarga dan foto dapat dilengkapi nanti.</p></div>
         </header>
         <div class="couple-form-grid">
             @foreach (['groom' => ['Mempelai Pria', 'Nama pria'], 'bride' => ['Mempelai Wanita', 'Nama wanita']] as $person => [$heading, $placeholder])
@@ -90,7 +90,7 @@
 
     <section class="panel invitation-step" data-wizard-step="3">
         <header class="invitation-step-header">
-            <span>3</span><div><p class="overline">Langkah 3 dari 6</p><h2>Tanggal dan Acara</h2><p>Tambahkan akad, resepsi, atau acara lain yang akan dihadiri tamu.</p></div>
+            <span>3</span><div><p class="overline">Langkah 3 dari 6</p><h2>Tanggal dan Acara</h2><p>Isi tanggal, jam, lokasi, dan alamat agar tamu tahu kapan serta ke mana harus datang. Minimal satu acara diperlukan sebelum publikasi.</p></div>
         </header>
         <div class="form-grid">
             <div class="field"><label for="wedding_date">Tanggal pernikahan <em>Disarankan</em></label><input class="input" id="wedding_date" type="date" name="wedding_date" data-summary-source="date" value="{{ old('wedding_date', data_get($data, 'wedding_date')) }}">@error('wedding_date')<small class="field-error">{{ $message }}</small>@enderror</div>
@@ -166,7 +166,7 @@
 
     <section class="panel invitation-step" data-wizard-step="5">
         <header class="invitation-step-header">
-            <span>5</span><div><p class="overline">Langkah 5 dari 6</p><h2>Foto dan Musik</h2><p>Hidupkan undangan dengan foto terbaik dan musik pilihan.</p></div>
+            <span>5</span><div><p class="overline">Langkah 5 dari 6</p><h2>Foto dan Musik</h2><p>Tambahkan foto dan musik jika diinginkan. Keduanya opsional; periksa hasilnya lewat pratinjau setelah menyimpan.</p></div>
         </header>
         <div class="invitation-subsection">
             <div class="invitation-subsection-head"><div><h3>Media Undangan</h3><p>Semua media opsional dan dapat ditambahkan kembali nanti.</p></div></div>
@@ -237,10 +237,11 @@
 
     <section class="panel invitation-step" data-wizard-step="6">
         <header class="invitation-step-header">
-            <span>6</span><div><p class="overline">Langkah 6 dari 6</p><h2>Periksa dan Simpan</h2><p>Pilih bagian yang ingin ditampilkan lalu periksa ringkasan.</p></div>
+            <span>6</span><div><p class="overline">Langkah 6 dari 6</p><h2>Periksa dan Simpan</h2><p>Centang bagian yang ingin dilihat tamu, periksa ringkasan, lalu simpan. Menyimpan tidak langsung mempublikasikan undangan.</p></div>
         </header>
         <div class="invitation-settings">
             <h3>Bagian yang Ditampilkan</h3>
+            <p>Hapus centang untuk menyembunyikan bagian yang tidak dibutuhkan dari undangan tamu.</p>
             <div class="check-grid">
                 @foreach (['countdown' => 'Hitung Mundur', 'gallery' => 'Galeri', 'story' => 'Love Story', 'gift' => 'Wedding Gift', 'rsvp' => 'RSVP', 'wishes' => 'Ucapan', 'music' => 'Musik'] as $key => $label)
                     <label class="check"><input type="checkbox" name="settings[{{ $key }}]" value="1" @checked((bool) old('settings.' . $key, data_get($data, 'settings.' . $key, true)))><span>{{ $label }}</span></label>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
+use App\Models\Template;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
@@ -31,7 +32,11 @@ class SessionController extends Controller
             return redirect()->intended(route('admin.dashboard'));
         }
 
-        return redirect()->intended(route('dashboard'));
+        $selectedTemplate = Template::query()->where('is_active', true)->find($request->session()->pull('selected_template_id'));
+
+        return $selectedTemplate
+            ? redirect()->route('payments.create', $selectedTemplate)
+            : redirect()->intended(route('dashboard'));
     }
 
     public function destroy(): RedirectResponse

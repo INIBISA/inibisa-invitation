@@ -6,13 +6,14 @@
         <div>
             <p class="overline">{{ $invitation->title }}</p>
             <h1>Daftar Tamu</h1>
-            <p>Kelola penerima, tautan personal, dan status pengiriman undangan.</p>
+            <p>Tambahkan penerima, bagikan tautan pribadi, lalu catat undangan yang sudah dikirim.</p>
         </div>
         <div class="actions">
             <button class="button secondary" type="button" data-copy-link="{{ route('public.invitation', $invitation->slug) }}">Salin Tautan Umum</button>
             <a class="button secondary" href="{{ route('invitations.edit', $invitation) }}">Kembali ke Undangan</a>
         </div>
     </section>
+    <section class="customer-guide" aria-label="Cara membagikan undangan"><h2>Cara mengundang tamu</h2><p>Pastikan undangan sudah dipublikasikan. Tambahkan nama tamu satu per satu atau impor daftar, lalu gunakan tombol bagikan pada baris tamu untuk mengirim tautan pribadi. Tautan umum dapat disalin untuk dibagikan tanpa nama penerima.</p></section>
 
     @php($sentGuests = (int) ($guestStats->sent ?? 0))
     @php($totalGuests = (int) ($guestStats->total ?? 0))
@@ -28,7 +29,7 @@
             <form method="POST" action="{{ route('invitations.guests.store', $invitation) }}">
                 @csrf
                 <div class="field"><label for="guest-name">Nama tamu</label><input class="input" id="guest-name" name="name" value="{{ old('name') }}" maxlength="150" required></div>
-                <div class="field"><label for="guest-whatsapp">Nomor WhatsApp <small>Opsional</small></label><input class="input" id="guest-whatsapp" name="whatsapp" type="tel" value="{{ old('whatsapp') }}" placeholder="6281234567890"></div>
+                 <div class="field"><label for="guest-whatsapp">Nomor WhatsApp <small>Opsional</small></label><input class="input" id="guest-whatsapp" name="whatsapp" type="tel" value="{{ old('whatsapp') }}" placeholder="6281234567890"><small>Gunakan format 62 diikuti nomor tanpa 0 di depan agar tautan berbagi WhatsApp siap digunakan.</small></div>
                 <button class="button gold" type="submit">Tambah Tamu</button>
             </form>
         </section>

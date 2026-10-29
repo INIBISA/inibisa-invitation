@@ -3,6 +3,7 @@
 @section('content')
     @include('partials.datatables-assets')
     <div class="page-head"><div><div class="eyebrow">{{ $invitation->title }}</div><h1>RSVP</h1></div><a class="button secondary" href="{{ route('dashboard') }}">Kembali</a></div>
+    <section class="customer-guide" aria-label="Panduan RSVP"><h2>Konfirmasi kehadiran tamu</h2><p>Jawaban muncul di sini setelah tamu mengisi formulir RSVP pada tautan undangan yang sudah dipublikasikan. “Jumlah” adalah banyaknya orang yang dikonfirmasi dalam jawaban tersebut. Gunakan penyaring untuk melihat tamu hadir atau tidak hadir.</p></section>
     <section class="card table-wrap datatable-panel">
         <form class="management-filters" id="rsvp-filters"><select class="input" name="attendance"><option value="">Semua kehadiran</option><option value="attending">Hadir</option><option value="not_attending">Tidak hadir</option></select><button class="button secondary" type="submit">Saring</button><button class="button secondary" type="button" data-datatable-reset>Atur Ulang</button></form>
         <div class="table-scroll">

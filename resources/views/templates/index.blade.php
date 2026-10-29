@@ -5,8 +5,12 @@
         <div>
             <p class="overline">Katalog Desain</p>
             <h1>Pilih Template</h1>
-            <p>Lihat demo, temukan desain favorit, lalu lanjutkan ke checkout.</p>
+            <p>Bandingkan tampilan demo dan harga. Pilih template untuk melihat ringkasan sebelum membayar.</p>
         </div>
+    </section>
+    <section class="customer-guide" aria-label="Panduan memilih template">
+        <h2>Sebelum memilih</h2>
+        <p>Demo menunjukkan contoh tampilan; nama, acara, dan foto Anda diisi setelah pembayaran berhasil. Tombol “Pilih Template” membuka checkout, belum langsung menagih pembayaran.</p>
     </section>
     <div class="template-grid">
         @forelse($templates as $template)
@@ -16,12 +20,12 @@
                         class="template-category">{{ $template->category }}</span></div>
                 <div class="template-card-body">
                     <h2>{{ $template->name }}</h2>
-                    <p>Desain undangan yang dapat disesuaikan dengan cerita Anda.</p><strong>Rp
+                    <p>{{ $template->description ?: 'Desain undangan yang dapat disesuaikan dengan cerita Anda.' }}</p><strong>Rp
                         {{ number_format($template->price, 0, ',', '.') }}</strong>
                     <div class="actions template-card-actions">
                         <a class="button secondary" href="{{ route('templates.show', $template) }}" target="_blank"
                             rel="noopener">Lihat Demo</a>
-                        <a class="button gold" href="{{ route('payments.create', $template) }}">Pilih Template</a>
+                        <a class="button gold" href="{{ route('payments.create', $template) }}">Lihat Checkout</a>
                     </div>
                 </div>
         </article>@empty<div class="premium-empty">

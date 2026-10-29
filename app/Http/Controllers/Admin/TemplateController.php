@@ -38,6 +38,7 @@ class TemplateController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:150'],
             'category' => ['required', 'string', 'max:80'],
+            'description' => ['sometimes', 'nullable', 'string', 'max:500'],
             'price' => ['required', 'integer', 'min:1000', 'max:100000000'],
             'is_active' => ['nullable', 'boolean'],
             'thumbnail' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],

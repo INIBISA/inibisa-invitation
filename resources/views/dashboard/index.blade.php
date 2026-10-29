@@ -5,14 +5,19 @@
         <div>
             <p class="overline">Ruang Kerja</p>
             <h1>Selamat datang, {{ auth()->user()->name }}</h1>
-            <p>Pilih templat, lihat demo, dan mulai undangan Anda.</p>
+            <p>Semua undangan, pembayaran, tamu, RSVP, dan ucapan Anda dikelola dari sini.</p>
         </div><a class="primary-button" href="{{ route('templates.index') }}">Pilih Templat</a>
+    </section>
+    <section class="customer-guide" aria-label="Panduan memulai">
+        <h2>Langkah membuat undangan</h2>
+        <p>Pendaftaran akun gratis. Harga tiap template terlihat sebelum checkout; pengisian undangan terbuka setelah pembayaran berhasil.</p>
+        <ol><li><a href="{{ route('templates.index') }}">Lihat demo dan pilih template</a></li><li>Bayar template pilihan</li><li>Isi dan pratinjau undangan</li><li>Publikasikan, bagikan, lalu pantau tamu</li></ol>
     </section>
     @if ($availablePayments->isNotEmpty())
         <section class="panel dashboard-callout">
             <div><span class="status-badge paid"><i></i>Pembayaran berhasil</span>
                 <h2>Templat Anda siap diisi</h2>
-                <p>Mulai membuat undangan dari templat yang sudah dibayar.</p>
+                <p>Isi detail acara, simpan draf, lalu pratinjau sebelum mempublikasikan undangan.</p>
             </div>
             <div class="actions">
                 @foreach ($availablePayments as $payment)
@@ -45,7 +50,7 @@
         @if ($invitations->isEmpty())
             <div class="premium-empty dashboard-empty"><span class="empty-symbol">✦</span>
                 <h3>Belum punya undangan</h3>
-                <p>Pilih templat favoritmu, lihat demonya, lalu mulai buat undangan.</p><a class="button gold"
+                 <p>Pilih template dan lihat harganya. Setelah pembayaran berhasil, Anda bisa mulai mengisi undangan.</p><a class="button gold"
                     href="{{ route('templates.index') }}">Lihat Templat</a>
         </div>@else<div class="table-scroll">
                 <table class="premium-table">

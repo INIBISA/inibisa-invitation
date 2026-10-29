@@ -17,6 +17,7 @@ class VoxelVoyageTemplateSeeder extends Seeder
                 'thumbnail' => 'images/templates/voxel-voyage/thumbnail.svg',
                 'price' => 150000,
                 'category' => 'Playful',
+                'description' => 'Dunia voxel penuh warna dengan panel permainan, peta perjalanan, dan nuansa petualangan ceria.',
                 'is_active' => true,
             ],
         );

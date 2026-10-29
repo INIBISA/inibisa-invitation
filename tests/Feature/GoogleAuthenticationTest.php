@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Http\Controllers\Auth\GoogleAuthController;
+use App\Models\Template;
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Hash;
@@ -55,6 +56,22 @@ class GoogleAuthenticationTest extends TestCase
             ->assertRedirect(route('dashboard'));
 
         $this->assertAuthenticatedAs($user);
+    }
+
+    public function test_google_registration_continues_to_selected_template_checkout(): void
+    {
+        $template = Template::factory()->create();
+        $this->get(route('register', ['template' => $template->id]));
+
+        Socialite::fake('google', $this->fakeGoogleUser([
+            'id' => 'google-selected-template',
+            'name' => 'Pengguna Baru',
+            'email' => 'pilihan@example.com',
+        ]));
+
+        $this->get(route('google.callback'))->assertRedirect(route('google.confirm'));
+        $this->post(route('google.confirm.store'), ['terms' => '1'])
+            ->assertRedirect(route('payments.create', $template));
     }
 
     public function test_existing_customer_is_linked_by_verified_email(): void
