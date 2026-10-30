@@ -6,6 +6,53 @@
     var header = document.querySelector("[data-landing-header]");
     var menuButton = document.querySelector("[data-landing-menu-open]");
     var mobileMenu = document.querySelector("[data-landing-mobile]");
+    var whatsappDialog = document.querySelector("[data-whatsapp-dialog]");
+
+    if (whatsappDialog && typeof whatsappDialog.showModal === "function") {
+        var whatsappMessage = whatsappDialog.querySelector("[data-whatsapp-message]");
+        var whatsappTrigger = null;
+
+        document.querySelectorAll('a[href^="https://wa.me/"]').forEach(function (link) {
+            link.addEventListener("click", function (event) {
+                event.preventDefault();
+                whatsappTrigger = link;
+                whatsappDialog.showModal();
+            });
+        });
+
+        whatsappDialog.querySelector("[data-whatsapp-close]").addEventListener("click", function () {
+            whatsappDialog.close();
+        });
+
+        whatsappDialog.addEventListener("click", function (event) {
+            if (event.target === whatsappDialog) {
+                whatsappDialog.close();
+            }
+        });
+
+        whatsappDialog.addEventListener("close", function () {
+            if (whatsappTrigger) {
+                whatsappTrigger.focus();
+            }
+        });
+
+        whatsappDialog.querySelectorAll("[data-whatsapp-suggestion]").forEach(function (button) {
+            button.addEventListener("click", function () {
+                whatsappMessage.value = button.getAttribute("data-whatsapp-suggestion");
+                whatsappMessage.focus();
+            });
+        });
+
+        whatsappDialog.querySelector("[data-whatsapp-form]").addEventListener("submit", function (event) {
+            whatsappMessage.value = whatsappMessage.value.trim();
+            if (!whatsappMessage.value) {
+                event.preventDefault();
+                whatsappMessage.focus();
+                return;
+            }
+            whatsappDialog.close();
+        });
+    }
 
     function isMobileMenuOpen() {
         return mobileMenu && !mobileMenu.hasAttribute("hidden");

@@ -252,6 +252,9 @@ class AdminDemoTest extends TestCase
 
         $this->get('/')
             ->assertOk()
+            ->assertSee('data-whatsapp-dialog', false)
+            ->assertSee('action="https://wa.me/'.config('legal.whatsapp').'"', false)
+            ->assertSee('name="text"', false)
             ->assertSee('href="'.route('templates.show', $template).'"', false)
             ->assertSee('href="'.route('register', ['template' => $template->id]).'"', false)
             ->assertSee('Rp 175.000')

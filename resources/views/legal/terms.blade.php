@@ -103,7 +103,7 @@
 
         <h2 id="kontak">12. Kontak</h2>
         <p>Pertanyaan mengenai Syarat dan Ketentuan ini dapat disampaikan melalui WhatsApp layanan:</p>
-        <p><a class="landing-cta" href="https://wa.me/{{ config('legal.whatsapp', '62882006381163') }}" target="_blank" rel="noopener">Hubungi 0882006381163</a></p>
+        <p><a class="landing-cta" href="https://wa.me/{{ config('legal.whatsapp') }}" target="_blank" rel="noopener">Hubungi 0813 6036 9629</a></p>
     </article>
 </main>
 <footer class="landing-footer">

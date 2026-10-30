@@ -94,7 +94,7 @@
 
         <h2 id="kontak">10. Kontak Privasi</h2>
         <p>Permintaan akses, koreksi, atau penghapusan data dapat disampaikan melalui WhatsApp layanan:</p>
-        <p><a class="landing-cta" href="https://wa.me/{{ config('legal.whatsapp', '62882006381163') }}" target="_blank" rel="noopener">Hubungi 0882006381163</a></p>
+        <p><a class="landing-cta" href="https://wa.me/{{ config('legal.whatsapp') }}" target="_blank" rel="noopener">Hubungi 0813 6036 9629</a></p>
     </article>
 </main>
 <footer class="landing-footer">

@@ -8,7 +8,7 @@
     <link rel="icon" type="image/webp" href="{{ asset('favicon.webp') }}">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <link rel="stylesheet" href="{{ asset('css/landing.css') }}?v={{ filemtime(public_path('css/landing.css')) }}">
-    <script src="{{ asset('js/landing.js') }}" defer></script>
+    <script src="{{ asset('js/landing.js') }}?v={{ filemtime(public_path('js/landing.js')) }}" defer></script>
 </head>
 <body class="landing-body">
 <!-- HEADER / NAVBAR -->
@@ -57,6 +57,7 @@
                 <div class="hero-cta">
                     <a class="primary-button hero-primary" href="{{ route('register') }}">Daftar Gratis <svg viewBox="0 0 24 24"><path d="M5 12h14M14 7l5 5-5 5"/></svg></a>
                     <a class="secondary-button" href="#template">Lihat Demo &amp; Harga</a>
+                    <a class="secondary-button whatsapp-hero-link" href="https://wa.me/{{ config('legal.whatsapp') }}?text=Halo%2C%20saya%20ingin%20bertanya%20tentang%20undangan%20digital." target="_blank" rel="noopener">Tanya via WhatsApp <span aria-hidden="true">↗</span></a>
                 </div>
             </div>
             <div class="hero-preview" data-reveal>
@@ -272,7 +273,7 @@
                 <h2>Ceritakan momen bahagiamu lewat undangan digital.</h2>
                 <div class="cta-actions">
                     <a class="primary-button" href="{{ route('register') }}">Daftar Gratis <svg viewBox="0 0 24 24"><path d="M5 12h14M14 7l5 5-5 5"/></svg></a>
-                    <a class="ghost-button" href="{{ route('login') }}">Masuk ke Akun</a>
+                    <a class="ghost-button" href="https://wa.me/{{ config('legal.whatsapp') }}?text=Halo%2C%20saya%20ingin%20bertanya%20tentang%20undangan%20digital." target="_blank" rel="noopener">Ada pertanyaan? Chat WhatsApp ↗</a>
                 </div>
             </div>
         </div>
@@ -307,5 +308,34 @@
         <span><a href="{{ route('terms') }}">Syarat dan Ketentuan</a> &middot; <a href="{{ route('privacy') }}">Kebijakan Privasi</a></span>
     </div>
 </footer>
+<a class="landing-whatsapp-float" href="https://wa.me/{{ config('legal.whatsapp') }}?text=Halo%2C%20saya%20ingin%20bertanya%20tentang%20undangan%20digital." target="_blank" rel="noopener" aria-label="Tanya tentang undangan digital melalui WhatsApp">
+    <span class="landing-whatsapp-icon" aria-hidden="true">
+        <svg viewBox="0 0 32 32" fill="currentColor"><path d="M16 .8A15.1 15.1 0 0 0 3.1 23.7L1 31l7.5-2A15.2 15.2 0 1 0 16 .8Zm0 27.6a12.3 12.3 0 0 1-6.3-1.7l-.5-.3-4.4 1.2 1.2-4.3-.3-.5A12.4 12.4 0 1 1 16 28.4Zm6.8-9.3c-.4-.2-2.2-1.1-2.6-1.2-.3-.1-.6-.2-.8.2s-1 1.2-1.2 1.4c-.2.2-.4.3-.8.1-.4-.2-1.6-.6-3.1-1.9-1.1-1-1.9-2.2-2.1-2.5-.2-.4 0-.6.2-.8l.6-.7.4-.6c.1-.2 0-.5 0-.7l-1.2-2.9c-.3-.7-.6-.6-.8-.6h-.7c-.3 0-.7.1-1 .5-.4.4-1.3 1.3-1.3 3.1s1.4 3.6 1.6 3.9c.2.2 2.8 4.3 6.8 6 .9.4 1.6.6 2.2.7.9.1 1.7.1 2.4-.2.7-.3 2.2-1 2.5-2s.3-1.8.2-2-.3-.3-.7-.5Z"/></svg>
+    </span>
+    <span class="landing-whatsapp-label"><strong>Butuh bantuan?</strong><small>Chat kami di WhatsApp</small></span>
+    <span class="landing-whatsapp-arrow" aria-hidden="true">↗</span>
+</a>
+<dialog class="landing-whatsapp-dialog" aria-labelledby="whatsapp-dialog-title" aria-describedby="whatsapp-dialog-description" data-whatsapp-dialog>
+    <div class="landing-whatsapp-dialog-head">
+        <span class="landing-whatsapp-dialog-icon" aria-hidden="true">✦</span>
+        <button type="button" class="landing-whatsapp-close" aria-label="Tutup dialog" data-whatsapp-close>×</button>
+        <p>Undangan Digital Studio</p>
+        <h2 id="whatsapp-dialog-title">Ada yang ingin ditanyakan?</h2>
+        <span id="whatsapp-dialog-description">Pilih pertanyaan di bawah, atau tulis pesan sendiri. Kami siap membantu lewat WhatsApp.</span>
+    </div>
+    <div class="landing-whatsapp-dialog-body">
+        <p class="landing-whatsapp-suggestions-title">Pertanyaan populer</p>
+        <div class="landing-whatsapp-suggestions">
+            <button type="button" data-whatsapp-suggestion="Halo, saya ingin bertanya tentang harga template undangan digital.">Berapa harga templatenya? <span aria-hidden="true">↗</span></button>
+            <button type="button" data-whatsapp-suggestion="Halo, saya ingin bertanya tentang cara membuat undangan digital.">Bagaimana cara membuat undangan? <span aria-hidden="true">↗</span></button>
+            <button type="button" data-whatsapp-suggestion="Halo, saya ingin bertanya tentang masa aktif dan batas tamu undangan.">Berapa lama masa aktifnya? <span aria-hidden="true">↗</span></button>
+        </div>
+        <form action="https://wa.me/{{ config('legal.whatsapp') }}" method="get" target="_blank" rel="noopener" data-whatsapp-form>
+            <label for="whatsapp-message">Pesan Anda</label>
+            <textarea id="whatsapp-message" name="text" rows="3" maxlength="1000" placeholder="Tulis pertanyaan Anda di sini..." required data-whatsapp-message></textarea>
+            <button type="submit" class="landing-whatsapp-send">Lanjutkan ke WhatsApp <span aria-hidden="true">↗</span></button>
+        </form>
+    </div>
+</dialog>
 </body>
 </html>
