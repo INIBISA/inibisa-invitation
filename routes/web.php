@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\DemoInvitationController as AdminDemoInvitationController;
 use App\Http\Controllers\Admin\DemoMediaUploadController as AdminDemoMediaUploadController;
 use App\Http\Controllers\Admin\InvitationController as AdminInvitationController;
+use App\Http\Controllers\Admin\InvitationPublicationController as AdminInvitationPublicationController;
 use App\Http\Controllers\Admin\RsvpController as AdminRsvpController;
 use App\Http\Controllers\Admin\SettingController as AdminSettingController;
 use App\Http\Controllers\Admin\TemplateCanvasController;
@@ -98,6 +99,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin', 'admin.head
     Route::get('/customers/data', [AdminCustomerController::class, 'data'])->name('customers.data');
     Route::get('/invitations', AdminInvitationController::class)->name('invitations.index');
     Route::get('/invitations/data', [AdminInvitationController::class, 'data'])->name('invitations.data');
+    Route::delete('/invitations/{invitation}/publication', AdminInvitationPublicationController::class)->name('invitations.publication.destroy');
     Route::get('/templates', AdminTemplateController::class)->name('templates.index');
     Route::get('/templates/create', [VisualTemplateController::class, 'create'])->name('templates.create');
     Route::post('/templates', [VisualTemplateController::class, 'store'])->name('templates.store');

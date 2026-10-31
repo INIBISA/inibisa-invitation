@@ -25,7 +25,7 @@ class InvitationController extends Controller
             ->addColumn('customer', fn (Invitation $invitation): string => '<strong>'.e($invitation->user->name).'</strong><small>'.e($invitation->user->email).'</small>')
             ->addColumn('template_name', fn (Invitation $invitation): string => $invitation->template->name)
             ->addColumn('status_label', fn (Invitation $invitation): string => '<span class="status-badge '.e($invitation->status).'"><i></i>'.e($invitation->statusLabel()).'</span>')
-            ->addColumn('link', fn (Invitation $invitation): string => $invitation->status === Invitation::STATUS_PUBLISHED ? '<a class="button secondary small" href="'.e(route('public.invitation', $invitation->slug)).'" target="_blank" rel="noopener">Buka</a>' : '<span class="muted">Belum publik</span>')
+            ->addColumn('link', fn (Invitation $invitation): string => view('admin.invitations-link', ['invitation' => $invitation])->render())
             ->filterColumn('invitation', fn ($query, string $keyword) => $query->where(fn ($query) => $query->where('title', 'like', "%{$keyword}%")->orWhere('slug', 'like', "%{$keyword}%")))
             ->filterColumn('customer', fn ($query, string $keyword) => $query->whereHas('user', fn ($query) => $query->where('name', 'like', "%{$keyword}%")->orWhere('email', 'like', "%{$keyword}%")))
             ->filterColumn('template_name', fn ($query, string $keyword) => $query->whereHas('template', fn ($query) => $query->where('name', 'like', "%{$keyword}%")))

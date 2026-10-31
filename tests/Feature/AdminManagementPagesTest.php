@@ -53,6 +53,47 @@ class AdminManagementPagesTest extends TestCase
         $response->assertOk()->assertSee('Anisa')->assertSee('Semoga selalu bahagia')->assertDontSee('Budi');
     }
 
+    public function test_admin_can_remove_active_link_without_deleting_invitation(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $invitation = Invitation::factory()->published()->create();
+        $publicUrl = route('public.invitation', $invitation->slug);
+
+        $table = $this->actingAs($admin)->getJson(route('admin.invitations.data'));
+        $table->assertOk();
+        $this->assertStringContainsString('Hapus Tautan', $table->json('data.0.link'));
+        $this->assertStringContainsString(route('admin.invitations.publication.destroy', $invitation), $table->json('data.0.link'));
+
+        $this->actingAs($admin)->from(route('admin.invitations.index'))
+            ->delete(route('admin.invitations.publication.destroy', $invitation))
+            ->assertRedirect(route('admin.invitations.index'))
+            ->assertSessionHas('success', 'Tautan undangan berhasil dihapus.');
+
+        $this->assertModelExists($invitation);
+        $this->assertSame(Invitation::STATUS_INACTIVE, $invitation->refresh()->status);
+        $this->actingAs($admin)->get($publicUrl)->assertNotFound();
+
+        $updatedTable = $this->actingAs($admin)->getJson(route('admin.invitations.data'));
+        $updatedTable->assertOk();
+        $this->assertStringNotContainsString('Hapus Tautan', $updatedTable->json('data.0.link'));
+
+        $this->actingAs($admin)->from(route('admin.invitations.index'))
+            ->delete(route('admin.invitations.publication.destroy', $invitation))
+            ->assertRedirect(route('admin.invitations.index'))
+            ->assertSessionHasErrors(['publication' => 'Tautan undangan ini sudah tidak aktif.']);
+    }
+
+    public function test_customer_cannot_remove_another_invitation_link_from_admin(): void
+    {
+        $customer = User::factory()->active()->create();
+        $invitation = Invitation::factory()->published()->create();
+
+        $this->actingAs($customer)->delete(route('admin.invitations.publication.destroy', $invitation))
+            ->assertForbidden();
+
+        $this->assertSame(Invitation::STATUS_PUBLISHED, $invitation->refresh()->status);
+    }
+
     public function test_customer_is_forbidden_from_admin_management_pages(): void
     {
         $customer = User::factory()->active()->create();

@@ -325,6 +325,38 @@ class InvitationManagementTest extends TestCase
         $this->assertSame(Invitation::STATUS_INACTIVE, $invitation->refresh()->status);
     }
 
+    public function test_incomplete_invitation_shows_publication_error_alert_without_publishing(): void
+    {
+        $customer = User::factory()->active()->create();
+        $invitation = Invitation::factory()->for($customer)->create();
+
+        $response = $this->actingAs($customer)
+            ->followingRedirects()
+            ->from(route('invitations.edit', $invitation))
+            ->post(route('invitations.publication.store', $invitation));
+
+        $response->assertOk()
+            ->assertSee('class="alert error"', false)
+            ->assertSee('Lengkapi nama mempelai, tanggal, dan minimal satu acara sebelum publikasi.');
+        $this->assertSame(Invitation::STATUS_DRAFT, $invitation->refresh()->status);
+        $this->assertNull($invitation->published_at);
+    }
+
+    public function test_inactive_template_shows_publication_error_without_publishing(): void
+    {
+        $customer = User::factory()->active()->create();
+        $template = Template::factory()->create(['is_active' => false]);
+        $invitation = Invitation::factory()->for($customer)->for($template)->create();
+
+        $response = $this->actingAs($customer)
+            ->from(route('invitations.edit', $invitation))
+            ->post(route('invitations.publication.store', $invitation));
+
+        $response->assertRedirect(route('invitations.edit', $invitation))
+            ->assertSessionHasErrors(['publication' => 'Template tidak aktif.']);
+        $this->assertSame(Invitation::STATUS_DRAFT, $invitation->refresh()->status);
+    }
+
     private function validPayload(Template $template): array
     {
         return [
